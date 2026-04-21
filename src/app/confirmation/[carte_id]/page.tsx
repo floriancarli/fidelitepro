@@ -95,7 +95,7 @@ export default function ConfirmationPage() {
             <p className="text-white/70 text-sm font-medium">Carte de fidélité</p>
             <Star size={16} className="text-white/50" />
           </div>
-          <h2 className="text-xl font-bold mb-4">Bonjour {carte.client_prenom} 👋</h2>
+          <h2 className="text-xl font-bold mb-4">Bonjour {carte.client_nom} 👋</h2>
 
           <div className="text-center mb-4">
             <p className="text-5xl font-bold">{carte.nombre_points}</p>

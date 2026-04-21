@@ -183,7 +183,7 @@ export default function ClientScannerModal({ onClose }: Props) {
                 {result.recompenseDeclenchee ? 'Récompense débloquée !' : 'Point ajouté !'}
               </h3>
               <p className="text-[#6B7280] text-sm mb-5">
-                Bonjour <strong>{result.client.prenom}</strong> 👋
+                Bonjour <strong>{result.client.nom}</strong> 👋
               </p>
 
               {result.recompenseDeclenchee && (

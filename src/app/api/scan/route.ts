@@ -42,7 +42,7 @@ export async function POST(request: NextRequest) {
     .select('*')
     .eq('commercant_id', commercant.id)
     .eq('client_id', client.id)
-    .single()
+    .maybeSingle()
 
   let recompenseDeclenchee = false
 
@@ -55,7 +55,7 @@ export async function POST(request: NextRequest) {
         commercant_id: commercant.id,
         client_id: client.id,
         client_email: client.email,
-        client_prenom: client.prenom,
+        client_nom: client.nom,
         nombre_points: newPoints,
         points_cumules_total: newPoints,
         derniere_visite: new Date().toISOString(),

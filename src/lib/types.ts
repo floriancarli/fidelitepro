@@ -15,7 +15,7 @@ export interface Commercant {
 export interface Client {
   id: string
   email: string
-  prenom: string
+  nom: string
   qr_code_id: string
   created_at: string
 }
@@ -25,7 +25,7 @@ export interface CarteFidelite {
   commercant_id: string
   client_id: string
   client_email: string
-  client_prenom: string
+  client_nom: string
   nombre_points: number
   points_cumules_total: number
   derniere_visite: string

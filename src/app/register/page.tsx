@@ -14,7 +14,7 @@ type Step = 'form' | 'card'
 
 export default function RegisterPage() {
   const [step, setStep] = useState<Step>('form')
-  const [form, setForm] = useState({ prenom: '', email: '' })
+  const [form, setForm] = useState({ nom: '', email: '' })
   const [client, setClient] = useState<Client | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
@@ -27,12 +27,14 @@ export default function RegisterPage() {
     try {
       const supabase = createClient()
 
-      // Vérifier si le client existe déjà
-      const { data: existing } = await supabase
+      // Vérifier si le client existe déjà (maybeSingle évite le 406 si absent)
+      const { data: existing, error: selectError } = await supabase
         .from('clients')
         .select('*')
         .eq('email', form.email.toLowerCase())
-        .single()
+        .maybeSingle()
+
+      if (selectError) throw selectError
 
       if (existing) {
         setClient(existing)
@@ -45,7 +47,7 @@ export default function RegisterPage() {
         .from('clients')
         .insert({
           email: form.email.toLowerCase(),
-          prenom: form.prenom,
+          nom: form.nom,
         })
         .select()
         .single()
@@ -126,13 +128,13 @@ export default function RegisterPage() {
 
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-[#1A1A23] mb-1.5">Votre prénom</label>
+                <label className="block text-sm font-medium text-[#1A1A23] mb-1.5">Votre nom</label>
                 <input
                   type="text"
                   required
-                  value={form.prenom}
-                  onChange={(e) => setForm({ ...form, prenom: e.target.value })}
-                  placeholder="Ex: Marie"
+                  value={form.nom}
+                  onChange={(e) => setForm({ ...form, nom: e.target.value })}
+                  placeholder="Ex: Marie Dupont"
                   className="w-full border border-gray-200 rounded-xl px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-[#534AB7]/30 focus:border-[#534AB7] transition-colors"
                 />
               </div>
@@ -164,13 +166,12 @@ export default function RegisterPage() {
 
         {step === 'card' && client && (
           <div className="w-full max-w-sm">
-            {/* Succès */}
             <div className="text-center mb-6">
               <div className="flex items-center justify-center gap-2 text-[#0F6E56] mb-2">
                 <CheckCircle size={22} />
                 <span className="font-semibold">Carte créée !</span>
               </div>
-              <h1 className="text-2xl font-bold">Bonjour {client.prenom} 👋</h1>
+              <h1 className="text-2xl font-bold">Bonjour {client.nom} 👋</h1>
               <p className="text-[#6B7280] text-sm mt-2">
                 Voici votre QR code personnel. Sauvegardez-le sur votre téléphone.
               </p>
@@ -181,7 +182,7 @@ export default function RegisterPage() {
               <div className="bg-gradient-to-br from-[#534AB7] to-[#3C3489] p-6 text-white text-center">
                 <Logo white size="sm" />
                 <p className="text-white/70 text-xs mt-1">Carte de fidélité</p>
-                <p className="font-bold text-lg mt-2">{client.prenom}</p>
+                <p className="font-bold text-lg mt-2">{client.nom}</p>
               </div>
 
               <div id="client-qr" className="p-8 flex flex-col items-center">

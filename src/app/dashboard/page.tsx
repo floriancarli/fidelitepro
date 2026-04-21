@@ -76,7 +76,7 @@ export default function DashboardPage() {
   const filtered = cartes.filter(
     (c) =>
       c.client_email.toLowerCase().includes(search.toLowerCase()) ||
-      c.client_prenom.toLowerCase().includes(search.toLowerCase())
+      c.client_nom.toLowerCase().includes(search.toLowerCase())
   )
 
   const mois = new Intl.DateTimeFormat('fr-FR', { month: 'long', year: 'numeric' }).format(new Date())
@@ -185,7 +185,7 @@ export default function DashboardPage() {
                 </thead>
                 <tbody className="divide-y divide-gray-50">
                   {filtered.map((carte) => {
-                    const initiales = carte.client_prenom.slice(0, 1).toUpperCase() + carte.client_email.slice(0, 1).toUpperCase()
+                    const initiales = carte.client_nom.slice(0, 1).toUpperCase() + carte.client_email.slice(0, 1).toUpperCase()
                     return (
                       <tr key={carte.id} className="hover:bg-gray-50/50 transition-colors">
                         <td className="px-6 py-4">
@@ -194,7 +194,7 @@ export default function DashboardPage() {
                               {initiales}
                             </div>
                             <div>
-                              <p className="text-sm font-medium">{carte.client_prenom}</p>
+                              <p className="text-sm font-medium">{carte.client_nom}</p>
                               <p className="text-xs text-[#6B7280]">{carte.client_email}</p>
                             </div>
                           </div>
