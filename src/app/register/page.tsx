@@ -42,12 +42,16 @@ export default function RegisterPage() {
         return
       }
 
+      // Générer un qr_code_id unique : QR- + 8 premiers chars d'un UUID
+      const qrCodeId = 'QR-' + crypto.randomUUID().replace(/-/g, '').slice(0, 8).toUpperCase()
+
       // Créer le client
       const { data: newClient, error: insertError } = await supabase
         .from('clients')
         .insert({
           email: form.email.toLowerCase(),
           nom: form.nom,
+          qr_code_id: qrCodeId,
         })
         .select()
         .single()
