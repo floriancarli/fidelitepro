@@ -5,8 +5,8 @@ import Logo from '@/components/Logo'
 const avantages = [
   {
     icon: QrCode,
-    titre: 'QR Code unique',
-    desc: "Un code généré automatiquement à l'inscription. Affichez-le en caisse, vos clients scannent.",
+    titre: 'QR Code personnel',
+    desc: 'Chaque client obtient son QR code unique. Le commerçant scanne en caisse en moins de 3 secondes.',
   },
   {
     icon: BarChart3,
@@ -70,8 +70,11 @@ export default function LandingPage() {
         <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
           <Logo size="md" />
           <div className="flex items-center gap-4">
+            <Link href="/register" className="text-sm font-medium text-gray-600 hover:text-[#534AB7] transition-colors">
+              Espace clients
+            </Link>
             <Link href="/login" className="text-sm font-medium text-gray-600 hover:text-[#534AB7] transition-colors">
-              Se connecter
+              Commerçants
             </Link>
             <Link
               href="/inscription"

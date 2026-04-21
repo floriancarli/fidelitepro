@@ -18,10 +18,20 @@ CREATE TABLE commercants (
   created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
+-- Table clients (inscription unique, QR code personnel)
+CREATE TABLE clients (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  email TEXT UNIQUE NOT NULL,
+  prenom TEXT NOT NULL,
+  qr_code_id TEXT UNIQUE NOT NULL DEFAULT gen_random_uuid()::text,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
 -- Table cartes_fidelite
 CREATE TABLE cartes_fidelite (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   commercant_id UUID NOT NULL REFERENCES commercants(id) ON DELETE CASCADE,
+  client_id UUID NOT NULL REFERENCES clients(id) ON DELETE CASCADE,
   client_email TEXT NOT NULL,
   client_prenom TEXT NOT NULL DEFAULT '',
   nombre_points INT NOT NULL DEFAULT 0,
@@ -29,7 +39,7 @@ CREATE TABLE cartes_fidelite (
   derniere_visite TIMESTAMPTZ NOT NULL DEFAULT now(),
   recompenses_obtenues INT NOT NULL DEFAULT 0,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
-  UNIQUE (commercant_id, client_email)
+  UNIQUE (commercant_id, client_id)
 );
 
 -- Table scans
@@ -59,66 +69,39 @@ CREATE TABLE recompenses (
 -- ============================================
 
 ALTER TABLE commercants ENABLE ROW LEVEL SECURITY;
+ALTER TABLE clients ENABLE ROW LEVEL SECURITY;
 ALTER TABLE cartes_fidelite ENABLE ROW LEVEL SECURITY;
 ALTER TABLE scans ENABLE ROW LEVEL SECURITY;
 ALTER TABLE recompenses ENABLE ROW LEVEL SECURITY;
 
--- Commercants : lecture et modification par le propriétaire
-CREATE POLICY "commercant_select_own" ON commercants
-  FOR SELECT USING (auth.uid() = id);
+-- Commercants
+CREATE POLICY "commercant_select_public" ON commercants FOR SELECT USING (true);
+CREATE POLICY "commercant_insert_own" ON commercants FOR INSERT WITH CHECK (auth.uid() = id);
+CREATE POLICY "commercant_update_own" ON commercants FOR UPDATE USING (auth.uid() = id);
 
-CREATE POLICY "commercant_insert_own" ON commercants
-  FOR INSERT WITH CHECK (auth.uid() = id);
+-- Clients : lecture/écriture publique (pas d'auth côté client)
+CREATE POLICY "clients_select_public" ON clients FOR SELECT USING (true);
+CREATE POLICY "clients_insert_public" ON clients FOR INSERT WITH CHECK (true);
 
-CREATE POLICY "commercant_update_own" ON commercants
-  FOR UPDATE USING (auth.uid() = id);
+-- Cartes fidélité : lecture/écriture pour commerçants authentifiés + lecture publique par client_id
+CREATE POLICY "cartes_select" ON cartes_fidelite FOR SELECT USING (true);
+CREATE POLICY "cartes_insert_auth" ON cartes_fidelite FOR INSERT WITH CHECK (auth.uid() = commercant_id);
+CREATE POLICY "cartes_update_auth" ON cartes_fidelite FOR UPDATE USING (auth.uid() = commercant_id);
 
--- Lecture publique pour les pages /scan (par qr_code_id)
-CREATE POLICY "commercant_public_read_by_qr" ON commercants
-  FOR SELECT USING (true);
+-- Scans : insertion et lecture par commerçant authentifié
+CREATE POLICY "scans_insert_auth" ON scans FOR INSERT WITH CHECK (auth.uid() = commercant_id);
+CREATE POLICY "scans_select" ON scans FOR SELECT USING (
+  auth.uid() = commercant_id
+  OR EXISTS (SELECT 1 FROM cartes_fidelite cf WHERE cf.id = scans.carte_fidelite_id)
+);
 
--- Cartes fidélité : lecture/écriture publique (le client n'est pas connecté)
--- La sécurité est assurée par la logique applicative + unicité email+commercant
-CREATE POLICY "cartes_insert_public" ON cartes_fidelite
-  FOR INSERT WITH CHECK (true);
-
-CREATE POLICY "cartes_select_public" ON cartes_fidelite
-  FOR SELECT USING (true);
-
-CREATE POLICY "cartes_update_public" ON cartes_fidelite
-  FOR UPDATE USING (true);
-
--- Le commerçant peut voir ses propres cartes (vue dashboard)
--- (couvert par la politique publique ci-dessus)
-
--- Scans : insertion publique, lecture par commerçant
-CREATE POLICY "scans_insert_public" ON scans
-  FOR INSERT WITH CHECK (true);
-
-CREATE POLICY "scans_select_own" ON scans
-  FOR SELECT USING (
-    auth.uid() = commercant_id
-    OR EXISTS (
-      SELECT 1 FROM cartes_fidelite cf
-      WHERE cf.id = scans.carte_fidelite_id
-    )
-  );
-
--- Récompenses : insertion publique, lecture/mise à jour par commerçant
-CREATE POLICY "recompenses_insert_public" ON recompenses
-  FOR INSERT WITH CHECK (true);
-
-CREATE POLICY "recompenses_select" ON recompenses
-  FOR SELECT USING (
-    auth.uid() = commercant_id
-    OR EXISTS (
-      SELECT 1 FROM cartes_fidelite cf
-      WHERE cf.id = recompenses.carte_fidelite_id
-    )
-  );
-
-CREATE POLICY "recompenses_update_own" ON recompenses
-  FOR UPDATE USING (auth.uid() = commercant_id);
+-- Récompenses : gestion par commerçant authentifié
+CREATE POLICY "recompenses_insert_auth" ON recompenses FOR INSERT WITH CHECK (auth.uid() = commercant_id);
+CREATE POLICY "recompenses_select" ON recompenses FOR SELECT USING (
+  auth.uid() = commercant_id
+  OR EXISTS (SELECT 1 FROM cartes_fidelite cf WHERE cf.id = recompenses.carte_fidelite_id)
+);
+CREATE POLICY "recompenses_update_own" ON recompenses FOR UPDATE USING (auth.uid() = commercant_id);
 
 -- ============================================
 -- Storage bucket pour les logos
@@ -126,17 +109,12 @@ CREATE POLICY "recompenses_update_own" ON recompenses
 
 INSERT INTO storage.buckets (id, name, public) VALUES ('logos', 'logos', true);
 
-CREATE POLICY "logos_insert" ON storage.objects
-  FOR INSERT WITH CHECK (bucket_id = 'logos' AND auth.uid() IS NOT NULL);
-
-CREATE POLICY "logos_select" ON storage.objects
-  FOR SELECT USING (bucket_id = 'logos');
-
-CREATE POLICY "logos_update" ON storage.objects
-  FOR UPDATE USING (bucket_id = 'logos' AND auth.uid() IS NOT NULL);
+CREATE POLICY "logos_insert" ON storage.objects FOR INSERT WITH CHECK (bucket_id = 'logos' AND auth.uid() IS NOT NULL);
+CREATE POLICY "logos_select" ON storage.objects FOR SELECT USING (bucket_id = 'logos');
+CREATE POLICY "logos_update" ON storage.objects FOR UPDATE USING (bucket_id = 'logos' AND auth.uid() IS NOT NULL);
 
 -- ============================================
--- Activer Realtime sur les tables dashboard
+-- Realtime
 -- ============================================
 
 ALTER PUBLICATION supabase_realtime ADD TABLE cartes_fidelite;

@@ -12,9 +12,18 @@ export interface Commercant {
   created_at: string
 }
 
+export interface Client {
+  id: string
+  email: string
+  prenom: string
+  qr_code_id: string
+  created_at: string
+}
+
 export interface CarteFidelite {
   id: string
   commercant_id: string
+  client_id: string
   client_email: string
   client_prenom: string
   nombre_points: number
@@ -42,4 +51,13 @@ export interface Recompense {
   utilisee: boolean
   date_obtention: string
   date_utilisation: string | null
+}
+
+export interface ScanResult {
+  client: Client
+  carte: CarteFidelite
+  pointsAjoutes: number
+  recompenseDeclenchee: boolean
+  libelleRecompense: string
+  pointsPourRecompense: number
 }
