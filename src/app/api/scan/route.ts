@@ -22,7 +22,8 @@ export async function POST(request: NextRequest) {
     .single()
 
   if (commercantError || !commercant) {
-    return NextResponse.json({ error: 'Compte commerçant introuvable' }, { status: 404 })
+    console.error('[scan] commercant error:', commercantError)
+    return NextResponse.json({ error: 'Compte commerçant introuvable', detail: commercantError?.message }, { status: 404 })
   }
 
   // Récupérer le client via son QR code
@@ -33,30 +34,35 @@ export async function POST(request: NextRequest) {
     .single()
 
   if (clientError || !client) {
-    return NextResponse.json({ error: 'Client introuvable — QR code non reconnu' }, { status: 404 })
+    console.error('[scan] client error:', clientError)
+    return NextResponse.json({ error: 'Client introuvable — QR code non reconnu', detail: clientError?.message }, { status: 404 })
   }
 
-  // Trouver ou créer la carte de fidélité
-  let { data: carte } = await supabase
+  // Trouver ou créer la carte — lookup par client_email (pas client_id, colonne optionnelle)
+  const { data: carte, error: carteSelectError } = await supabase
     .from('cartes_fidelite')
     .select('*')
     .eq('commercant_id', commercant.id)
-    .eq('client_id', client.id)
+    .eq('client_email', client.email)
     .maybeSingle()
 
-  let recompenseDeclenchee = false
+  if (carteSelectError) {
+    console.error('[scan] carte select error:', carteSelectError)
+    return NextResponse.json({ error: 'Erreur lecture carte', detail: carteSelectError.message }, { status: 500 })
+  }
 
-  if (!carte) {
+  let recompenseDeclenchee = false
+  let carteCourante = carte
+
+  if (!carteCourante) {
     // Première visite chez ce commerçant
-    const newPoints = commercant.points_par_visite
     const { data: newCarte, error: insertError } = await supabase
       .from('cartes_fidelite')
       .insert({
         commercant_id: commercant.id,
-        client_id: client.id,
         client_email: client.email,
-        nombre_points: newPoints,
-        points_cumules_total: newPoints,
+        nombre_points: commercant.points_par_visite,
+        points_cumules_total: commercant.points_par_visite,
         derniere_visite: new Date().toISOString(),
         recompenses_obtenues: 0,
       })
@@ -64,58 +70,66 @@ export async function POST(request: NextRequest) {
       .single()
 
     if (insertError) {
-      return NextResponse.json({ error: 'Erreur création carte' }, { status: 500 })
+      console.error('[scan] insert carte error:', insertError)
+      return NextResponse.json({ error: 'Erreur création carte', detail: insertError.message, code: insertError.code }, { status: 500 })
     }
-    carte = newCarte
+    carteCourante = newCarte
   } else {
     // Visite suivante
-    let newPoints = carte.nombre_points + commercant.points_par_visite
-    let recompensesObtenues = carte.recompenses_obtenues
+    let newPoints = carteCourante.nombre_points + commercant.points_par_visite
+    let recompensesObtenues = carteCourante.recompenses_obtenues
 
     if (newPoints >= commercant.points_pour_recompense) {
       recompenseDeclenchee = true
       newPoints = newPoints - commercant.points_pour_recompense
       recompensesObtenues += 1
 
-      await supabase.from('recompenses').insert({
-        carte_fidelite_id: carte.id,
+      const { error: recompenseError } = await supabase.from('recompenses').insert({
+        carte_fidelite_id: carteCourante.id,
         commercant_id: commercant.id,
         libelle: commercant.libelle_recompense,
         utilisee: false,
         date_obtention: new Date().toISOString(),
       })
+      if (recompenseError) console.error('[scan] insert recompense error:', recompenseError)
     }
 
-    await supabase
+    const { error: updateError } = await supabase
       .from('cartes_fidelite')
       .update({
         nombre_points: newPoints,
-        points_cumules_total: carte.points_cumules_total + commercant.points_par_visite,
+        points_cumules_total: carteCourante.points_cumules_total + commercant.points_par_visite,
         derniere_visite: new Date().toISOString(),
         recompenses_obtenues: recompensesObtenues,
       })
-      .eq('id', carte.id)
+      .eq('id', carteCourante.id)
 
-    carte = {
-      ...carte,
+    if (updateError) {
+      console.error('[scan] update carte error:', updateError)
+      return NextResponse.json({ error: 'Erreur mise à jour carte', detail: updateError.message }, { status: 500 })
+    }
+
+    carteCourante = {
+      ...carteCourante,
       nombre_points: newPoints,
-      points_cumules_total: carte.points_cumules_total + commercant.points_par_visite,
+      points_cumules_total: carteCourante.points_cumules_total + commercant.points_par_visite,
       recompenses_obtenues: recompensesObtenues,
     }
   }
 
   // Enregistrer le scan
-  await supabase.from('scans').insert({
-    carte_fidelite_id: carte.id,
+  const { error: scanError } = await supabase.from('scans').insert({
+    carte_fidelite_id: carteCourante.id,
     commercant_id: commercant.id,
     points_ajoutes: commercant.points_par_visite,
-    points_apres_scan: carte.nombre_points,
+    points_apres_scan: carteCourante.nombre_points,
     recompense_declenchee: recompenseDeclenchee,
   })
+  if (scanError) console.error('[scan] insert scan error:', scanError)
 
   return NextResponse.json({
     client,
-    carte,
+    carte: carteCourante,
     pointsAjoutes: commercant.points_par_visite,
     recompenseDeclenchee,
     libelleRecompense: commercant.libelle_recompense,

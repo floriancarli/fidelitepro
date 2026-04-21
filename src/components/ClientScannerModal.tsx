@@ -47,7 +47,7 @@ export default function ClientScannerModal({ onClose }: Props) {
               const data = await res.json()
 
               if (!res.ok) {
-                setErrorMsg(data.error || 'Erreur lors du scan')
+                setErrorMsg(data.detail ? `${data.error} — ${data.detail}` : (data.error || 'Erreur lors du scan'))
                 setState('error')
                 return
               }
@@ -101,7 +101,7 @@ export default function ClientScannerModal({ onClose }: Props) {
                 body: JSON.stringify({ clientQrCodeId: decodedText }),
               })
               const data = await res.json()
-              if (!res.ok) { setErrorMsg(data.error || 'Erreur'); setState('error'); return }
+              if (!res.ok) { setErrorMsg(data.detail ? `${data.error} — ${data.detail}` : (data.error || 'Erreur')); setState('error'); return }
               setResult(data)
               setState('success')
               setTimeout(onClose, 4000)
