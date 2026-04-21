@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 import Logo from '@/components/Logo'
+import Footer from '@/components/Footer'
 
 export default function LoginPage() {
   const router = useRouter()
@@ -35,7 +36,8 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#F9F9FB] flex flex-col items-center justify-center px-4 py-12">
+    <div className="min-h-screen bg-[#F9F9FB] flex flex-col">
+      <div className="flex-1 flex flex-col items-center justify-center px-4 py-12">
       <div className="mb-8">
         <Logo size="lg" />
       </div>
@@ -91,6 +93,8 @@ export default function LoginPage() {
           </Link>
         </p>
       </div>
+      </div>
+      <Footer />
     </div>
   )
 }

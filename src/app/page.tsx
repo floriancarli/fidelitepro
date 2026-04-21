@@ -232,11 +232,11 @@ export default function LandingPage() {
       <footer className="border-t border-gray-100 py-8 px-6">
         <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
           <Logo size="sm" />
-          <p className="text-[#6B7280] text-sm">© 2025 FidèlePro. Tous droits réservés.</p>
+          <p className="text-[#6B7280] text-sm">© 2025 FidèlePro SAS. Tous droits réservés.</p>
           <div className="flex gap-6 text-sm text-[#6B7280]">
-            <a href="#" className="hover:text-[#534AB7]">Mentions légales</a>
-            <a href="#" className="hover:text-[#534AB7]">CGU</a>
-            <a href="#" className="hover:text-[#534AB7]">Contact</a>
+            <Link href="/mentions-legales" className="hover:text-[#534AB7]">Mentions légales</Link>
+            <Link href="/politique-confidentialite" className="hover:text-[#534AB7]">Confidentialité</Link>
+            <a href="mailto:contact@fidelepro.fr" className="hover:text-[#534AB7]">Contact</a>
           </div>
         </div>
       </footer>

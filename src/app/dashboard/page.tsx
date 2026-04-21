@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback, useRef } from 'react'
 import dynamic from 'next/dynamic'
-import { Users, QrCode, TrendingUp, Search, Star, ScanLine, CheckCircle, Gift } from 'lucide-react'
+import { Users, QrCode, TrendingUp, Search, Star, ScanLine, CheckCircle, Gift, Trash2 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import type { Commercant, CarteFidelite, ScanResult } from '@/lib/types'
 
@@ -64,6 +64,7 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true)
   const [scannerOpen, setScannerOpen] = useState(false)
   const [lastScanResult, setLastScanResult] = useState<ScanResult | null>(null)
+  const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null) // carte id à confirmer
   const bannerDismissRef = useRef<(() => void) | null>(null)
 
   const load = useCallback(async () => {
@@ -113,6 +114,14 @@ export default function DashboardPage() {
   const dismissBanner = useCallback(() => setLastScanResult(null), [])
   bannerDismissRef.current = dismissBanner
 
+  const handleDeleteClient = async (carteId: string) => {
+    const supabase = createClient()
+    // Supprime la carte + cascade sur scans et recompenses (FK ON DELETE CASCADE)
+    await supabase.from('cartes_fidelite').delete().eq('id', carteId)
+    setDeleteConfirm(null)
+    load()
+  }
+
   const filtered = cartes.filter(
     (c) =>
       c.client_email.toLowerCase().includes(search.toLowerCase()) ||
@@ -132,6 +141,35 @@ export default function DashboardPage() {
   return (
     <>
       {scannerOpen && <ClientScannerModal onClose={handleScannerClose} />}
+
+      {deleteConfirm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+          <div className="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-sm">
+            <div className="w-12 h-12 rounded-full bg-red-50 flex items-center justify-center mx-auto mb-4">
+              <Trash2 size={22} className="text-red-500" />
+            </div>
+            <h3 className="text-lg font-bold text-center mb-2">Supprimer ce client ?</h3>
+            <p className="text-sm text-[#6B7280] text-center mb-6">
+              Toutes les données de ce client seront supprimées (points, historique, récompenses).
+              Cette action est irréversible.
+            </p>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setDeleteConfirm(null)}
+                className="flex-1 border border-gray-200 text-[#1A1A23] font-medium py-2.5 rounded-xl hover:bg-gray-50 transition-colors"
+              >
+                Annuler
+              </button>
+              <button
+                onClick={() => handleDeleteClient(deleteConfirm)}
+                className="flex-1 bg-red-500 text-white font-semibold py-2.5 rounded-xl hover:bg-red-600 transition-colors"
+              >
+                Supprimer
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="p-8">
         {/* Header */}
@@ -226,6 +264,7 @@ export default function DashboardPage() {
                     <th className="text-left px-6 py-3 font-medium">Progression</th>
                     <th className="text-left px-6 py-3 font-medium">Récompenses</th>
                     <th className="text-left px-6 py-3 font-medium">Dernière visite</th>
+                    <th className="px-6 py-3" />
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-50">
@@ -260,6 +299,15 @@ export default function DashboardPage() {
                         </td>
                         <td className="px-6 py-4 text-sm text-[#6B7280]">
                           {formatDate(carte.derniere_visite)}
+                        </td>
+                        <td className="px-4 py-4">
+                          <button
+                            onClick={() => setDeleteConfirm(carte.id)}
+                            title="Supprimer les données de ce client (RGPD)"
+                            className="w-8 h-8 rounded-lg hover:bg-red-50 flex items-center justify-center text-gray-300 hover:text-red-500 transition-colors"
+                          >
+                            <Trash2 size={15} />
+                          </button>
                         </td>
                       </tr>
                     )

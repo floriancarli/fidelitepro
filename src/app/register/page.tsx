@@ -6,6 +6,7 @@ import { ArrowLeft, Download, Share2, CheckCircle } from 'lucide-react'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 import Logo from '@/components/Logo'
+import Footer from '@/components/Footer'
 import type { Client } from '@/lib/types'
 
 const QRCodeCanvas = dynamic(() => import('qrcode.react').then((m) => m.QRCodeCanvas), { ssr: false })
@@ -14,7 +15,7 @@ type Step = 'form' | 'card'
 
 export default function RegisterPage() {
   const [step, setStep] = useState<Step>('form')
-  const [form, setForm] = useState({ nom: '', email: '' })
+  const [form, setForm] = useState({ nom: '', email: '', rgpd: false })
   const [client, setClient] = useState<Client | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
@@ -153,10 +154,27 @@ export default function RegisterPage() {
                   className="w-full border border-gray-200 rounded-xl px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-[#534AB7]/30 focus:border-[#534AB7] transition-colors"
                 />
               </div>
+              <label className="flex items-start gap-3 cursor-pointer">
+                <input
+                  type="checkbox"
+                  required
+                  checked={form.rgpd}
+                  onChange={(e) => setForm({ ...form, rgpd: e.target.checked })}
+                  className="mt-0.5 w-4 h-4 rounded border-gray-300 text-[#534AB7] focus:ring-[#534AB7]/30 flex-shrink-0"
+                />
+                <span className="text-sm text-[#6B7280] leading-snug">
+                  J&apos;accepte la{' '}
+                  <Link href="/politique-confidentialite" target="_blank" className="text-[#534AB7] hover:underline font-medium">
+                    politique de confidentialité
+                  </Link>{' '}
+                  et le traitement de mes données personnelles dans le cadre du programme de fidélité.
+                </span>
+              </label>
+
               <button
                 type="submit"
-                disabled={loading}
-                className="w-full bg-[#534AB7] text-white font-bold py-3.5 rounded-xl hover:bg-[#3C3489] transition-colors disabled:opacity-50 mt-2"
+                disabled={loading || !form.rgpd}
+                className="w-full bg-[#534AB7] text-white font-bold py-3.5 rounded-xl hover:bg-[#3C3489] transition-colors disabled:opacity-50 disabled:cursor-not-allowed mt-2"
               >
                 {loading ? 'Création...' : 'Obtenir mon QR code'}
               </button>
@@ -233,6 +251,7 @@ export default function RegisterPage() {
           </div>
         )}
       </div>
+      <Footer />
     </div>
   )
 }
