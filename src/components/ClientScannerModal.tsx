@@ -102,8 +102,10 @@ export default function ClientScannerModal({ onClose }: Props) {
     startScanner(handleDecode)
   }
 
+  const nextPalier = result?.paliers?.find((p) => p.points > result.carte.nombre_points)
+  const progressMax = nextPalier?.points ?? result?.pointsPourRecompense ?? 1
   const progressPct = result
-    ? Math.min(100, Math.round((result.carte.nombre_points / result.pointsPourRecompense) * 100))
+    ? Math.min(100, Math.round((result.carte.nombre_points / progressMax) * 100))
     : 0
 
   return (
@@ -183,7 +185,7 @@ export default function ClientScannerModal({ onClose }: Props) {
                 <div className="flex justify-between text-sm mb-2">
                   <span className="text-[#6B7280]">Points</span>
                   <span className="font-bold text-[#534AB7]">
-                    +{result.pointsAjoutes} → {result.carte.nombre_points} / {result.pointsPourRecompense}
+                    +{result.pointsAjoutes} → {result.carte.nombre_points} / {progressMax}
                   </span>
                 </div>
                 <div className="bg-gray-200 rounded-full h-2">
@@ -192,14 +194,33 @@ export default function ClientScannerModal({ onClose }: Props) {
                     style={{ width: `${progressPct}%` }}
                   />
                 </div>
-                <p className="text-xs text-[#6B7280] mt-2">
-                  {result.pointsPourRecompense - result.carte.nombre_points > 0
-                    ? `Plus que ${result.pointsPourRecompense - result.carte.nombre_points} point(s) pour la prochaine récompense`
-                    : 'Palier atteint !'}
-                </p>
+
+                {/* Paliers */}
+                {result.paliers?.length > 0 && (
+                  <div className="mt-3 space-y-1.5">
+                    {result.paliers.map((p) => {
+                      const reached = result.carte.nombre_points >= p.points
+                      return (
+                        <div
+                          key={p.points}
+                          className={`flex items-center gap-2 text-xs rounded-lg px-2.5 py-1.5 ${
+                            reached ? 'bg-[#0F6E56]/8 text-[#0F6E56]' : 'text-[#6B7280]'
+                          }`}
+                        >
+                          <span className="flex-shrink-0">{reached ? '✅' : '🎁'}</span>
+                          <span className={`font-semibold tabular-nums flex-shrink-0 ${reached ? 'text-[#0F6E56]' : 'text-[#1A1A23]'}`}>
+                            {p.points} pts
+                          </span>
+                          <span className="text-gray-300 flex-shrink-0">→</span>
+                          <span className={`truncate ${reached ? 'font-medium' : ''}`}>{p.libelle}</span>
+                        </div>
+                      )
+                    })}
+                  </div>
+                )}
               </div>
 
-              <p className="text-xs text-[#6B7280] mt-4">
+              <p className="text-xs text-[#6B7280] mt-3">
                 Fermeture dans {countdown}s…
               </p>
             </div>

@@ -1,3 +1,8 @@
+export interface Palier {
+  points: number
+  libelle: string
+}
+
 export interface Commercant {
   id: string
   nom_commerce: string
@@ -9,6 +14,9 @@ export interface Commercant {
   couleur_principale: string
   logo_url: string | null
   abonnement_actif: boolean
+  nom_programme: string
+  message_bienvenue: string
+  paliers: Palier[]
   created_at: string
 }
 
@@ -60,4 +68,5 @@ export interface ScanResult {
   recompenseDeclenchee: boolean
   libelleRecompense: string
   pointsPourRecompense: number
+  paliers: Palier[]
 }

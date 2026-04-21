@@ -51,18 +51,29 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Erreur lecture carte', detail: carteSelectError.message }, { status: 500 })
   }
 
+  // Résoudre les paliers : utilise paliers[] si définis, sinon fallback sur l'ancien champ unique
+  type Palier = { points: number; libelle: string }
+  const paliers: Palier[] = Array.isArray(commercant.paliers) && commercant.paliers.length > 0
+    ? (commercant.paliers as Palier[]).slice().sort((a, b) => a.points - b.points)
+    : [{ points: commercant.points_pour_recompense, libelle: commercant.libelle_recompense }]
+
+  // Palier de référence pour la barre de progression (le plus bas)
+  const palierMin = paliers[0]
+
   let recompenseDeclenchee = false
+  let libelleRecompenseObtenue = ''
   let carteCourante = carte
 
+  const pointsParVisite = commercant.points_par_visite
+
   if (!carteCourante) {
-    // Première visite chez ce commerçant
     const { data: newCarte, error: insertError } = await supabase
       .from('cartes_fidelite')
       .insert({
         commercant_id: commercant.id,
         client_email: client.email,
-        nombre_points: commercant.points_par_visite,
-        points_cumules_total: commercant.points_par_visite,
+        nombre_points: pointsParVisite,
+        points_cumules_total: pointsParVisite,
         derniere_visite: new Date().toISOString(),
         recompenses_obtenues: 0,
       })
@@ -75,19 +86,22 @@ export async function POST(request: NextRequest) {
     }
     carteCourante = newCarte
   } else {
-    // Visite suivante
-    let newPoints = carteCourante.nombre_points + commercant.points_par_visite
+    let newPoints = carteCourante.nombre_points + pointsParVisite
     let recompensesObtenues = carteCourante.recompenses_obtenues
 
-    if (newPoints >= commercant.points_pour_recompense) {
+    // Trouver le palier le plus élevé atteint
+    const palierAtteint = [...paliers].reverse().find((p) => newPoints >= p.points)
+
+    if (palierAtteint) {
       recompenseDeclenchee = true
-      newPoints = newPoints - commercant.points_pour_recompense
+      libelleRecompenseObtenue = palierAtteint.libelle
+      newPoints = newPoints - palierAtteint.points
       recompensesObtenues += 1
 
       const { error: recompenseError } = await supabase.from('recompenses').insert({
         carte_fidelite_id: carteCourante.id,
         commercant_id: commercant.id,
-        libelle: commercant.libelle_recompense,
+        libelle: palierAtteint.libelle,
         utilisee: false,
         date_obtention: new Date().toISOString(),
       })
@@ -98,7 +112,7 @@ export async function POST(request: NextRequest) {
       .from('cartes_fidelite')
       .update({
         nombre_points: newPoints,
-        points_cumules_total: carteCourante.points_cumules_total + commercant.points_par_visite,
+        points_cumules_total: carteCourante.points_cumules_total + pointsParVisite,
         derniere_visite: new Date().toISOString(),
         recompenses_obtenues: recompensesObtenues,
       })
@@ -112,7 +126,7 @@ export async function POST(request: NextRequest) {
     carteCourante = {
       ...carteCourante,
       nombre_points: newPoints,
-      points_cumules_total: carteCourante.points_cumules_total + commercant.points_par_visite,
+      points_cumules_total: carteCourante.points_cumules_total + pointsParVisite,
       recompenses_obtenues: recompensesObtenues,
     }
   }
@@ -121,7 +135,7 @@ export async function POST(request: NextRequest) {
   const { error: scanError } = await supabase.from('scans').insert({
     carte_fidelite_id: carteCourante.id,
     commercant_id: commercant.id,
-    points_ajoutes: commercant.points_par_visite,
+    points_ajoutes: pointsParVisite,
     points_apres_scan: carteCourante.nombre_points,
     recompense_declenchee: recompenseDeclenchee,
   })
@@ -130,9 +144,10 @@ export async function POST(request: NextRequest) {
   return NextResponse.json({
     client,
     carte: carteCourante,
-    pointsAjoutes: commercant.points_par_visite,
+    pointsAjoutes: pointsParVisite,
     recompenseDeclenchee,
-    libelleRecompense: commercant.libelle_recompense,
-    pointsPourRecompense: commercant.points_pour_recompense,
+    libelleRecompense: libelleRecompenseObtenue || palierMin.libelle,
+    pointsPourRecompense: palierMin.points,
+    paliers,
   })
 }

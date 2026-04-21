@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
 import Link from 'next/link'
-import { LayoutDashboard, QrCode, Gift, UserCircle, LogOut, BadgeCheck } from 'lucide-react'
+import { LayoutDashboard, QrCode, Gift, UserCircle, LogOut, BadgeCheck, Settings } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import Logo from './Logo'
 import type { Commercant } from '@/lib/types'
@@ -12,6 +12,7 @@ const navItems = [
   { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { href: '/dashboard/qr-code', label: 'Mon QR Code', icon: QrCode },
   { href: '/dashboard/recompenses', label: 'Récompenses', icon: Gift },
+  { href: '/dashboard/configuration', label: 'Configuration', icon: Settings },
   { href: '/mon-compte', label: 'Mon Compte', icon: UserCircle },
 ]
 
