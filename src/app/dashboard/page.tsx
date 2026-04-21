@@ -1,10 +1,10 @@
 'use client'
 
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState, useCallback, useRef } from 'react'
 import dynamic from 'next/dynamic'
-import { Users, QrCode, TrendingUp, Search, Star, ScanLine } from 'lucide-react'
+import { Users, QrCode, TrendingUp, Search, Star, ScanLine, CheckCircle, Gift } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
-import type { Commercant, CarteFidelite } from '@/lib/types'
+import type { Commercant, CarteFidelite, ScanResult } from '@/lib/types'
 
 const ClientScannerModal = dynamic(() => import('@/components/ClientScannerModal'), { ssr: false })
 
@@ -24,6 +24,37 @@ function ProgressBar({ value, max, color }: { value: number; max: number; color:
   )
 }
 
+function ScanSuccessBanner({ result, onDismiss }: { result: ScanResult; onDismiss: () => void }) {
+  useEffect(() => {
+    const t = setTimeout(onDismiss, 5000)
+    return () => clearTimeout(t)
+  }, [onDismiss])
+
+  const isReward = result.recompenseDeclenchee
+  const bgClass = isReward ? 'bg-[#0F6E56]' : 'bg-[#534AB7]'
+
+  return (
+    <div className={`${bgClass} text-white rounded-2xl px-5 py-4 flex items-center gap-4 shadow-lg mb-6 animate-in slide-in-from-top-2 duration-300`}>
+      <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center flex-shrink-0">
+        {isReward ? <Gift size={20} /> : <CheckCircle size={20} />}
+      </div>
+      <div className="flex-1 min-w-0">
+        <p className="font-semibold">
+          {isReward ? `🎁 Récompense débloquée pour ${result.client.nom} !` : `✓ Point ajouté — ${result.client.nom}`}
+        </p>
+        <p className="text-white/80 text-sm mt-0.5">
+          {isReward
+            ? `Remettez : ${result.libelleRecompense}`
+            : `${result.carte.nombre_points} / ${result.pointsPourRecompense} points`}
+        </p>
+      </div>
+      <button onClick={onDismiss} className="text-white/60 hover:text-white text-xs flex-shrink-0">
+        ✕
+      </button>
+    </div>
+  )
+}
+
 export default function DashboardPage() {
   const [commercant, setCommercant] = useState<Commercant | null>(null)
   const [cartes, setCartes] = useState<CarteFidelite[]>([])
@@ -32,6 +63,8 @@ export default function DashboardPage() {
   const [search, setSearch] = useState('')
   const [loading, setLoading] = useState(true)
   const [scannerOpen, setScannerOpen] = useState(false)
+  const [lastScanResult, setLastScanResult] = useState<ScanResult | null>(null)
+  const bannerDismissRef = useRef<(() => void) | null>(null)
 
   const load = useCallback(async () => {
     const supabase = createClient()
@@ -68,10 +101,17 @@ export default function DashboardPage() {
     })
   }, [load])
 
-  const handleScannerClose = useCallback(() => {
+  // Fermeture du modal : résultat optionnel transmis par le scanner
+  const handleScannerClose = useCallback((result?: ScanResult) => {
     setScannerOpen(false)
+    if (result) {
+      setLastScanResult(result)
+    }
     load()
   }, [load])
+
+  const dismissBanner = useCallback(() => setLastScanResult(null), [])
+  bannerDismissRef.current = dismissBanner
 
   const filtered = cartes.filter(
     (c) =>
@@ -95,7 +135,7 @@ export default function DashboardPage() {
 
       <div className="p-8">
         {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center gap-4 mb-8">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-4 mb-6">
           <div>
             <h1 className="text-2xl font-bold text-[#1A1A23]">
               Bonjour, {commercant?.nom_commerce} 👋
@@ -110,6 +150,11 @@ export default function DashboardPage() {
             Scanner un client
           </button>
         </div>
+
+        {/* Bannière résultat scan */}
+        {lastScanResult && (
+          <ScanSuccessBanner result={lastScanResult} onDismiss={dismissBanner} />
+        )}
 
         {/* Métriques */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
@@ -195,7 +240,7 @@ export default function DashboardPage() {
                               {initiales}
                             </div>
                             <div>
-                              <p className="text-sm font-medium">{carte.clients?.nom ?? carte.client_email}</p>
+                              <p className="text-sm font-medium">{nom || carte.client_email}</p>
                               <p className="text-xs text-[#6B7280]">{carte.client_email}</p>
                             </div>
                           </div>
