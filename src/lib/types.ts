@@ -25,12 +25,12 @@ export interface CarteFidelite {
   commercant_id: string
   client_id: string
   client_email: string
-  client_nom: string
   nombre_points: number
   points_cumules_total: number
   derniere_visite: string
   recompenses_obtenues: number
   created_at: string
+  clients?: { nom: string }
 }
 
 export interface Scan {

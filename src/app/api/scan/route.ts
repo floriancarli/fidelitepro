@@ -55,7 +55,6 @@ export async function POST(request: NextRequest) {
         commercant_id: commercant.id,
         client_id: client.id,
         client_email: client.email,
-        client_nom: client.nom,
         nombre_points: newPoints,
         points_cumules_total: newPoints,
         derniere_visite: new Date().toISOString(),

@@ -40,7 +40,7 @@ export default function DashboardPage() {
 
     const [{ data: comm }, { data: cartesData }, { count: scans }] = await Promise.all([
       supabase.from('commercants').select('*').eq('id', user.id).single(),
-      supabase.from('cartes_fidelite').select('*').eq('commercant_id', user.id).order('derniere_visite', { ascending: false }),
+      supabase.from('cartes_fidelite').select('*, clients(nom)').eq('commercant_id', user.id).order('derniere_visite', { ascending: false }),
       supabase.from('scans').select('*', { count: 'exact', head: true })
         .eq('commercant_id', user.id)
         .gte('created_at', new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString()),
@@ -76,7 +76,7 @@ export default function DashboardPage() {
   const filtered = cartes.filter(
     (c) =>
       c.client_email.toLowerCase().includes(search.toLowerCase()) ||
-      c.client_nom.toLowerCase().includes(search.toLowerCase())
+      (c.clients?.nom ?? '').toLowerCase().includes(search.toLowerCase())
   )
 
   const mois = new Intl.DateTimeFormat('fr-FR', { month: 'long', year: 'numeric' }).format(new Date())
@@ -185,7 +185,8 @@ export default function DashboardPage() {
                 </thead>
                 <tbody className="divide-y divide-gray-50">
                   {filtered.map((carte) => {
-                    const initiales = carte.client_nom.slice(0, 1).toUpperCase() + carte.client_email.slice(0, 1).toUpperCase()
+                    const nom = carte.clients?.nom ?? ''
+                    const initiales = (nom.slice(0, 1) || carte.client_email.slice(0, 1)).toUpperCase() + carte.client_email.slice(0, 1).toUpperCase()
                     return (
                       <tr key={carte.id} className="hover:bg-gray-50/50 transition-colors">
                         <td className="px-6 py-4">
@@ -194,7 +195,7 @@ export default function DashboardPage() {
                               {initiales}
                             </div>
                             <div>
-                              <p className="text-sm font-medium">{carte.client_nom}</p>
+                              <p className="text-sm font-medium">{carte.clients?.nom ?? carte.client_email}</p>
                               <p className="text-xs text-[#6B7280]">{carte.client_email}</p>
                             </div>
                           </div>

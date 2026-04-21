@@ -11,8 +11,8 @@ interface RecompenseWithClient {
   date_obtention: string
   date_utilisation: string | null
   cartes_fidelite: {
-    client_nom: string
     client_email: string
+    clients: { nom: string } | null
   }
 }
 
@@ -32,7 +32,7 @@ export default function RecompensesPage() {
 
     const { data } = await supabase
       .from('recompenses')
-      .select('*, cartes_fidelite(client_nom, client_email)')
+      .select('*, cartes_fidelite(client_email, clients(nom))')
       .eq('commercant_id', user.id)
       .order('date_obtention', { ascending: false })
 
@@ -117,7 +117,7 @@ export default function RecompensesPage() {
               <div className="flex-1 min-w-0">
                 <p className="font-medium text-sm">{r.libelle}</p>
                 <p className="text-xs text-[#6B7280] mt-0.5">
-                  {r.cartes_fidelite?.client_nom} · {r.cartes_fidelite?.client_email}
+                  {r.cartes_fidelite?.clients?.nom ?? r.cartes_fidelite?.client_email}
                 </p>
                 <div className="flex items-center gap-1 mt-1 text-xs text-[#6B7280]">
                   <Clock size={12} />
