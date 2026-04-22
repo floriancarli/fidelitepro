@@ -15,7 +15,8 @@ export async function GET(
   const startUrl = `/mon-qr-code/${id}`
 
   let nomCommerce: string | null = null
-  let logoUrl: string | null = null
+  let commercantId: string | null = null
+  let hasLogo = false
 
   try {
     const supabase = createClient(
@@ -33,16 +34,19 @@ export async function GET(
     if (client?.email) {
       const { data: carte } = await supabase
         .from('cartes_fidelite')
-        .select('commercants(nom_commerce, logo_url)')
+        .select('commercants(id, nom_commerce, logo_url)')
         .eq('client_email', client.email)
         .order('derniere_visite', { ascending: false })
         .limit(1)
         .single()
 
-      const commercant = (carte as unknown as { commercants: { nom_commerce: string; logo_url: string | null } | null })?.commercants
+      const commercant = (carte as unknown as {
+        commercants: { id: string; nom_commerce: string; logo_url: string | null } | null
+      })?.commercants
       if (commercant) {
         nomCommerce = commercant.nom_commerce
-        logoUrl = commercant.logo_url ?? null
+        commercantId = commercant.id
+        hasLogo = !!commercant.logo_url
       }
     }
   } catch {
@@ -52,9 +56,10 @@ export async function GET(
   const name = nomCommerce ? `Fidélité ${nomCommerce}` : 'Ma Carte Fidélité'
   const shortName = nomCommerce ?? 'Ma Fidélité'
 
-  const icons = logoUrl
+  // Use same-origin proxy URL so iOS Safari can load the icon
+  const icons = hasLogo && commercantId
     ? [
-        { src: logoUrl, sizes: '512x512', type: 'image/png', purpose: 'any maskable' },
+        { src: `/api/logo/${commercantId}`, sizes: '512x512', type: 'image/png', purpose: 'any maskable' },
         ...DEFAULT_ICONS,
       ]
     : DEFAULT_ICONS
