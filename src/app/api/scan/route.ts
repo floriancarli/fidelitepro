@@ -72,6 +72,7 @@ export async function POST(request: NextRequest) {
       .insert({
         commercant_id: commercant.id,
         client_email: client.email,
+        client_nom: client.nom,
         nombre_points: pointsParVisite,
         points_cumules_total: pointsParVisite,
         derniere_visite: new Date().toISOString(),

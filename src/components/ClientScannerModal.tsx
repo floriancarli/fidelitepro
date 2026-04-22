@@ -204,7 +204,7 @@ export default function ClientScannerModal({ onClose }: Props) {
                         <div
                           key={p.points}
                           className={`flex items-center gap-2 text-xs rounded-lg px-2.5 py-1.5 ${
-                            reached ? 'bg-[#0F6E56]/8 text-[#0F6E56]' : 'text-[#6B7280]'
+                            reached ? 'bg-[#0F6E56]/10 text-[#0F6E56]' : 'text-[#6B7280]'
                           }`}
                         >
                           <span className="flex-shrink-0">{reached ? '✅' : '🎁'}</span>

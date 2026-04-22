@@ -15,6 +15,9 @@ CREATE TABLE commercants (
   couleur_principale TEXT NOT NULL DEFAULT '#534AB7',
   logo_url TEXT,
   abonnement_actif BOOLEAN NOT NULL DEFAULT false,
+  nom_programme TEXT NOT NULL DEFAULT 'Programme de fidélité',
+  message_bienvenue TEXT NOT NULL DEFAULT '',
+  paliers JSONB NOT NULL DEFAULT '[]',
   created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
@@ -22,8 +25,8 @@ CREATE TABLE commercants (
 CREATE TABLE clients (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   email TEXT UNIQUE NOT NULL,
-  prenom TEXT NOT NULL,
-  qr_code_id TEXT UNIQUE NOT NULL DEFAULT gen_random_uuid()::text,
+  nom TEXT NOT NULL DEFAULT '',
+  qr_code_id TEXT UNIQUE NOT NULL,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
@@ -31,15 +34,15 @@ CREATE TABLE clients (
 CREATE TABLE cartes_fidelite (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   commercant_id UUID NOT NULL REFERENCES commercants(id) ON DELETE CASCADE,
-  client_id UUID NOT NULL REFERENCES clients(id) ON DELETE CASCADE,
+  client_id UUID REFERENCES clients(id) ON DELETE SET NULL,
   client_email TEXT NOT NULL,
-  client_prenom TEXT NOT NULL DEFAULT '',
+  client_nom TEXT NOT NULL DEFAULT '',
   nombre_points INT NOT NULL DEFAULT 0,
   points_cumules_total INT NOT NULL DEFAULT 0,
   derniere_visite TIMESTAMPTZ NOT NULL DEFAULT now(),
   recompenses_obtenues INT NOT NULL DEFAULT 0,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
-  UNIQUE (commercant_id, client_id)
+  UNIQUE (commercant_id, client_email)
 );
 
 -- Table scans
