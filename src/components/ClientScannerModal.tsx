@@ -17,7 +17,7 @@ export default function ClientScannerModal({ onClose }: Props) {
   const [state, setState] = useState<State>('scanning')
   const [result, setResult] = useState<ScanResult | null>(null)
   const [errorMsg, setErrorMsg] = useState('')
-  const [countdown, setCountdown] = useState(4)
+  const [countdown, setCountdown] = useState(5)
 
   const stopScanner = async () => {
     if (isScannerRunning.current && scannerRef.current) {
@@ -67,7 +67,7 @@ export default function ClientScannerModal({ onClose }: Props) {
       }
 
       setResult(data as ScanResult)
-      setCountdown(4)
+      setCountdown(5)
       setState('success')
     } catch {
       setErrorMsg('Erreur réseau')
@@ -110,10 +110,10 @@ export default function ClientScannerModal({ onClose }: Props) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-      <div className="bg-white rounded-3xl w-full max-w-sm shadow-2xl overflow-hidden">
+      <div className="bg-white rounded-3xl w-full max-w-sm shadow-2xl flex flex-col max-h-[90vh]">
 
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 flex-shrink-0">
           <div className="flex items-center gap-2">
             <ScanLine size={20} className="text-[#534AB7]" />
             <span className="font-semibold">Scanner un client</span>
@@ -126,7 +126,7 @@ export default function ClientScannerModal({ onClose }: Props) {
           </button>
         </div>
 
-        <div className="p-6">
+        <div className="p-6 overflow-y-auto">
 
           {/* Scanning / Processing */}
           {(state === 'scanning' || state === 'processing') && (
@@ -158,26 +158,26 @@ export default function ClientScannerModal({ onClose }: Props) {
           {state === 'success' && result && (
             <div className="text-center">
               {result.recompenseDeclenchee ? (
-                <div className="w-16 h-16 rounded-full bg-[#0F6E56]/10 flex items-center justify-center mx-auto mb-4">
-                  <Gift size={32} className="text-[#0F6E56]" />
+                <div className="w-12 h-12 rounded-full bg-[#0F6E56]/10 flex items-center justify-center mx-auto mb-3">
+                  <Gift size={26} className="text-[#0F6E56]" />
                 </div>
               ) : (
-                <div className="w-16 h-16 rounded-full bg-[#534AB7]/10 flex items-center justify-center mx-auto mb-4">
-                  <CheckCircle size={32} className="text-[#534AB7]" />
+                <div className="w-12 h-12 rounded-full bg-[#534AB7]/10 flex items-center justify-center mx-auto mb-3">
+                  <CheckCircle size={26} className="text-[#534AB7]" />
                 </div>
               )}
 
-              <h3 className="text-xl font-bold mb-1">
+              <h3 className="text-lg font-bold mb-0.5">
                 {result.recompenseDeclenchee ? 'Récompense débloquée !' : 'Point ajouté !'}
               </h3>
-              <p className="text-[#6B7280] text-sm mb-5">
+              <p className="text-[#6B7280] text-sm mb-3">
                 Bonjour <strong>{result.client.nom}</strong> 👋
               </p>
 
               {result.recompenseDeclenchee && (
-                <div className="bg-[#0F6E56]/10 border border-[#0F6E56]/20 rounded-2xl p-4 mb-5">
-                  <p className="text-[#0F6E56] font-semibold">🎁 {result.libelleRecompense}</p>
-                  <p className="text-[#0F6E56]/80 text-xs mt-1">Remettez la récompense au client</p>
+                <div className="bg-[#0F6E56]/10 border border-[#0F6E56]/20 rounded-xl p-3 mb-3">
+                  <p className="text-[#0F6E56] font-semibold text-sm">🎁 {result.libelleRecompense}</p>
+                  <p className="text-[#0F6E56]/80 text-xs mt-0.5">Remettez la récompense au client</p>
                 </div>
               )}
 
