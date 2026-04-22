@@ -2,12 +2,15 @@
 
 import { useState, useEffect } from 'react'
 import dynamic from 'next/dynamic'
+import { useRouter } from 'next/navigation'
 import { ArrowLeft, Download, Share2, CheckCircle, Gift, Star, ChevronRight } from 'lucide-react'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 import Logo from '@/components/Logo'
 import Footer from '@/components/Footer'
 import type { Client, Palier } from '@/lib/types'
+
+const LS_KEY = 'fidelite_client'
 
 const QRCodeCanvas = dynamic(() => import('qrcode.react').then((m) => m.QRCodeCanvas), { ssr: false })
 
@@ -164,12 +167,37 @@ function RecompensesSection({ cartes }: { cartes: CarteAvecCommercant[] }) {
 }
 
 export default function RegisterPage() {
+  const router = useRouter()
+  const [checking, setChecking] = useState(true)
   const [step, setStep] = useState<Step>('form')
   const [form, setForm] = useState({ nom: '', email: '', rgpd: false })
   const [client, setClient] = useState<Client | null>(null)
   const [cartes, setCartes] = useState<CarteAvecCommercant[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+
+  // Redirect if client already registered
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem(LS_KEY)
+      if (stored) {
+        const { qr_code_id } = JSON.parse(stored)
+        if (qr_code_id) {
+          router.replace(`/mon-qr-code/${qr_code_id}`)
+          return
+        }
+      }
+    } catch {
+      localStorage.removeItem(LS_KEY)
+    }
+    setChecking(false)
+  }, [router])
+
+  // Persist client identity after registration
+  useEffect(() => {
+    if (!client) return
+    localStorage.setItem(LS_KEY, JSON.stringify({ qr_code_id: client.qr_code_id, email: client.email }))
+  }, [client])
 
   // Fetch cartes when on card step
   useEffect(() => {
@@ -266,6 +294,14 @@ export default function RegisterPage() {
     } catch {
       handleDownload()
     }
+  }
+
+  if (checking) {
+    return (
+      <div className="min-h-screen bg-[#F9F9FB] flex items-center justify-center">
+        <div className="w-8 h-8 rounded-full border-2 border-[#534AB7] border-t-transparent animate-spin" />
+      </div>
+    )
   }
 
   return (
