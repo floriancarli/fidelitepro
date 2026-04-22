@@ -1,7 +1,7 @@
 'use client'
 
-import { useEffect, useState, useCallback } from 'react'
-import { Plus, Trash2, Save, CheckCircle } from 'lucide-react'
+import { useEffect, useState, useCallback, useRef } from 'react'
+import { Plus, Trash2, Save, CheckCircle, Upload, ImageIcon } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import type { Commercant, Palier } from '@/lib/types'
 
@@ -24,6 +24,10 @@ export default function ConfigurationPage() {
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
   const [error, setError] = useState('')
+  const [logoUrl, setLogoUrl] = useState<string | null>(null)
+  const [logoUploading, setLogoUploading] = useState(false)
+  const [logoError, setLogoError] = useState('')
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   const load = useCallback(async () => {
     const supabase = createClient()
@@ -32,6 +36,7 @@ export default function ConfigurationPage() {
     const { data } = await supabase.from('commercants').select('*').eq('id', user.id).single()
     if (data) {
       setCommercant(data)
+      setLogoUrl(data.logo_url ?? null)
       setForm({
         points_par_visite: data.points_par_visite ?? 1,
         nom_programme: data.nom_programme ?? '',
@@ -108,6 +113,65 @@ export default function ConfigurationPage() {
     setForm((f) => ({ ...f, paliers: f.paliers.filter((_, i) => i !== index) }))
   }
 
+  const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file || !commercant) return
+
+    if (!file.type.startsWith('image/')) {
+      setLogoError('Veuillez sélectionner une image.')
+      return
+    }
+    if (file.size > 2 * 1024 * 1024) {
+      setLogoError('L\'image ne doit pas dépasser 2 Mo.')
+      return
+    }
+
+    setLogoError('')
+    setLogoUploading(true)
+
+    try {
+      const supabase = createClient()
+      const ext = file.name.split('.').pop() ?? 'png'
+      const path = `${commercant.id}/logo.${ext}`
+
+      const { error: uploadError } = await supabase.storage
+        .from('logos')
+        .upload(path, file, { upsert: true, contentType: file.type })
+
+      if (uploadError) throw uploadError
+
+      const { data: { publicUrl } } = supabase.storage.from('logos').getPublicUrl(path)
+
+      const { error: updateError } = await supabase
+        .from('commercants')
+        .update({ logo_url: publicUrl })
+        .eq('id', commercant.id)
+
+      if (updateError) throw updateError
+
+      setLogoUrl(publicUrl)
+    } catch (err: unknown) {
+      setLogoError(err instanceof Error ? err.message : 'Erreur lors du téléversement')
+    } finally {
+      setLogoUploading(false)
+      if (fileInputRef.current) fileInputRef.current.value = ''
+    }
+  }
+
+  const handleLogoRemove = async () => {
+    if (!commercant) return
+    setLogoUploading(true)
+    try {
+      const supabase = createClient()
+      await supabase.from('commercants').update({ logo_url: null }).eq('id', commercant.id)
+      setLogoUrl(null)
+    } catch (err: unknown) {
+      setLogoError(err instanceof Error ? err.message : 'Erreur')
+    } finally {
+      setLogoUploading(false)
+    }
+  }
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-full min-h-screen">
@@ -137,6 +201,59 @@ export default function ConfigurationPage() {
       )}
 
       <form onSubmit={handleSave} className="space-y-8">
+        {/* Logo */}
+        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+          <h2 className="font-semibold text-[#1A1A23] mb-1">Logo</h2>
+          <p className="text-xs text-[#6B7280] mb-4">
+            Utilisé comme icône de l&apos;application lors de l&apos;installation sur l&apos;écran d&apos;accueil
+          </p>
+
+          {logoError && (
+            <p className="text-red-600 text-xs mb-3">{logoError}</p>
+          )}
+
+          <div className="flex items-center gap-4">
+            {/* Preview */}
+            <div className="w-16 h-16 rounded-2xl border-2 border-dashed border-gray-200 flex items-center justify-center overflow-hidden flex-shrink-0 bg-gray-50">
+              {logoUrl ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={logoUrl} alt="Logo" className="w-full h-full object-cover" />
+              ) : (
+                <ImageIcon size={24} className="text-gray-300" />
+              )}
+            </div>
+
+            <div className="flex flex-col gap-2">
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={handleLogoUpload}
+              />
+              <button
+                type="button"
+                disabled={logoUploading}
+                onClick={() => fileInputRef.current?.click()}
+                className="flex items-center gap-2 text-sm text-[#534AB7] font-medium border border-[#534AB7]/30 rounded-lg px-4 py-2 hover:bg-[#534AB7]/5 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <Upload size={15} />
+                {logoUploading ? 'Téléversement…' : logoUrl ? 'Changer le logo' : 'Choisir un logo'}
+              </button>
+              {logoUrl && !logoUploading && (
+                <button
+                  type="button"
+                  onClick={handleLogoRemove}
+                  className="text-xs text-[#6B7280] hover:text-red-500 transition-colors text-left"
+                >
+                  Supprimer le logo
+                </button>
+              )}
+              <p className="text-xs text-[#6B7280]">PNG, JPG, SVG — max 2 Mo</p>
+            </div>
+          </div>
+        </div>
+
         {/* Programme */}
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 space-y-4">
           <h2 className="font-semibold text-[#1A1A23]">Programme</h2>

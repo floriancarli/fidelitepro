@@ -1,4 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { createClient } from '@supabase/supabase-js'
+
+const DEFAULT_ICONS = [
+  { src: '/icons/icon-192.png', sizes: '192x192', type: 'image/png', purpose: 'any' },
+  { src: '/icons/icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
+  { src: '/icons/icon.svg', sizes: 'any', type: 'image/svg+xml', purpose: 'any' },
+]
 
 export async function GET(
   _req: NextRequest,
@@ -7,9 +14,54 @@ export async function GET(
   const { id } = await params
   const startUrl = `/mon-qr-code/${id}`
 
+  let nomCommerce: string | null = null
+  let logoUrl: string | null = null
+
+  try {
+    const supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    )
+
+    // Find the client's most recently visited commercant
+    const { data: client } = await supabase
+      .from('clients')
+      .select('email')
+      .eq('qr_code_id', id)
+      .single()
+
+    if (client?.email) {
+      const { data: carte } = await supabase
+        .from('cartes_fidelite')
+        .select('commercants(nom_commerce, logo_url)')
+        .eq('client_email', client.email)
+        .order('derniere_visite', { ascending: false })
+        .limit(1)
+        .single()
+
+      const commercant = (carte as unknown as { commercants: { nom_commerce: string; logo_url: string | null } | null })?.commercants
+      if (commercant) {
+        nomCommerce = commercant.nom_commerce
+        logoUrl = commercant.logo_url ?? null
+      }
+    }
+  } catch {
+    // Fall back to generic manifest on any error
+  }
+
+  const name = nomCommerce ? `Fidélité ${nomCommerce}` : 'Ma Carte Fidélité'
+  const shortName = nomCommerce ?? 'Ma Fidélité'
+
+  const icons = logoUrl
+    ? [
+        { src: logoUrl, sizes: '512x512', type: 'image/png', purpose: 'any maskable' },
+        ...DEFAULT_ICONS,
+      ]
+    : DEFAULT_ICONS
+
   const manifest = {
-    name: 'Ma Carte Fidélité',
-    short_name: 'Ma Fidélité',
+    name,
+    short_name: shortName,
     description: 'Votre carte de fidélité numérique personnelle.',
     start_url: startUrl,
     scope: '/mon-qr-code/',
@@ -17,26 +69,7 @@ export async function GET(
     orientation: 'portrait',
     background_color: '#F9F9FB',
     theme_color: '#534AB7',
-    icons: [
-      {
-        src: '/icons/icon-192.png',
-        sizes: '192x192',
-        type: 'image/png',
-        purpose: 'any',
-      },
-      {
-        src: '/icons/icon-512.png',
-        sizes: '512x512',
-        type: 'image/png',
-        purpose: 'maskable',
-      },
-      {
-        src: '/icons/icon.svg',
-        sizes: 'any',
-        type: 'image/svg+xml',
-        purpose: 'any',
-      },
-    ],
+    icons,
   }
 
   return NextResponse.json(manifest, {
