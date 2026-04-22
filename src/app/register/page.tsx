@@ -405,6 +405,15 @@ export default function RegisterPage() {
               </div>
             </div>
 
+            {/* Lien page en temps réel */}
+            <Link
+              href={`/mon-qr-code/${client.qr_code_id}`}
+              className="mt-4 flex items-center justify-center gap-2 w-full bg-[#534AB7]/5 border border-[#534AB7]/20 text-[#534AB7] font-semibold rounded-xl py-3 text-sm hover:bg-[#534AB7]/10 transition-colors"
+            >
+              <span className="w-2 h-2 rounded-full bg-[#0F6E56] animate-pulse" />
+              Voir mes points en temps réel
+            </Link>
+
             {/* Mes récompenses */}
             <RecompensesSection cartes={cartes} />
 
