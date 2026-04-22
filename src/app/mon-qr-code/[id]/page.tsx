@@ -7,6 +7,7 @@ import { ArrowLeft, Star, ChevronRight } from 'lucide-react'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 import Logo from '@/components/Logo'
+import InstallPrompt from '@/components/InstallPrompt'
 import type { Client, Palier } from '@/lib/types'
 
 const QRCodeCanvas = dynamic(() => import('qrcode.react').then((m) => m.QRCodeCanvas), { ssr: false })
@@ -409,6 +410,9 @@ export default function MonQrCodePage() {
               </div>
             </div>
           </div>
+
+          {/* Ajouter à l'écran d'accueil */}
+          <InstallPrompt />
 
           {/* Points par commerce */}
           {cartes.length === 0 ? (
