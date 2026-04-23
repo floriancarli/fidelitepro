@@ -134,25 +134,30 @@ export async function POST(request: NextRequest) {
   }
 
   // Email "presque là" : 1 ou 2 points du prochain palier non atteint
+  console.log('[scan] points après scan:', carteCourante!.nombre_points, '| recompenseDeclenchee:', recompenseDeclenchee)
   if (!recompenseDeclenchee) {
     const nextPalier = paliers.find((p) => p.points > carteCourante!.nombre_points)
     const pointsManquants = nextPalier ? nextPalier.points - carteCourante!.nombre_points : null
+    console.log('[scan] nextPalier:', nextPalier, '| pointsManquants:', pointsManquants)
     if (nextPalier && pointsManquants !== null && pointsManquants <= 2) {
-      const carteId = carteCourante!.id
-      sendAlmostThereEmail({
-        clientEmail: client.email,
-        clientNom: client.nom,
-        clientQrCodeId: client.qr_code_id,
-        nomCommerce: commercant.nom_commerce,
-        couleur: commercant.couleur_principale || '#534AB7',
-        pointsActuels: carteCourante!.nombre_points,
-        pointsManquants,
-        libelleProchainPalier: nextPalier.libelle,
-        pointsProchainPalier: nextPalier.points,
-      })
-        .then(() =>
-          supabase.from('email_logs').insert({
-            carte_fidelite_id: carteId,
+      console.log('[scan] envoi email "presque là" à', client.email)
+      try {
+        const emailResult = await sendAlmostThereEmail({
+          clientEmail: client.email,
+          clientNom: client.nom,
+          clientQrCodeId: client.qr_code_id,
+          nomCommerce: commercant.nom_commerce,
+          couleur: commercant.couleur_principale || '#534AB7',
+          pointsActuels: carteCourante!.nombre_points,
+          pointsManquants,
+          libelleProchainPalier: nextPalier.libelle,
+          pointsProchainPalier: nextPalier.points,
+        })
+        console.log('[scan] email envoyé, id:', emailResult.data?.id, 'error:', emailResult.error)
+
+        if (!emailResult.error) {
+          const { error: logError } = await supabase.from('email_logs').insert({
+            carte_fidelite_id: carteCourante!.id,
             type: 'almost_there',
             metadata: {
               points_at_time: carteCourante!.nombre_points,
@@ -160,9 +165,14 @@ export async function POST(request: NextRequest) {
               palier_libelle: nextPalier.libelle,
               palier_points: nextPalier.points,
             },
-          }).then(({ error }) => { if (error) console.error('[scan] email_log error:', error) })
-        )
-        .catch((err) => console.error('[scan] email error:', err))
+          })
+          if (logError) console.error('[scan] email_log insert error:', logError)
+        }
+      } catch (err) {
+        console.error('[scan] sendAlmostThereEmail threw:', err)
+      }
+    } else {
+      console.log('[scan] pas d\'email — condition non remplie (pointsManquants > 2 ou palier max atteint)')
     }
   }
 
