@@ -138,6 +138,7 @@ export async function POST(request: NextRequest) {
     const nextPalier = paliers.find((p) => p.points > carteCourante!.nombre_points)
     const pointsManquants = nextPalier ? nextPalier.points - carteCourante!.nombre_points : null
     if (nextPalier && pointsManquants !== null && pointsManquants <= 2) {
+      const carteId = carteCourante!.id
       sendAlmostThereEmail({
         clientEmail: client.email,
         clientNom: client.nom,
@@ -148,7 +149,20 @@ export async function POST(request: NextRequest) {
         pointsManquants,
         libelleProchainPalier: nextPalier.libelle,
         pointsProchainPalier: nextPalier.points,
-      }).catch((err) => console.error('[scan] email error:', err))
+      })
+        .then(() =>
+          supabase.from('email_logs').insert({
+            carte_fidelite_id: carteId,
+            type: 'almost_there',
+            metadata: {
+              points_at_time: carteCourante!.nombre_points,
+              points_manquants: pointsManquants,
+              palier_libelle: nextPalier.libelle,
+              palier_points: nextPalier.points,
+            },
+          }).then(({ error }) => { if (error) console.error('[scan] email_log error:', error) })
+        )
+        .catch((err) => console.error('[scan] email error:', err))
     }
   }
 

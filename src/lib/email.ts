@@ -96,6 +96,54 @@ export async function sendAlmostThereEmail(p: AlmostThereParams) {
   })
 }
 
+// ── Relance J+7 "toujours presque là" ────────────────────────────────────────
+
+type RelanceJ7Params = {
+  clientEmail: string
+  clientNom: string
+  clientQrCodeId: string
+  nomCommerce: string
+  couleur: string
+  pointsActuels: number
+  pointsManquants: number
+  libelleProchainPalier: string
+  pointsProchainPalier: number
+}
+
+export async function sendRelanceJ7Email(p: RelanceJ7Params) {
+  const pct = Math.round((p.pointsActuels / p.pointsProchainPalier) * 100)
+  const body = `
+    <h1 style="margin:0 0 8px;font-size:22px;font-weight:700;color:#1A1A23">
+      Tu es toujours à ${p.pointsManquants} point${p.pointsManquants > 1 ? 's' : ''} de ta récompense&nbsp;🎁
+    </h1>
+    <p style="margin:0 0 24px;font-size:15px;color:#6B7280;line-height:1.5">
+      Reviens nous voir chez <strong style="color:#1A1A23">${p.nomCommerce}</strong> pour la débloquer&nbsp;!
+    </p>
+
+    <div style="background:#F9F9FB;border-radius:14px;padding:20px 24px;border:1px solid #E5E7EB">
+      <p style="margin:0 0 4px;font-size:13px;font-weight:600;color:#6B7280;text-transform:uppercase;letter-spacing:0.05em">Ta récompense t'attend</p>
+      <p style="margin:0;font-size:20px;font-weight:700;color:#1A1A23">${p.libelleProchainPalier}</p>
+      <p style="margin:4px 0 16px;font-size:13px;color:#6B7280">chez ${p.nomCommerce}</p>
+
+      <div style="background:#E5E7EB;border-radius:999px;height:10px;overflow:hidden">
+        <div style="background:${p.couleur};width:${pct}%;height:100%;border-radius:999px"></div>
+      </div>
+      <p style="margin:8px 0 0;font-size:12px;color:#9CA3AF;text-align:right">
+        ${p.pointsActuels} / ${p.pointsProchainPalier} pts
+      </p>
+    </div>
+
+    ${ctaButton(`${APP_URL}/mon-qr-code/${p.clientQrCodeId}`, 'Voir ma carte', p.couleur)}
+  `
+
+  return getResend().emails.send({
+    from: fromAddress(p.nomCommerce),
+    to: p.clientEmail,
+    subject: `Tu es toujours à ${p.pointsManquants} point${p.pointsManquants > 1 ? 's' : ''} de "${p.libelleProchainPalier}" chez ${p.nomCommerce} 🎁`,
+    html: baseTemplate(p.couleur, body),
+  })
+}
+
 // ── Relance inactivité ────────────────────────────────────────────────────────
 
 type RelanceParams = {
