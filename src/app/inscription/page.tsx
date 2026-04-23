@@ -1,7 +1,7 @@
 'use client'
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useState, useEffect, Suspense } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 import Logo from '@/components/Logo'
@@ -30,8 +30,10 @@ function generateQrCodeId(nomCommerce: string): string {
   return `QR-${letters}-${nums}`
 }
 
-export default function InscriptionPage() {
+function InscriptionForm() {
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const plan = searchParams.get('plan') // 'mensuel' | 'annuel' | null
   const [form, setForm] = useState({
     nomCommerce: '',
     secteur: '',
@@ -73,7 +75,8 @@ export default function InscriptionPage() {
 
       if (dbError) throw dbError
 
-      router.push('/dashboard')
+      // Redirect to pricing for payment (keep plan param if present)
+      router.push(plan ? `/pricing` : '/pricing')
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Une erreur est survenue'
       setError(message)
@@ -179,5 +182,13 @@ export default function InscriptionPage() {
       </div>
       <Footer />
     </div>
+  )
+}
+
+export default function InscriptionPage() {
+  return (
+    <Suspense>
+      <InscriptionForm />
+    </Suspense>
   )
 }

@@ -58,11 +58,18 @@ export default function DashboardSidebar() {
             <p className="text-white/60 text-xs truncate">{commercant?.secteur_activite || ''}</p>
           </div>
         </div>
-        {commercant?.abonnement_actif && (
+        {commercant?.abonnement_actif ? (
           <div className="mt-3 flex items-center gap-1.5 bg-white/10 rounded-lg px-3 py-1.5 text-xs">
             <BadgeCheck size={14} className="text-green-300" />
             <span className="text-green-300 font-medium">Abonnement actif</span>
           </div>
+        ) : commercant && (
+          <Link
+            href="/pricing"
+            className="mt-3 flex items-center gap-1.5 bg-yellow-400/20 border border-yellow-400/30 rounded-lg px-3 py-1.5 text-xs hover:bg-yellow-400/30 transition-colors"
+          >
+            <span className="text-yellow-300 font-medium">⚡ Activer mon compte</span>
+          </Link>
         )}
       </div>
 

@@ -20,45 +20,28 @@ const avantages = [
   },
   {
     icon: Mail,
-    titre: 'Contact direct clients',
-    desc: 'Exportez les emails de vos clients pour communiquer directement avec eux.',
+    titre: 'Notifications automatiques',
+    desc: 'Relances email automatiques pour fidéliser vos clients et les faire revenir.',
   },
 ]
 
 const pricing = [
   {
-    nom: 'Starter',
-    prix: '29',
-    desc: 'Idéal pour démarrer',
-    features: ['1 commerce', '200 clients max', 'QR code basique', 'Dashboard simple'],
+    nom: 'Mensuel',
+    prix: '39',
+    desc: 'Sans engagement',
+    features: ['Clients illimités', '1 programme de fidélité', 'Notifications email', 'Support email'],
     cta: 'Commencer',
     highlight: false,
   },
   {
-    nom: 'Pro',
-    prix: '49',
-    desc: 'Le plus populaire',
-    features: [
-      'Personnalisation couleurs + logo',
-      'Clients illimités',
-      'Export emails',
-      'Support email prioritaire',
-    ],
-    cta: 'Choisir Pro',
+    nom: 'Annuel',
+    prix: '29',
+    desc: 'Économisez 25%',
+    facturation: 'Facturé 348€/an',
+    features: ['Clients illimités', 'Programmes multiples', 'Notifications email', 'Analytics avancés', 'Export CSV', 'Support prioritaire'],
+    cta: 'Commencer',
     highlight: true,
-  },
-  {
-    nom: 'Premium',
-    prix: '79',
-    desc: 'Pour les multi-sites',
-    features: [
-      'Multi-sites',
-      'Stats avancées',
-      'Support prioritaire 24/7',
-      'API access',
-    ],
-    cta: 'Contacter',
-    highlight: false,
   },
 ]
 
@@ -163,53 +146,61 @@ export default function LandingPage() {
 
       {/* Pricing */}
       <section className="py-20 px-6 bg-[#F9F9FB]">
-        <div className="max-w-5xl mx-auto">
+        <div className="max-w-4xl mx-auto">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold mb-4">Tarifs simples et transparents</h2>
-            <p className="text-[#6B7280]">Sans engagement, sans frais cachés</p>
+            <p className="text-[#6B7280]">Sans frais cachés. Annulable à tout moment.</p>
           </div>
-          <div className="grid md:grid-cols-3 gap-8 items-start">
-            {pricing.map(({ nom, prix, desc, features, cta, highlight }) => (
+          <div className="grid md:grid-cols-2 gap-6 items-start">
+            {pricing.map((p) => (
               <div
-                key={nom}
+                key={p.nom}
                 className={`rounded-2xl p-8 relative ${
-                  highlight
-                    ? 'bg-[#534AB7] text-white shadow-xl'
+                  p.highlight
+                    ? 'bg-[#534AB7] text-white shadow-xl ring-2 ring-[#534AB7]'
                     : 'bg-white border border-gray-100 shadow-sm'
                 }`}
               >
-                {highlight && (
-                  <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-yellow-400 text-yellow-900 text-xs font-bold px-4 py-1 rounded-full whitespace-nowrap">
-                    ⭐ Le plus populaire
+                {p.highlight && (
+                  <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-yellow-400 text-yellow-900 text-xs font-bold px-4 py-1 rounded-full whitespace-nowrap">
+                    ⭐ {p.desc}
                   </div>
                 )}
-                <h3 className={`font-bold text-xl mb-1 ${highlight ? 'text-white' : ''}`}>{nom}</h3>
-                <p className={`text-sm mb-4 ${highlight ? 'text-white/70' : 'text-[#6B7280]'}`}>{desc}</p>
-                <div className="flex items-end gap-1 mb-6">
-                  <span className={`text-4xl font-bold ${highlight ? 'text-white' : 'text-[#1A1A23]'}`}>{prix}€</span>
-                  <span className={`text-sm pb-1 ${highlight ? 'text-white/70' : 'text-[#6B7280]'}`}>/mois</span>
+                <h3 className={`font-bold text-xl mb-1 ${p.highlight ? 'text-white' : ''}`}>{p.nom}</h3>
+                <p className={`text-sm mb-4 ${p.highlight ? 'text-white/70' : 'text-[#6B7280]'}`}>
+                  {p.highlight ? 'Engagement annuel' : p.desc}
+                </p>
+                <div className="flex items-end gap-1 mb-1">
+                  <span className={`text-4xl font-bold ${p.highlight ? 'text-white' : 'text-[#1A1A23]'}`}>{p.prix}€</span>
+                  <span className={`text-sm pb-1 ${p.highlight ? 'text-white/70' : 'text-[#6B7280]'}`}>/mois</span>
                 </div>
-                <ul className="space-y-3 mb-8">
-                  {features.map((f) => (
-                    <li key={f} className={`flex items-start gap-2 text-sm ${highlight ? 'text-white/90' : 'text-[#6B7280]'}`}>
-                      <Check size={16} className={`mt-0.5 flex-shrink-0 ${highlight ? 'text-green-300' : 'text-[#0F6E56]'}`} />
+                {'facturation' in p && p.facturation && (
+                  <p className={`text-xs mb-5 ${p.highlight ? 'text-white/60' : 'text-[#6B7280]'}`}>{p.facturation}</p>
+                )}
+                <ul className={`space-y-3 mb-8 ${'facturation' in p && p.facturation ? '' : 'mt-5'}`}>
+                  {p.features.map((f) => (
+                    <li key={f} className={`flex items-start gap-2 text-sm ${p.highlight ? 'text-white/90' : 'text-[#6B7280]'}`}>
+                      <Check size={16} className={`mt-0.5 flex-shrink-0 ${p.highlight ? 'text-green-300' : 'text-[#0F6E56]'}`} />
                       {f}
                     </li>
                   ))}
                 </ul>
                 <Link
-                  href="/inscription"
+                  href="/pricing"
                   className={`block text-center font-semibold py-3 rounded-xl transition-colors ${
-                    highlight
+                    p.highlight
                       ? 'bg-white text-[#534AB7] hover:bg-gray-50'
                       : 'bg-[#534AB7] text-white hover:bg-[#3C3489]'
                   }`}
                 >
-                  {cta}
+                  {p.cta}
                 </Link>
               </div>
             ))}
           </div>
+          <p className="text-center mt-6 text-sm text-[#6B7280]">
+            Paiement sécurisé par <span className="font-semibold text-[#635BFF]">Stripe</span>
+          </p>
         </div>
       </section>
 
