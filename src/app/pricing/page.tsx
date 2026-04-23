@@ -53,6 +53,7 @@ const PLANS = [
 export default function PricingPage() {
   const router = useRouter()
   const [loading, setLoading] = useState<'mensuel' | 'annuel' | null>(null)
+  const [checkoutError, setCheckoutError] = useState('')
   const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [checkingAuth, setCheckingAuth] = useState(true)
 
@@ -69,17 +70,21 @@ export default function PricingPage() {
       return
     }
     setLoading(plan)
+    setCheckoutError('')
     try {
       const res = await fetch('/api/stripe/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ plan }),
       })
-      const { url, error } = await res.json()
-      if (error) throw new Error(error)
-      window.location.href = url
+      const data = await res.json()
+      if (!res.ok || data.error) {
+        throw new Error(data.error || `Erreur ${res.status}`)
+      }
+      window.location.href = data.url
     } catch (err) {
-      console.error(err)
+      console.error('[checkout]', err)
+      setCheckoutError(err instanceof Error ? err.message : 'Une erreur est survenue')
       setLoading(null)
     }
   }
@@ -100,6 +105,12 @@ export default function PricingPage() {
             Choisissez le plan qui correspond à votre activité. Pas de frais cachés.
           </p>
         </div>
+
+        {checkoutError && (
+          <div className="w-full max-w-3xl mb-4 bg-red-50 border border-red-200 text-red-700 rounded-xl px-4 py-3 text-sm">
+            {checkoutError}
+          </div>
+        )}
 
         <div className="grid md:grid-cols-2 gap-6 w-full max-w-3xl items-start">
           {PLANS.map((plan) => (
