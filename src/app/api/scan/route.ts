@@ -134,11 +134,15 @@ export async function POST(request: NextRequest) {
   }
 
   // Email "presque là" : 1 ou 2 points du prochain palier non atteint
-  console.log('[scan] points après scan:', carteCourante!.nombre_points, '| recompenseDeclenchee:', recompenseDeclenchee)
   if (!recompenseDeclenchee) {
     const nextPalier = paliers.find((p) => p.points > carteCourante!.nombre_points)
     const pointsManquants = nextPalier ? nextPalier.points - carteCourante!.nombre_points : null
-    console.log('[scan] nextPalier:', nextPalier, '| pointsManquants:', pointsManquants)
+    console.log('[scan] email check —', {
+      nombre_points: carteCourante!.nombre_points,
+      recompenseDeclenchee,
+      nextPalier,
+      pointsManquants,
+    })
     if (nextPalier && pointsManquants !== null && pointsManquants <= 2) {
       console.log('[scan] envoi email "presque là" à', client.email)
       try {
