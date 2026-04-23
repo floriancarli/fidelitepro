@@ -60,10 +60,16 @@ export default function LandingPage() {
               Commerçants
             </Link>
             <Link
-              href="/inscription"
+              href="/demo"
+              className="text-sm font-medium text-gray-600 hover:text-[#534AB7] transition-colors"
+            >
+              Voir la démo
+            </Link>
+            <Link
+              href="/pricing"
               className="bg-[#534AB7] text-white text-sm font-semibold px-4 py-2 rounded-lg hover:bg-[#3C3489] transition-colors"
             >
-              Essai gratuit
+              Commencer
             </Link>
           </div>
         </div>
@@ -84,18 +90,18 @@ export default function LandingPage() {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
-              href="/inscription"
+              href="/pricing"
               className="bg-white text-[#534AB7] font-semibold px-8 py-3.5 rounded-xl hover:bg-gray-50 transition-colors flex items-center justify-center gap-2"
             >
-              Commencer gratuitement
+              Voir les tarifs
               <ArrowRight size={18} />
             </Link>
-            <a
-              href="#comment"
+            <Link
+              href="/demo"
               className="border border-white/30 text-white font-semibold px-8 py-3.5 rounded-xl hover:bg-white/10 transition-colors flex items-center justify-center"
             >
-              Voir comment ça marche
-            </a>
+              Voir la démo
+            </Link>
           </div>
         </div>
       </section>
@@ -210,10 +216,10 @@ export default function LandingPage() {
           <h2 className="text-3xl font-bold mb-4">Prêt à fidéliser vos clients ?</h2>
           <p className="text-white/80 mb-8">Rejoignez des centaines de commerçants qui font confiance à FidèlePro.</p>
           <Link
-            href="/inscription"
+            href="/pricing"
             className="inline-flex items-center gap-2 bg-white text-[#534AB7] font-semibold px-8 py-3.5 rounded-xl hover:bg-gray-50 transition-colors"
           >
-            Créer mon compte gratuitement
+            Voir les tarifs
             <ArrowRight size={18} />
           </Link>
         </div>
