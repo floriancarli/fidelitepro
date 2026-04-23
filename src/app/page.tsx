@@ -53,11 +53,11 @@ export default function LandingPage() {
         <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
           <Logo size="md" />
           <div className="flex items-center gap-4">
-            <Link href="/register" className="text-sm font-medium text-gray-600 hover:text-[#534AB7] transition-colors">
-              Espace clients
+            <Link href="/demo" className="text-sm font-medium text-gray-600 hover:text-[#534AB7] transition-colors">
+              Voir la démo
             </Link>
             <Link href="/login" className="text-sm font-medium text-gray-600 hover:text-[#534AB7] transition-colors">
-              Commerçants
+              Connexion
             </Link>
             <Link
               href="/demo"
