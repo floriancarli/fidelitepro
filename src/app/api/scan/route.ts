@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { sendAlmostThereEmail } from '@/lib/email'
 
 export async function POST(request: NextRequest) {
   const supabase = await createClient()
@@ -129,6 +130,25 @@ export async function POST(request: NextRequest) {
       nombre_points: newPoints,
       points_cumules_total: carteCourante.points_cumules_total + pointsParVisite,
       recompenses_obtenues: recompensesObtenues,
+    }
+  }
+
+  // Email "presque là" : 1 ou 2 points du prochain palier non atteint
+  if (!recompenseDeclenchee) {
+    const nextPalier = paliers.find((p) => p.points > carteCourante!.nombre_points)
+    const pointsManquants = nextPalier ? nextPalier.points - carteCourante!.nombre_points : null
+    if (nextPalier && pointsManquants !== null && pointsManquants <= 2) {
+      sendAlmostThereEmail({
+        clientEmail: client.email,
+        clientNom: client.nom,
+        clientQrCodeId: client.qr_code_id,
+        nomCommerce: commercant.nom_commerce,
+        couleur: commercant.couleur_principale || '#534AB7',
+        pointsActuels: carteCourante!.nombre_points,
+        pointsManquants,
+        libelleProchainPalier: nextPalier.libelle,
+        pointsProchainPalier: nextPalier.points,
+      }).catch((err) => console.error('[scan] email error:', err))
     }
   }
 
