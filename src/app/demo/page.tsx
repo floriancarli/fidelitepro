@@ -21,7 +21,7 @@ export default function DemoPage() {
         password: DEMO_PASSWORD,
       })
       if (signInError) {
-        setError('La démo est temporairement indisponible. Veuillez réessayer.')
+        setError(`[${signInError.status}] ${signInError.name}: ${signInError.message}`)
         return
       }
       router.replace('/dashboard')
