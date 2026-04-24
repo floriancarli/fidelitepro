@@ -69,7 +69,7 @@ function InscriptionForm() {
         points_par_visite: 1,
         points_pour_recompense: 10,
         libelle_recompense: 'Offre spéciale',
-        couleur_principale: '#534AB7',
+        couleur_principale: '#2D4A8A',
         abonnement_actif: false,
       })
 
@@ -86,13 +86,13 @@ function InscriptionForm() {
   }
 
   return (
-    <div className="min-h-screen bg-[#F9F9FB] flex flex-col">
+    <div className="min-h-screen bg-white flex flex-col">
       <div className="flex-1 flex flex-col items-center justify-center px-4 py-12">
       <div className="mb-8">
         <Logo size="lg" />
       </div>
 
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-8 w-full max-w-md">
+      <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-8 w-full max-w-md">
         <h1 className="text-2xl font-bold mb-2">Créer votre compte</h1>
         <p className="text-[#6B7280] text-sm mb-6">Commencez à fidéliser vos clients en quelques minutes</p>
 
@@ -113,7 +113,7 @@ function InscriptionForm() {
               value={form.nomCommerce}
               onChange={(e) => setForm({ ...form, nomCommerce: e.target.value })}
               placeholder="Ex: Boulangerie Martin"
-              className="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#534AB7]/30 focus:border-[#534AB7] transition-colors"
+              className="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#2D4A8A]/30 focus:border-[#2D4A8A] transition-colors"
             />
           </div>
 
@@ -125,7 +125,7 @@ function InscriptionForm() {
               required
               value={form.secteur}
               onChange={(e) => setForm({ ...form, secteur: e.target.value })}
-              className="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#534AB7]/30 focus:border-[#534AB7] transition-colors bg-white"
+              className="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#2D4A8A]/30 focus:border-[#2D4A8A] transition-colors bg-white"
             >
               <option value="">Choisir un secteur</option>
               {secteurs.map((s) => (
@@ -144,7 +144,7 @@ function InscriptionForm() {
               value={form.email}
               onChange={(e) => setForm({ ...form, email: e.target.value })}
               placeholder="vous@exemple.fr"
-              className="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#534AB7]/30 focus:border-[#534AB7] transition-colors"
+              className="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#2D4A8A]/30 focus:border-[#2D4A8A] transition-colors"
             />
           </div>
 
@@ -159,14 +159,14 @@ function InscriptionForm() {
               value={form.password}
               onChange={(e) => setForm({ ...form, password: e.target.value })}
               placeholder="Minimum 6 caractères"
-              className="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#534AB7]/30 focus:border-[#534AB7] transition-colors"
+              className="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#2D4A8A]/30 focus:border-[#2D4A8A] transition-colors"
             />
           </div>
 
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-[#534AB7] text-white font-semibold py-3 rounded-xl hover:bg-[#3C3489] transition-colors disabled:opacity-50 disabled:cursor-not-allowed mt-2"
+            className="w-full bg-[#2D4A8A] text-white font-semibold py-3 rounded-xl hover:bg-[#1e3a6e] transition-colors disabled:opacity-50 disabled:cursor-not-allowed mt-2"
           >
             {loading ? 'Création en cours...' : 'Créer mon compte'}
           </button>
@@ -174,7 +174,7 @@ function InscriptionForm() {
 
         <p className="text-center text-sm text-[#6B7280] mt-6">
           Déjà un compte ?{' '}
-          <Link href="/login" className="text-[#534AB7] font-medium hover:underline">
+          <Link href="/login" className="text-[#2D4A8A] font-medium hover:underline">
             Se connecter
           </Link>
         </p>

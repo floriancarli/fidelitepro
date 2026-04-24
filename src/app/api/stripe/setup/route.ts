@@ -13,7 +13,7 @@ function isAuthorized(req: NextRequest): boolean {
 const PRODUCTS = [
   {
     lookupKey: 'fidelitepro_mensuel',
-    name: 'FidèlePro — Plan Mensuel',
+    name: 'Orlyo — Plan Mensuel',
     description: 'Clients illimités, 1 programme de fidélité, notifications email, support email.',
     amount: 3900, // 39,00 €
     interval: 'month' as const,
@@ -21,7 +21,7 @@ const PRODUCTS = [
   },
   {
     lookupKey: 'fidelitepro_annuel',
-    name: 'FidèlePro — Plan Annuel',
+    name: 'Orlyo — Plan Annuel',
     description: 'Clients illimités, programmes multiples, analytics avancés, export CSV, support prioritaire.',
     amount: 34800, // 348,00 € / an (= 29€/mois)
     interval: 'year' as const,

@@ -46,7 +46,7 @@ export default function DashboardSidebar() {
   const initiales = commercant?.nom_commerce?.slice(0, 2).toUpperCase() || '??'
 
   return (
-    <aside className="w-64 min-h-screen bg-[#534AB7] flex flex-col text-white">
+    <aside className="w-64 min-h-screen bg-[#2D4A8A] flex flex-col text-white">
       <div className="px-6 py-6 border-b border-white/10">
         <Logo white size="md" />
       </div>
@@ -91,7 +91,7 @@ export default function DashboardSidebar() {
               key={href}
               href={href}
               className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors ${
-                active ? 'bg-white/20 text-white' : 'text-white/70 hover:bg-white/10 hover:text-white'
+                active ? 'bg-white/10 text-white border-l-2 border-[#F59E0B]' : 'text-white/75 hover:bg-white/10 hover:text-white'
               }`}
             >
               <Icon size={18} />

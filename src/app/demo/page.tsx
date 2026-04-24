@@ -21,7 +21,7 @@ export default function DemoPage() {
         password: DEMO_PASSWORD,
       })
       if (signInError) {
-        setError(`[${signInError.status}] ${signInError.name}: ${signInError.message}`)
+        setError('La démo est temporairement indisponible. Veuillez réessayer dans quelques instants.')
         return
       }
       router.replace('/dashboard')
@@ -41,7 +41,7 @@ export default function DemoPage() {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center gap-6">
       <Logo size="lg" />
-      <div className="w-8 h-8 border-4 border-[#534AB7] border-t-transparent rounded-full animate-spin" />
+      <div className="w-8 h-8 border-4 border-[#2D4A8A] border-t-transparent rounded-full animate-spin" />
       <p className="text-[#6B7280] text-sm">Chargement de la démo…</p>
     </div>
   )

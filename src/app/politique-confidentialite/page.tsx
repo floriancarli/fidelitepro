@@ -3,7 +3,7 @@ import { ArrowLeft } from 'lucide-react'
 import Footer from '@/components/Footer'
 
 export const metadata = {
-  title: 'Politique de confidentialité — FidèlePro',
+  title: 'Politique de confidentialité — Orlyo',
 }
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
@@ -18,7 +18,7 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 export default function PolitiqueConfidentialitePage() {
   return (
     <div className="min-h-screen bg-white flex flex-col">
-      <header className="border-b border-gray-100 px-6 py-4">
+      <header className="border-b border-gray-200 px-6 py-4">
         <div className="max-w-3xl mx-auto flex items-center gap-4">
           <Link href="/" className="w-8 h-8 rounded-full hover:bg-gray-100 flex items-center justify-center transition-colors">
             <ArrowLeft size={18} />
@@ -33,16 +33,16 @@ export default function PolitiqueConfidentialitePage() {
 
         <Section title="1. Responsable du traitement">
           <p>
-            Le responsable du traitement des données personnelles collectées via FidèlePro est :
+            Le responsable du traitement des données personnelles collectées via Orlyo est :
           </p>
-          <div className="bg-[#F9F9FB] rounded-xl p-4 text-sm font-mono">
-            <p>FidèlePro SAS</p>
-            <p>Contact : <a href="mailto:dpo@fidelepro.fr" className="text-[#534AB7] hover:underline">dpo@fidelepro.fr</a></p>
+          <div className="bg-white rounded-xl p-4 text-sm font-mono">
+            <p>Orlyo SAS</p>
+            <p>Contact : <a href="mailto:dpo@fidelepro.fr" className="text-[#2D4A8A] hover:underline">dpo@fidelepro.fr</a></p>
           </div>
         </Section>
 
         <Section title="2. Données collectées">
-          <p>FidèlePro collecte les catégories de données suivantes :</p>
+          <p>Orlyo collecte les catégories de données suivantes :</p>
           <ul className="list-disc list-inside space-y-1 mt-2">
             <li><strong>Données d&apos;identité :</strong> nom, adresse email</li>
             <li><strong>Données de fidélité :</strong> nombre de points cumulés, historique des visites, récompenses obtenues</li>
@@ -102,19 +102,19 @@ export default function PolitiqueConfidentialitePage() {
           </ul>
           <p className="mt-3">
             Pour exercer ces droits, contactez notre DPO à{' '}
-            <a href="mailto:dpo@fidelepro.fr" className="text-[#534AB7] hover:underline">dpo@fidelepro.fr</a>.
+            <a href="mailto:dpo@fidelepro.fr" className="text-[#2D4A8A] hover:underline">dpo@fidelepro.fr</a>.
             Nous répondrons dans un délai maximum de 30 jours.
           </p>
           <p className="mt-2">
             Vous pouvez également introduire une réclamation auprès de la{' '}
             <strong>CNIL</strong> (Commission Nationale de l&apos;Informatique et des Libertés) :{' '}
-            <span className="text-[#534AB7]">www.cnil.fr</span>.
+            <span className="text-[#2D4A8A]">www.cnil.fr</span>.
           </p>
         </Section>
 
         <Section title="7. Cookies">
           <p>
-            FidèlePro utilise uniquement des cookies strictement nécessaires au fonctionnement de l&apos;application
+            Orlyo utilise uniquement des cookies strictement nécessaires au fonctionnement de l&apos;application
             (session d&apos;authentification). Aucun cookie publicitaire ou de tracking tiers n&apos;est utilisé.
           </p>
         </Section>

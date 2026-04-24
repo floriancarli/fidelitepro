@@ -33,7 +33,7 @@ function ScanSuccessBanner({ result, onDismiss }: { result: ScanResult; onDismis
   }, [onDismiss])
 
   const isReward = result.recompenseDeclenchee
-  const bgClass = isReward ? 'bg-[#0F6E56]' : 'bg-[#534AB7]'
+  const bgClass = isReward ? 'bg-[#0F6E56]' : 'bg-[#2D4A8A]'
 
   return (
     <div className={`${bgClass} text-white rounded-2xl px-5 py-4 flex items-center gap-4 shadow-lg mb-6 animate-in slide-in-from-top-2 duration-300`}>
@@ -173,7 +173,7 @@ export default function DashboardPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-full min-h-screen">
-        <div className="w-8 h-8 border-4 border-[#534AB7] border-t-transparent rounded-full animate-spin" />
+        <div className="w-8 h-8 border-4 border-[#2D4A8A] border-t-transparent rounded-full animate-spin" />
       </div>
     )
   }
@@ -228,7 +228,7 @@ export default function DashboardPage() {
           </div>
           <button
             onClick={() => setScannerOpen(true)}
-            className="sm:ml-auto flex items-center gap-2.5 bg-[#534AB7] text-white font-semibold px-5 py-3 rounded-xl hover:bg-[#3C3489] transition-colors shadow-md shadow-[#534AB7]/20"
+            className="sm:ml-auto flex items-center gap-2.5 bg-[#F59E0B] text-[#1B2B4B] font-semibold px-5 py-3 rounded-xl hover:bg-[#e08900] transition-colors shadow-md shadow-[#F59E0B]/20"
           >
             <ScanLine size={20} />
             Scanner un client
@@ -242,18 +242,18 @@ export default function DashboardPage() {
 
         {/* Métriques */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
-          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+          <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
             <div className="flex items-center justify-between mb-4">
               <span className="text-sm text-[#6B7280] font-medium">Clients fidèles</span>
-              <div className="w-10 h-10 rounded-xl bg-[#534AB7]/10 flex items-center justify-center">
-                <Users size={20} className="text-[#534AB7]" />
+              <div className="w-10 h-10 rounded-xl bg-[#2D4A8A]/10 flex items-center justify-center">
+                <Users size={20} className="text-[#2D4A8A]" />
               </div>
             </div>
             <p className="text-3xl font-bold">{cartes.length}</p>
             <p className="text-xs text-[#6B7280] mt-1">Total inscrits</p>
           </div>
 
-          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+          <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
             <div className="flex items-center justify-between mb-4">
               <span className="text-sm text-[#6B7280] font-medium">Scans ce mois</span>
               <div className="w-10 h-10 rounded-xl bg-[#0F6E56]/10 flex items-center justify-center">
@@ -264,7 +264,7 @@ export default function DashboardPage() {
             <p className="text-xs text-[#6B7280] mt-1">Visites enregistrées</p>
           </div>
 
-          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+          <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
             <div className="flex items-center justify-between mb-4">
               <span className="text-sm text-[#6B7280] font-medium">Points distribués</span>
               <div className="w-10 h-10 rounded-xl bg-yellow-50 flex items-center justify-center">
@@ -277,8 +277,8 @@ export default function DashboardPage() {
         </div>
 
         {/* Tableau clients */}
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm">
-          <div className="px-6 py-5 border-b border-gray-100 flex flex-col sm:flex-row sm:items-center gap-4">
+        <div className="bg-white rounded-2xl border border-gray-200 shadow-sm">
+          <div className="px-6 py-5 border-b border-gray-200 flex flex-col sm:flex-row sm:items-center gap-4">
             <div>
               <h2 className="font-semibold text-[#1A1A23]">Mes clients fidèles</h2>
               <p className="text-xs text-[#6B7280]">{cartes.length} client{cartes.length > 1 ? 's' : ''} inscrits</p>
@@ -290,7 +290,7 @@ export default function DashboardPage() {
                 placeholder="Rechercher un client..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="pl-9 pr-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#534AB7]/30 focus:border-[#534AB7] w-64"
+                className="pl-9 pr-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#2D4A8A]/30 focus:border-[#2D4A8A] w-64"
               />
             </div>
           </div>
@@ -305,7 +305,7 @@ export default function DashboardPage() {
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
-                  <tr className="text-xs text-[#6B7280] border-b border-gray-100">
+                  <tr className="text-xs text-[#6B7280] border-b border-gray-200">
                     <th className="text-left px-6 py-3 font-medium">Client</th>
                     <th className="text-left px-6 py-3 font-medium">Progression</th>
                     <th className="text-left px-6 py-3 font-medium">Récompenses</th>
@@ -321,7 +321,7 @@ export default function DashboardPage() {
                       <tr key={carte.id} className="hover:bg-gray-50/50 transition-colors">
                         <td className="px-6 py-4">
                           <div className="flex items-center gap-3">
-                            <div className="w-9 h-9 rounded-full bg-[#534AB7]/10 flex items-center justify-center text-[#534AB7] font-semibold text-sm">
+                            <div className="w-9 h-9 rounded-full bg-[#2D4A8A]/10 flex items-center justify-center text-[#2D4A8A] font-semibold text-sm">
                               {initiales}
                             </div>
                             <div>
@@ -334,7 +334,7 @@ export default function DashboardPage() {
                           <ProgressBar
                             value={carte.nombre_points}
                             max={commercant?.points_pour_recompense || 10}
-                            color={commercant?.couleur_principale || '#534AB7'}
+                            color={commercant?.couleur_principale || '#2D4A8A'}
                           />
                         </td>
                         <td className="px-6 py-4">

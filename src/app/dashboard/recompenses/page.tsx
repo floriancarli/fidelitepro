@@ -71,7 +71,7 @@ export default function RecompensesPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-full min-h-screen">
-        <div className="w-8 h-8 border-4 border-[#534AB7] border-t-transparent rounded-full animate-spin" />
+        <div className="w-8 h-8 border-4 border-[#2D4A8A] border-t-transparent rounded-full animate-spin" />
       </div>
     )
   }
@@ -94,8 +94,8 @@ export default function RecompensesPage() {
             onClick={() => setFilter(val)}
             className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${
               filter === val
-                ? 'bg-[#534AB7] text-white'
-                : 'bg-white border border-gray-200 text-[#6B7280] hover:border-[#534AB7] hover:text-[#534AB7]'
+                ? 'bg-[#2D4A8A] text-white'
+                : 'bg-white border border-gray-200 text-[#6B7280] hover:border-[#2D4A8A] hover:text-[#2D4A8A]'
             }`}
           >
             {label}
@@ -104,7 +104,7 @@ export default function RecompensesPage() {
       </div>
 
       {filtered.length === 0 ? (
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm text-center py-16 text-[#6B7280]">
+        <div className="bg-white rounded-2xl border border-gray-200 shadow-sm text-center py-16 text-[#6B7280]">
           <Gift size={40} className="mx-auto mb-3 opacity-30" />
           <p className="font-medium">Aucune récompense</p>
           <p className="text-sm mt-1">Les récompenses apparaîtront ici quand vos clients atteindront le palier</p>
@@ -115,7 +115,7 @@ export default function RecompensesPage() {
             <div
               key={r.id}
               className={`bg-white rounded-2xl border shadow-sm p-5 flex items-center gap-4 ${
-                r.utilisee ? 'border-gray-100 opacity-60' : 'border-[#0F6E56]/20'
+                r.utilisee ? 'border-gray-200 opacity-60' : 'border-[#0F6E56]/20'
               }`}
             >
               <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${
@@ -140,7 +140,7 @@ export default function RecompensesPage() {
                 onClick={() => handleToggle(r.id, r.utilisee)}
                 className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-colors flex-shrink-0 ${
                   r.utilisee
-                    ? 'border border-gray-200 text-[#6B7280] hover:border-[#534AB7] hover:text-[#534AB7]'
+                    ? 'border border-gray-200 text-[#6B7280] hover:border-[#2D4A8A] hover:text-[#2D4A8A]'
                     : 'bg-[#0F6E56] text-white hover:bg-[#0a5c47]'
                 }`}
               >

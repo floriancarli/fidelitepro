@@ -151,7 +151,7 @@ export async function POST(request: NextRequest) {
           clientNom: client.nom,
           clientQrCodeId: client.qr_code_id,
           nomCommerce: commercant.nom_commerce,
-          couleur: commercant.couleur_principale || '#534AB7',
+          couleur: commercant.couleur_principale || '#2D4A8A',
           pointsActuels: carteCourante!.nombre_points,
           pointsManquants,
           libelleProchainPalier: nextPalier.libelle,

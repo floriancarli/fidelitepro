@@ -13,7 +13,7 @@ export default function MonComptePage() {
     libelle_recompense: '',
     points_par_visite: 1,
     points_pour_recompense: 10,
-    couleur_principale: '#534AB7',
+    couleur_principale: '#2D4A8A',
   })
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
@@ -91,7 +91,7 @@ export default function MonComptePage() {
   if (!commercant) {
     return (
       <div className="flex items-center justify-center h-full min-h-screen">
-        <div className="w-8 h-8 border-4 border-[#534AB7] border-t-transparent rounded-full animate-spin" />
+        <div className="w-8 h-8 border-4 border-[#2D4A8A] border-t-transparent rounded-full animate-spin" />
       </div>
     )
   }
@@ -118,7 +118,7 @@ export default function MonComptePage() {
 
       <form onSubmit={handleSave} className="space-y-6">
         {/* Infos commerce */}
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 space-y-4">
+        <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 space-y-4">
           <h2 className="font-semibold">Informations du commerce</h2>
 
           <div>
@@ -128,7 +128,7 @@ export default function MonComptePage() {
               required
               value={form.nom_commerce}
               onChange={(e) => setForm({ ...form, nom_commerce: e.target.value })}
-              className="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#534AB7]/30 focus:border-[#534AB7] transition-colors"
+              className="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#2D4A8A]/30 focus:border-[#2D4A8A] transition-colors"
             />
           </div>
 
@@ -138,7 +138,7 @@ export default function MonComptePage() {
               type="text"
               value={form.secteur_activite}
               onChange={(e) => setForm({ ...form, secteur_activite: e.target.value })}
-              className="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#534AB7]/30 focus:border-[#534AB7] transition-colors"
+              className="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#2D4A8A]/30 focus:border-[#2D4A8A] transition-colors"
             />
           </div>
 
@@ -148,16 +148,16 @@ export default function MonComptePage() {
               type="file"
               accept="image/*"
               onChange={handleLogoUpload}
-              className="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none file:mr-4 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-[#534AB7]/10 file:text-[#534AB7] hover:file:bg-[#534AB7]/20"
+              className="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none file:mr-4 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-[#2D4A8A]/10 file:text-[#2D4A8A] hover:file:bg-[#2D4A8A]/20"
             />
             {commercant.logo_url && (
-              <img src={commercant.logo_url} alt="Logo" className="mt-2 h-16 object-contain rounded-lg border border-gray-100" />
+              <img src={commercant.logo_url} alt="Logo" className="mt-2 h-16 object-contain rounded-lg border border-gray-200" />
             )}
           </div>
         </div>
 
         {/* Programme fidélité */}
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 space-y-4">
+        <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 space-y-4">
           <h2 className="font-semibold">Programme de fidélité</h2>
 
           <div>
@@ -167,7 +167,7 @@ export default function MonComptePage() {
               value={form.libelle_recompense}
               onChange={(e) => setForm({ ...form, libelle_recompense: e.target.value })}
               placeholder="Ex: Croissant offert, Café gratuit..."
-              className="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#534AB7]/30 focus:border-[#534AB7] transition-colors"
+              className="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#2D4A8A]/30 focus:border-[#2D4A8A] transition-colors"
             />
           </div>
 
@@ -180,7 +180,7 @@ export default function MonComptePage() {
                 max={100}
                 value={form.points_par_visite}
                 onChange={(e) => setForm({ ...form, points_par_visite: parseInt(e.target.value) || 1 })}
-                className="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#534AB7]/30 focus:border-[#534AB7] transition-colors"
+                className="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#2D4A8A]/30 focus:border-[#2D4A8A] transition-colors"
               />
             </div>
 
@@ -192,12 +192,12 @@ export default function MonComptePage() {
                 max={1000}
                 value={form.points_pour_recompense}
                 onChange={(e) => setForm({ ...form, points_pour_recompense: parseInt(e.target.value) || 10 })}
-                className="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#534AB7]/30 focus:border-[#534AB7] transition-colors"
+                className="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#2D4A8A]/30 focus:border-[#2D4A8A] transition-colors"
               />
             </div>
           </div>
 
-          <div className="bg-[#F9F9FB] rounded-xl p-4 text-sm text-[#6B7280]">
+          <div className="bg-white rounded-xl p-4 text-sm text-[#6B7280]">
             Avec cette configuration, vos clients auront besoin de{' '}
             <strong className="text-[#1A1A23]">
               {Math.ceil(form.points_pour_recompense / form.points_par_visite)} visite{Math.ceil(form.points_pour_recompense / form.points_par_visite) > 1 ? 's' : ''}
@@ -207,7 +207,7 @@ export default function MonComptePage() {
         </div>
 
         {/* Personnalisation */}
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 space-y-4">
+        <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 space-y-4">
           <h2 className="font-semibold">Personnalisation</h2>
 
           <div>
@@ -223,8 +223,8 @@ export default function MonComptePage() {
                 type="text"
                 value={form.couleur_principale}
                 onChange={(e) => setForm({ ...form, couleur_principale: e.target.value })}
-                placeholder="#534AB7"
-                className="flex-1 border border-gray-200 rounded-lg px-4 py-2.5 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-[#534AB7]/30 focus:border-[#534AB7] transition-colors"
+                placeholder="#2D4A8A"
+                className="flex-1 border border-gray-200 rounded-lg px-4 py-2.5 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-[#2D4A8A]/30 focus:border-[#2D4A8A] transition-colors"
               />
             </div>
             <div className="mt-2 rounded-xl p-3 text-white text-sm font-medium" style={{ backgroundColor: form.couleur_principale }}>
@@ -236,7 +236,7 @@ export default function MonComptePage() {
         <button
           type="submit"
           disabled={saving}
-          className="w-full flex items-center justify-center gap-2 bg-[#534AB7] text-white font-semibold py-3.5 rounded-xl hover:bg-[#3C3489] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full flex items-center justify-center gap-2 bg-[#2D4A8A] text-white font-semibold py-3.5 rounded-xl hover:bg-[#1e3a6e] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <Save size={18} />
           {saving ? 'Sauvegarde...' : 'Sauvegarder les modifications'}

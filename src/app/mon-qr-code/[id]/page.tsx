@@ -293,7 +293,7 @@ export default function MonQrCodePage() {
             pointsAjoutes,
             nombrePoints: newPoints,
             nomCommerce: carteExistante.commercants.nom_commerce,
-            couleur: carteExistante.commercants.couleur_principale || '#534AB7',
+            couleur: carteExistante.commercants.couleur_principale || '#2D4A8A',
             paliers,
             recompenseDeclenchee,
             libelleRecompense,
@@ -333,7 +333,7 @@ export default function MonQrCodePage() {
             pointsAjoutes: newData.nombre_points,
             nombrePoints: newData.nombre_points,
             nomCommerce: carte.commercants.nom_commerce,
-            couleur: carte.commercants.couleur_principale || '#534AB7',
+            couleur: carte.commercants.couleur_principale || '#2D4A8A',
             paliers,
             recompenseDeclenchee: false,
             libelleRecompense: '',
@@ -351,17 +351,17 @@ export default function MonQrCodePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#F9F9FB] flex items-center justify-center">
-        <div className="w-8 h-8 border-4 border-[#534AB7] border-t-transparent rounded-full animate-spin" />
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="w-8 h-8 border-4 border-[#2D4A8A] border-t-transparent rounded-full animate-spin" />
       </div>
     )
   }
 
   if (notFound || !client) {
     return (
-      <div className="min-h-screen bg-[#F9F9FB] flex flex-col items-center justify-center gap-4 px-4">
+      <div className="min-h-screen bg-white flex flex-col items-center justify-center gap-4 px-4">
         <p className="text-[#6B7280]">QR code introuvable.</p>
-        <Link href="/register" className="text-[#534AB7] font-medium hover:underline text-sm">
+        <Link href="/register" className="text-[#2D4A8A] font-medium hover:underline text-sm">
           Créer une carte de fidélité →
         </Link>
       </div>
@@ -371,10 +371,10 @@ export default function MonQrCodePage() {
   // ── Rendu principal ─────────────────────────────────────────────────────────
 
   return (
-    <div className="min-h-screen bg-[#F9F9FB] flex flex-col">
+    <div className="min-h-screen bg-white flex flex-col">
       {animation && <AnimationOverlay data={animation} onDismiss={dismissAnimation} />}
 
-      <header className="bg-white border-b border-gray-100 px-4 py-4 flex items-center gap-4 sticky top-0 z-10">
+      <header className="bg-white border-b border-gray-200 px-4 py-4 flex items-center gap-4 sticky top-0 z-10">
         <Link
           href="/register"
           className="w-8 h-8 rounded-full hover:bg-gray-100 flex items-center justify-center transition-colors"
@@ -396,8 +396,8 @@ export default function MonQrCodePage() {
             <h1 className="text-2xl font-bold text-center mb-1">Bonjour {client.nom} 👋</h1>
             <p className="text-[#6B7280] text-sm text-center mb-5">Présentez ce QR code en caisse</p>
 
-            <div className="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden">
-              <div className="bg-gradient-to-br from-[#534AB7] to-[#3C3489] p-6 text-white text-center">
+            <div className="bg-white rounded-3xl border border-gray-200 shadow-sm overflow-hidden">
+              <div className="bg-gradient-to-br from-[#2D4A8A] to-[#1e3a6e] p-6 text-white text-center">
                 <Logo white size="sm" />
                 <p className="text-white/70 text-xs mt-1">Carte de fidélité</p>
                 <p className="font-bold text-lg mt-2">{client.nom}</p>
@@ -423,9 +423,9 @@ export default function MonQrCodePage() {
 
           {/* Points par commerce */}
           {cartes.length === 0 ? (
-            <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 text-center">
-              <div className="w-12 h-12 rounded-2xl bg-[#534AB7]/10 flex items-center justify-center mx-auto mb-3">
-                <Star size={22} className="text-[#534AB7]" />
+            <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 text-center">
+              <div className="w-12 h-12 rounded-2xl bg-[#2D4A8A]/10 flex items-center justify-center mx-auto mb-3">
+                <Star size={22} className="text-[#2D4A8A]" />
               </div>
               <p className="font-medium text-[#1A1A23] text-sm">Pas encore de points</p>
               <p className="text-xs text-[#6B7280] mt-1">
@@ -437,14 +437,14 @@ export default function MonQrCodePage() {
               <h2 className="font-semibold text-[#1A1A23]">Mes points de fidélité</h2>
               {cartes.map((carte) => {
                 const paliers = getPaliers(carte.commercants)
-                const color = carte.commercants.couleur_principale || '#534AB7'
+                const color = carte.commercants.couleur_principale || '#2D4A8A'
                 const programmeNom = carte.commercants.nom_programme || carte.commercants.nom_commerce
                 const maxPalier = paliers[paliers.length - 1]
                 const nextPalier = paliers.find((p) => p.points > carte.nombre_points)
                 const pct = Math.min(100, Math.round((carte.nombre_points / maxPalier.points) * 100))
 
                 return (
-                  <div key={carte.id} className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+                  <div key={carte.id} className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
                     {/* Header commerce */}
                     <div className="px-5 py-4 border-b border-gray-50 flex items-center gap-3">
                       <div

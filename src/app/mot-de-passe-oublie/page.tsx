@@ -31,13 +31,13 @@ export default function MotDePasseOubliePage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#F9F9FB] flex flex-col">
+    <div className="min-h-screen bg-white flex flex-col">
       <div className="flex-1 flex flex-col items-center justify-center px-4 py-12">
         <div className="mb-8">
           <Logo size="lg" />
         </div>
 
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-8 w-full max-w-md">
+        <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-8 w-full max-w-md">
           <Link
             href="/login"
             className="flex items-center gap-2 text-sm text-[#6B7280] hover:text-[#1A1A23] transition-colors mb-6"
@@ -78,13 +78,13 @@ export default function MotDePasseOubliePage() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="vous@exemple.fr"
-                    className="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#534AB7]/30 focus:border-[#534AB7] transition-colors"
+                    className="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#2D4A8A]/30 focus:border-[#2D4A8A] transition-colors"
                   />
                 </div>
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full bg-[#534AB7] text-white font-semibold py-3 rounded-xl hover:bg-[#3C3489] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full bg-[#2D4A8A] text-white font-semibold py-3 rounded-xl hover:bg-[#1e3a6e] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {loading ? 'Envoi…' : 'Envoyer le lien'}
                 </button>

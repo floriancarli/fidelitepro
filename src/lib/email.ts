@@ -1,6 +1,6 @@
 import { Resend } from 'resend'
 
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://fidelitepro.fr'
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://getorlyo.com'
 
 function getResend() {
   return new Resend(process.env.RESEND_API_KEY)

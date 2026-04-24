@@ -5,14 +5,14 @@ import { createClient } from '@/lib/supabase/server'
 const PLANS = {
   mensuel: {
     lookupKey: 'fidelitepro_mensuel',
-    name: 'FidèlePro — Plan Mensuel',
+    name: 'Orlyo — Plan Mensuel',
     description: 'Clients illimités, 1 programme de fidélité, notifications email, support email.',
     amount: 3900,
     interval: 'month' as const,
   },
   annuel: {
     lookupKey: 'fidelitepro_annuel',
-    name: 'FidèlePro — Plan Annuel',
+    name: 'Orlyo — Plan Annuel',
     description: 'Clients illimités, programmes multiples, analytics avancés, export CSV, support prioritaire.',
     amount: 34800,
     interval: 'year' as const,
@@ -72,7 +72,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Impossible de récupérer le prix Stripe' }, { status: 500 })
   }
 
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://fidelitepro.fr'
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://getorlyo.com'
 
   let session: Stripe.Checkout.Session
   try {

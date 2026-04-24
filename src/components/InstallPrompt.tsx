@@ -88,7 +88,7 @@ export default function InstallPrompt() {
     return (
       <button
         onClick={handleAndroidInstall}
-        className="w-full flex items-center gap-3 bg-[#534AB7] text-white rounded-2xl px-5 py-4 hover:bg-[#3C3489] transition-colors shadow-md shadow-[#534AB7]/20"
+        className="w-full flex items-center gap-3 bg-[#2D4A8A] text-white rounded-2xl px-5 py-4 hover:bg-[#1e3a6e] transition-colors shadow-md shadow-[#2D4A8A]/20"
       >
         <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center flex-shrink-0">
           <Smartphone size={20} />
@@ -160,13 +160,13 @@ export default function InstallPrompt() {
         ]
 
     return (
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+      <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
         <button
           onClick={() => setOpen((v) => !v)}
           className="w-full flex items-center gap-3 px-5 py-4 text-left"
         >
-          <div className="w-10 h-10 rounded-xl bg-[#534AB7]/10 flex items-center justify-center flex-shrink-0">
-            <Smartphone size={20} className="text-[#534AB7]" />
+          <div className="w-10 h-10 rounded-xl bg-[#2D4A8A]/10 flex items-center justify-center flex-shrink-0">
+            <Smartphone size={20} className="text-[#2D4A8A]" />
           </div>
           <div className="flex-1 min-w-0">
             <p className="font-semibold text-sm text-[#1A1A23]">Ajouter à l&apos;écran d&apos;accueil</p>
@@ -188,7 +188,7 @@ export default function InstallPrompt() {
             <ol className="space-y-3">
               {steps.map((step, i) => (
                 <li key={i} className="flex items-start gap-3">
-                  <div className="w-7 h-7 rounded-full bg-[#534AB7]/10 flex items-center justify-center flex-shrink-0 text-[#534AB7]">
+                  <div className="w-7 h-7 rounded-full bg-[#2D4A8A]/10 flex items-center justify-center flex-shrink-0 text-[#2D4A8A]">
                     {step.icon}
                   </div>
                   <p className="text-sm text-[#6B7280] leading-snug pt-0.5">{step.text}</p>
@@ -218,7 +218,7 @@ function ShareIcon() {
       strokeWidth="2.5"
       strokeLinecap="round"
       strokeLinejoin="round"
-      className="text-[#534AB7]"
+      className="text-[#2D4A8A]"
     >
       <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" />
       <polyline points="16 6 12 2 8 6" />

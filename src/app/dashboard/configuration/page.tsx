@@ -184,7 +184,7 @@ export default function ConfigurationPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-full min-h-screen">
-        <div className="w-8 h-8 border-4 border-[#534AB7] border-t-transparent rounded-full animate-spin" />
+        <div className="w-8 h-8 border-4 border-[#2D4A8A] border-t-transparent rounded-full animate-spin" />
       </div>
     )
   }
@@ -212,7 +212,7 @@ export default function ConfigurationPage() {
 
       <form onSubmit={handleSave} className="space-y-8">
         {/* Logo */}
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+        <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
           <h2 className="font-semibold text-[#1A1A23] mb-1">Logo</h2>
           <p className="text-xs text-[#6B7280] mb-4">
             Utilisé comme icône de l&apos;application lors de l&apos;installation sur l&apos;écran d&apos;accueil
@@ -245,7 +245,7 @@ export default function ConfigurationPage() {
                 type="button"
                 disabled={logoUploading}
                 onClick={() => fileInputRef.current?.click()}
-                className="flex items-center gap-2 text-sm text-[#534AB7] font-medium border border-[#534AB7]/30 rounded-lg px-4 py-2 hover:bg-[#534AB7]/5 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex items-center gap-2 text-sm text-[#2D4A8A] font-medium border border-[#2D4A8A]/30 rounded-lg px-4 py-2 hover:bg-[#2D4A8A]/5 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <Upload size={15} />
                 {logoUploading ? 'Téléversement…' : logoUrl ? 'Changer le logo' : 'Choisir un logo'}
@@ -265,7 +265,7 @@ export default function ConfigurationPage() {
         </div>
 
         {/* Programme */}
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 space-y-4">
+        <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 space-y-4">
           <h2 className="font-semibold text-[#1A1A23]">Programme</h2>
 
           <div>
@@ -277,7 +277,7 @@ export default function ConfigurationPage() {
               value={form.nom_programme}
               onChange={(e) => setForm({ ...form, nom_programme: e.target.value })}
               placeholder="Ex: Club Fidélité Martin"
-              className="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#534AB7]/30 focus:border-[#534AB7] transition-colors"
+              className="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#2D4A8A]/30 focus:border-[#2D4A8A] transition-colors"
             />
           </div>
 
@@ -290,13 +290,13 @@ export default function ConfigurationPage() {
               onChange={(e) => setForm({ ...form, message_bienvenue: e.target.value })}
               placeholder="Ex: Bienvenue dans notre programme de fidélité !"
               rows={3}
-              className="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#534AB7]/30 focus:border-[#534AB7] transition-colors resize-none"
+              className="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#2D4A8A]/30 focus:border-[#2D4A8A] transition-colors resize-none"
             />
           </div>
         </div>
 
         {/* Points */}
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+        <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
           <h2 className="font-semibold text-[#1A1A23] mb-4">Points</h2>
 
           <div>
@@ -311,7 +311,7 @@ export default function ConfigurationPage() {
                 required
                 value={form.points_par_visite}
                 onChange={(e) => setForm({ ...form, points_par_visite: parseInt(e.target.value) || 1 })}
-                className="w-28 border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#534AB7]/30 focus:border-[#534AB7] transition-colors"
+                className="w-28 border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#2D4A8A]/30 focus:border-[#2D4A8A] transition-colors"
               />
               <span className="text-sm text-[#6B7280]">point{form.points_par_visite > 1 ? 's' : ''} crédité{form.points_par_visite > 1 ? 's' : ''} à chaque scan</span>
             </div>
@@ -319,7 +319,7 @@ export default function ConfigurationPage() {
         </div>
 
         {/* Paliers */}
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+        <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
           <div className="flex items-center justify-between mb-4">
             <div>
               <h2 className="font-semibold text-[#1A1A23]">Paliers de récompense</h2>
@@ -330,7 +330,7 @@ export default function ConfigurationPage() {
             <button
               type="button"
               onClick={addPalier}
-              className="flex items-center gap-1.5 text-sm text-[#534AB7] font-medium hover:bg-[#534AB7]/5 px-3 py-1.5 rounded-lg transition-colors"
+              className="flex items-center gap-1.5 text-sm text-[#2D4A8A] font-medium hover:bg-[#2D4A8A]/5 px-3 py-1.5 rounded-lg transition-colors"
             >
               <Plus size={16} />
               Ajouter
@@ -352,7 +352,7 @@ export default function ConfigurationPage() {
                       required
                       value={palier.points}
                       onChange={(e) => updatePalier(index, 'points', parseInt(e.target.value) || 1)}
-                      className="w-20 border border-gray-200 rounded-lg px-3 py-2 text-sm text-center focus:outline-none focus:ring-2 focus:ring-[#534AB7]/30 focus:border-[#534AB7] transition-colors bg-white"
+                      className="w-20 border border-gray-200 rounded-lg px-3 py-2 text-sm text-center focus:outline-none focus:ring-2 focus:ring-[#2D4A8A]/30 focus:border-[#2D4A8A] transition-colors bg-white"
                     />
                     <span className="text-xs text-[#6B7280] whitespace-nowrap">pts</span>
                   </div>
@@ -363,7 +363,7 @@ export default function ConfigurationPage() {
                     value={palier.libelle}
                     onChange={(e) => updatePalier(index, 'libelle', e.target.value)}
                     placeholder="Ex: Café offert"
-                    className="flex-1 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#534AB7]/30 focus:border-[#534AB7] transition-colors bg-white"
+                    className="flex-1 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#2D4A8A]/30 focus:border-[#2D4A8A] transition-colors bg-white"
                   />
                   <button
                     type="button"
@@ -381,7 +381,7 @@ export default function ConfigurationPage() {
         <button
           type="submit"
           disabled={saving}
-          className="flex items-center gap-2 bg-[#534AB7] text-white font-semibold px-6 py-3 rounded-xl hover:bg-[#3C3489] transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-md shadow-[#534AB7]/20"
+          className="flex items-center gap-2 bg-[#2D4A8A] text-white font-semibold px-6 py-3 rounded-xl hover:bg-[#1e3a6e] transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-md shadow-[#2D4A8A]/20"
         >
           <Save size={18} />
           {saving ? 'Sauvegarde...' : 'Sauvegarder'}

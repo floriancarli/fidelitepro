@@ -127,9 +127,9 @@ export default function JoinPage() {
 
   if (notFound) {
     return (
-      <div className="min-h-screen bg-[#F9F9FB] flex flex-col items-center justify-center gap-4 px-4">
+      <div className="min-h-screen bg-white flex flex-col items-center justify-center gap-4 px-4">
         <p className="text-[#6B7280]">Commerce introuvable.</p>
-        <Link href="/" className="text-[#534AB7] font-medium hover:underline text-sm">
+        <Link href="/" className="text-[#2D4A8A] font-medium hover:underline text-sm">
           Retour à l&apos;accueil →
         </Link>
       </div>
@@ -138,8 +138,8 @@ export default function JoinPage() {
 
   if (needsConfirm) {
     return (
-      <div className="min-h-screen bg-[#F9F9FB] flex items-center justify-center px-4">
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-8 w-full max-w-md text-center">
+      <div className="min-h-screen bg-white flex items-center justify-center px-4">
+        <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-8 w-full max-w-md text-center">
           <div className="text-5xl mb-4">📧</div>
           <h1 className="text-xl font-bold mb-2">Vérifiez vos emails</h1>
           <p className="text-[#6B7280] text-sm leading-relaxed">
@@ -152,11 +152,11 @@ export default function JoinPage() {
     )
   }
 
-  const color = commercant?.couleur_principale || '#534AB7'
+  const color = commercant?.couleur_principale || '#2D4A8A'
 
   return (
-    <div className="min-h-screen bg-[#F9F9FB] flex flex-col">
-      <header className="bg-white border-b border-gray-100 px-4 py-4 flex items-center gap-4">
+    <div className="min-h-screen bg-white flex flex-col">
+      <header className="bg-white border-b border-gray-200 px-4 py-4 flex items-center gap-4">
         <button
           onClick={() => router.back()}
           className="w-8 h-8 rounded-full hover:bg-gray-100 flex items-center justify-center transition-colors"
@@ -167,12 +167,12 @@ export default function JoinPage() {
       </header>
 
       <div className="flex-1 flex flex-col items-center justify-center px-4 py-10">
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-8 w-full max-w-md">
+        <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-8 w-full max-w-md">
 
           {/* Merchant header */}
           <div className="text-center mb-7">
             {!commercant ? (
-              <div className="w-8 h-8 border-4 border-[#534AB7] border-t-transparent rounded-full animate-spin mx-auto" />
+              <div className="w-8 h-8 border-4 border-[#2D4A8A] border-t-transparent rounded-full animate-spin mx-auto" />
             ) : (
               <>
                 {commercant.logo_url ? (
@@ -225,7 +225,7 @@ export default function JoinPage() {
                 value={form.nom}
                 onChange={(e) => setForm({ ...form, nom: e.target.value })}
                 placeholder="Marie"
-                className="w-full border border-gray-200 rounded-xl px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-[#534AB7]/30 focus:border-[#534AB7] transition-colors"
+                className="w-full border border-gray-200 rounded-xl px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-[#2D4A8A]/30 focus:border-[#2D4A8A] transition-colors"
               />
             </div>
 
@@ -237,7 +237,7 @@ export default function JoinPage() {
                 value={form.email}
                 onChange={(e) => setForm({ ...form, email: e.target.value })}
                 placeholder="vous@exemple.fr"
-                className="w-full border border-gray-200 rounded-xl px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-[#534AB7]/30 focus:border-[#534AB7] transition-colors"
+                className="w-full border border-gray-200 rounded-xl px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-[#2D4A8A]/30 focus:border-[#2D4A8A] transition-colors"
               />
             </div>
 
@@ -250,7 +250,7 @@ export default function JoinPage() {
                   value={form.password}
                   onChange={(e) => setForm({ ...form, password: e.target.value })}
                   placeholder="6 caractères minimum"
-                  className="w-full border border-gray-200 rounded-xl px-4 py-3 pr-12 text-base focus:outline-none focus:ring-2 focus:ring-[#534AB7]/30 focus:border-[#534AB7] transition-colors"
+                  className="w-full border border-gray-200 rounded-xl px-4 py-3 pr-12 text-base focus:outline-none focus:ring-2 focus:ring-[#2D4A8A]/30 focus:border-[#2D4A8A] transition-colors"
                 />
                 <button
                   type="button"
@@ -273,7 +273,7 @@ export default function JoinPage() {
                   value={form.confirm}
                   onChange={(e) => setForm({ ...form, confirm: e.target.value })}
                   placeholder="Répétez votre mot de passe"
-                  className="w-full border border-gray-200 rounded-xl px-4 py-3 pr-12 text-base focus:outline-none focus:ring-2 focus:ring-[#534AB7]/30 focus:border-[#534AB7] transition-colors"
+                  className="w-full border border-gray-200 rounded-xl px-4 py-3 pr-12 text-base focus:outline-none focus:ring-2 focus:ring-[#2D4A8A]/30 focus:border-[#2D4A8A] transition-colors"
                 />
                 <button
                   type="button"
@@ -297,7 +297,7 @@ export default function JoinPage() {
 
           <p className="text-center text-xs text-[#6B7280] mt-6">
             Déjà inscrit ?{' '}
-            <Link href="/login" className="text-[#534AB7] font-medium hover:underline">
+            <Link href="/login" className="text-[#2D4A8A] font-medium hover:underline">
               Se connecter
             </Link>
           </p>

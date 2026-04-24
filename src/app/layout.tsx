@@ -5,7 +5,7 @@ import './globals.css'
 const inter = Inter({ subsets: ['latin'] })
 
 export const viewport: Viewport = {
-  themeColor: '#534AB7',
+  themeColor: '#2D4A8A',
   width: 'device-width',
   initialScale: 1,
   maximumScale: 1,
@@ -13,12 +13,12 @@ export const viewport: Viewport = {
 }
 
 export const metadata: Metadata = {
-  title: 'FidèlePro — Cartes de fidélité pour commerçants',
+  title: 'Orlyo — Cartes de fidélité pour commerçants',
   description: 'Fidélisez vos clients simplement avec un QR code unique.',
   manifest: '/manifest.webmanifest',
   appleWebApp: {
     capable: true,
-    title: 'FidèlePro',
+    title: 'Orlyo',
     statusBarStyle: 'default',
   },
   icons: {

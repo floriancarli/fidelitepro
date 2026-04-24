@@ -68,7 +68,7 @@ export async function POST(req: NextRequest) {
     nom_commerce: 'Boulangerie Martin',
     secteur_activite: 'Boulangerie / Pâtisserie',
     qr_code_id: DEMO_QR,
-    couleur_principale: '#534AB7',
+    couleur_principale: '#2D4A8A',
     points_par_visite: 1,
     points_pour_recompense: 5,
     libelle_recompense: 'Café offert',

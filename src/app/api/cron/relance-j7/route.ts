@@ -153,7 +153,7 @@ export async function GET(req: NextRequest) {
         clientNom: cl.nom,
         clientQrCodeId: cl.qr_code_id,
         nomCommerce: c.nom_commerce,
-        couleur: c.couleur_principale || '#534AB7',
+        couleur: c.couleur_principale || '#2D4A8A',
         pointsActuels: carte.nombre_points,
         pointsManquants,
         libelleProchainPalier: nextPalier.libelle,

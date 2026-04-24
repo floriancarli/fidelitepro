@@ -3,7 +3,7 @@ import { ArrowLeft } from 'lucide-react'
 import Footer from '@/components/Footer'
 
 export const metadata = {
-  title: 'Mentions légales — FidèlePro',
+  title: 'Mentions légales — Orlyo',
 }
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
@@ -17,7 +17,7 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 
 function InfoRow({ label, value }: { label: string; value: string }) {
   return (
-    <div className="flex gap-4 py-2 border-b border-gray-100 last:border-0">
+    <div className="flex gap-4 py-2 border-b border-gray-200 last:border-0">
       <span className="text-[#6B7280] text-sm w-40 flex-shrink-0">{label}</span>
       <span className="text-sm font-medium">{value}</span>
     </div>
@@ -27,7 +27,7 @@ function InfoRow({ label, value }: { label: string; value: string }) {
 export default function MentionsLegalesPage() {
   return (
     <div className="min-h-screen bg-white flex flex-col">
-      <header className="border-b border-gray-100 px-6 py-4">
+      <header className="border-b border-gray-200 px-6 py-4">
         <div className="max-w-3xl mx-auto flex items-center gap-4">
           <Link href="/" className="w-8 h-8 rounded-full hover:bg-gray-100 flex items-center justify-center transition-colors">
             <ArrowLeft size={18} />
@@ -41,8 +41,8 @@ export default function MentionsLegalesPage() {
         <p className="text-[#6B7280] text-sm mb-8">Conformément à la loi n° 2004-575 du 21 juin 2004 pour la confiance dans l&apos;économie numérique.</p>
 
         <Section title="1. Éditeur du site">
-          <div className="bg-[#F9F9FB] rounded-xl p-4">
-            <InfoRow label="Raison sociale" value="FidèlePro SAS" />
+          <div className="bg-white rounded-xl p-4">
+            <InfoRow label="Raison sociale" value="Orlyo SAS" />
             <InfoRow label="Forme juridique" value="Société par Actions Simplifiée (SAS)" />
             <InfoRow label="Capital social" value="À compléter" />
             <InfoRow label="Siège social" value="À compléter" />
@@ -53,8 +53,8 @@ export default function MentionsLegalesPage() {
         </Section>
 
         <Section title="2. Hébergement de l'application">
-          <p>L&apos;application FidèlePro est hébergée par :</p>
-          <div className="bg-[#F9F9FB] rounded-xl p-4 mt-2">
+          <p>L&apos;application Orlyo est hébergée par :</p>
+          <div className="bg-white rounded-xl p-4 mt-2">
             <InfoRow label="Société" value="Vercel Inc." />
             <InfoRow label="Adresse" value="440 N Barranca Ave #4133, Covina, CA 91723, États-Unis" />
             <InfoRow label="Site web" value="vercel.com" />
@@ -67,7 +67,7 @@ export default function MentionsLegalesPage() {
 
         <Section title="3. Hébergement de la base de données">
           <p>Les données sont stockées chez :</p>
-          <div className="bg-[#F9F9FB] rounded-xl p-4 mt-2">
+          <div className="bg-white rounded-xl p-4 mt-2">
             <InfoRow label="Société" value="Supabase Inc." />
             <InfoRow label="Adresse" value="970 Toa Payoh North, #07-04, Singapour" />
             <InfoRow label="Région des données" value="Europe (eu-west-1 — Irlande)" />
@@ -79,24 +79,24 @@ export default function MentionsLegalesPage() {
         <Section title="4. Propriété intellectuelle">
           <p>
             L&apos;ensemble du contenu de ce site (textes, images, logotypes, structure) est la propriété exclusive de
-            FidèlePro SAS et est protégé par les lois françaises et internationales relatives à la propriété intellectuelle.
+            Orlyo SAS et est protégé par les lois françaises et internationales relatives à la propriété intellectuelle.
           </p>
           <p>
             Toute reproduction, représentation, modification ou exploitation, totale ou partielle, du contenu de ce site
-            est interdite sans autorisation écrite préalable de FidèlePro SAS.
+            est interdite sans autorisation écrite préalable de Orlyo SAS.
           </p>
         </Section>
 
         <Section title="5. Données personnelles">
           <p>
-            Le traitement des données personnelles collectées via FidèlePro est décrit dans notre{' '}
-            <Link href="/politique-confidentialite" className="text-[#534AB7] hover:underline font-medium">
+            Le traitement des données personnelles collectées via Orlyo est décrit dans notre{' '}
+            <Link href="/politique-confidentialite" className="text-[#2D4A8A] hover:underline font-medium">
               Politique de confidentialité
             </Link>.
           </p>
           <p>
-            Responsable du traitement : FidèlePro SAS —{' '}
-            <a href="mailto:dpo@fidelepro.fr" className="text-[#534AB7] hover:underline">dpo@fidelepro.fr</a>
+            Responsable du traitement : Orlyo SAS —{' '}
+            <a href="mailto:dpo@fidelepro.fr" className="text-[#2D4A8A] hover:underline">dpo@fidelepro.fr</a>
           </p>
         </Section>
 
@@ -109,12 +109,12 @@ export default function MentionsLegalesPage() {
 
         <Section title="7. Limitation de responsabilité">
           <p>
-            FidèlePro SAS s&apos;efforce d&apos;assurer l&apos;exactitude et la mise à jour des informations diffusées sur ce site.
-            Toutefois, FidèlePro SAS ne peut garantir l&apos;exactitude, la précision ou l&apos;exhaustivité des informations
+            Orlyo SAS s&apos;efforce d&apos;assurer l&apos;exactitude et la mise à jour des informations diffusées sur ce site.
+            Toutefois, Orlyo SAS ne peut garantir l&apos;exactitude, la précision ou l&apos;exhaustivité des informations
             mises à disposition sur ce site.
           </p>
           <p>
-            FidèlePro SAS décline toute responsabilité pour toute imprécision, inexactitude ou omission portant sur
+            Orlyo SAS décline toute responsabilité pour toute imprécision, inexactitude ou omission portant sur
             des informations disponibles sur ce site.
           </p>
         </Section>

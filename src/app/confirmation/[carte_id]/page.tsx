@@ -45,7 +45,7 @@ export default function ConfirmationPage() {
 
   if (notFound) {
     return (
-      <div className="min-h-screen bg-[#F9F9FB] flex items-center justify-center px-4">
+      <div className="min-h-screen bg-white flex items-center justify-center px-4">
         <div className="text-center">
           <p className="text-2xl mb-2">Carte introuvable</p>
           <p className="text-[#6B7280]">Cette carte de fidélité n&apos;existe pas.</p>
@@ -56,18 +56,18 @@ export default function ConfirmationPage() {
 
   if (!carte || !commercant) {
     return (
-      <div className="min-h-screen bg-[#F9F9FB] flex items-center justify-center">
-        <div className="w-8 h-8 border-4 border-[#534AB7] border-t-transparent rounded-full animate-spin" />
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="w-8 h-8 border-4 border-[#2D4A8A] border-t-transparent rounded-full animate-spin" />
       </div>
     )
   }
 
-  const couleur = commercant.couleur_principale || '#534AB7'
+  const couleur = commercant.couleur_principale || '#2D4A8A'
   const pointsRestants = commercant.points_pour_recompense - carte.nombre_points
   const progressPct = Math.min(100, Math.round((carte.nombre_points / commercant.points_pour_recompense) * 100))
 
   return (
-    <div className="min-h-screen bg-[#F9F9FB] pb-10">
+    <div className="min-h-screen bg-white pb-10">
       {/* Header */}
       <div className="text-white text-center py-10 px-6" style={{ background: `linear-gradient(135deg, ${couleur} 0%, ${couleur}cc 100%)` }}>
         <CheckCircle size={48} className="mx-auto mb-3 text-white" />
@@ -131,7 +131,7 @@ export default function ConfirmationPage() {
 
         {/* Dernières visites */}
         {scans.length > 0 && (
-          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+          <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-5">
             <h3 className="font-semibold mb-4 flex items-center gap-2">
               <Clock size={16} className="text-[#6B7280]" />
               Dernières visites
@@ -146,7 +146,7 @@ export default function ConfirmationPage() {
                         Récompense !
                       </span>
                     )}
-                    <span className="font-medium text-[#534AB7]">+{scan.points_ajoutes} pt</span>
+                    <span className="font-medium text-[#2D4A8A]">+{scan.points_ajoutes} pt</span>
                   </div>
                 </div>
               ))}
@@ -155,7 +155,7 @@ export default function ConfirmationPage() {
         )}
 
         {/* Message */}
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 text-center">
+        <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-5 text-center">
           <p className="text-sm text-[#6B7280]">
             Présentez cette page lors de votre prochaine visite, ou retrouvez votre carte en rescannant le QR code.
           </p>

@@ -115,9 +115,9 @@ export default function ClientScannerModal({ onClose, demoResult }: Props) {
       <div className="bg-white rounded-3xl w-full max-w-sm shadow-2xl flex flex-col max-h-[90vh]">
 
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 flex-shrink-0">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 flex-shrink-0">
           <div className="flex items-center gap-2">
-            <ScanLine size={20} className="text-[#534AB7]" />
+            <ScanLine size={20} className="text-[#2D4A8A]" />
             <span className="font-semibold">Scanner un client</span>
           </div>
           <button
@@ -148,7 +148,7 @@ export default function ClientScannerModal({ onClose, demoResult }: Props) {
                 </div>
               </div>
               {state === 'processing' && (
-                <div className="mt-4 flex items-center justify-center gap-2 text-[#534AB7]">
+                <div className="mt-4 flex items-center justify-center gap-2 text-[#2D4A8A]">
                   <Loader2 size={18} className="animate-spin" />
                   <span className="text-sm font-medium">Traitement en cours...</span>
                 </div>
@@ -164,8 +164,8 @@ export default function ClientScannerModal({ onClose, demoResult }: Props) {
                   <Gift size={26} className="text-[#0F6E56]" />
                 </div>
               ) : (
-                <div className="w-12 h-12 rounded-full bg-[#534AB7]/10 flex items-center justify-center mx-auto mb-3">
-                  <CheckCircle size={26} className="text-[#534AB7]" />
+                <div className="w-12 h-12 rounded-full bg-[#2D4A8A]/10 flex items-center justify-center mx-auto mb-3">
+                  <CheckCircle size={26} className="text-[#2D4A8A]" />
                 </div>
               )}
 
@@ -183,16 +183,16 @@ export default function ClientScannerModal({ onClose, demoResult }: Props) {
                 </div>
               )}
 
-              <div className="bg-[#F9F9FB] rounded-2xl p-4">
+              <div className="bg-white rounded-2xl p-4">
                 <div className="flex justify-between text-sm mb-2">
                   <span className="text-[#6B7280]">Points</span>
-                  <span className="font-bold text-[#534AB7]">
+                  <span className="font-bold text-[#2D4A8A]">
                     +{result.pointsAjoutes} → {result.carte.nombre_points} / {progressMax}
                   </span>
                 </div>
                 <div className="bg-gray-200 rounded-full h-2">
                   <div
-                    className="h-2 rounded-full bg-[#534AB7] transition-all duration-700"
+                    className="h-2 rounded-full bg-[#2D4A8A] transition-all duration-700"
                     style={{ width: `${progressPct}%` }}
                   />
                 </div>
@@ -238,7 +238,7 @@ export default function ClientScannerModal({ onClose, demoResult }: Props) {
               <p className="text-[#6B7280] text-sm mb-6">{errorMsg}</p>
               <button
                 onClick={handleRetry}
-                className="w-full bg-[#534AB7] text-white font-semibold py-3 rounded-xl hover:bg-[#3C3489] transition-colors"
+                className="w-full bg-[#2D4A8A] text-white font-semibold py-3 rounded-xl hover:bg-[#1e3a6e] transition-colors"
               >
                 Réessayer
               </button>

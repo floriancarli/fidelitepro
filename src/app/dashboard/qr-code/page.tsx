@@ -70,7 +70,7 @@ export default function QrCodePage() {
   if (!commercant) {
     return (
       <div className="flex items-center justify-center h-full min-h-screen">
-        <div className="w-8 h-8 border-4 border-[#534AB7] border-t-transparent rounded-full animate-spin" />
+        <div className="w-8 h-8 border-4 border-[#2D4A8A] border-t-transparent rounded-full animate-spin" />
       </div>
     )
   }
@@ -87,8 +87,8 @@ export default function QrCodePage() {
       <div className="grid lg:grid-cols-2 gap-8 items-start">
 
         {/* QR Code */}
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-8 flex flex-col items-center">
-          <div ref={qrRef} className="p-5 bg-white rounded-2xl shadow-inner border border-gray-100 mb-6">
+        <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-8 flex flex-col items-center">
+          <div ref={qrRef} className="p-5 bg-white rounded-2xl shadow-inner border border-gray-200 mb-6">
             <QRCodeCanvas
               value={joinUrl}
               size={230}
@@ -102,11 +102,11 @@ export default function QrCodePage() {
           <div className="text-center mb-6 w-full">
             <p className="text-sm font-semibold text-[#1A1A23]">{commercant.nom_commerce}</p>
             <p className="text-xs text-[#6B7280] mt-1">Scannez pour créer votre carte de fidélité</p>
-            <div className="mt-3 flex items-center gap-2 bg-[#F9F9FB] border border-gray-200 rounded-xl px-3 py-2">
+            <div className="mt-3 flex items-center gap-2 bg-white border border-gray-200 rounded-xl px-3 py-2">
               <span className="flex-1 text-xs text-[#6B7280] font-mono truncate">{joinUrl}</span>
               <button
                 onClick={handleCopy}
-                className="flex-shrink-0 text-[#534AB7] hover:text-[#3C3489] transition-colors"
+                className="flex-shrink-0 text-[#2D4A8A] hover:text-[#1e3a6e] transition-colors"
                 title="Copier le lien"
               >
                 {copied ? <Check size={14} className="text-[#0F6E56]" /> : <Copy size={14} />}
@@ -124,7 +124,7 @@ export default function QrCodePage() {
             </button>
             <button
               onClick={handleDownload}
-              className="flex-1 flex items-center justify-center gap-2 bg-[#534AB7] text-white rounded-xl py-2.5 text-sm font-medium hover:bg-[#3C3489] transition-colors"
+              className="flex-1 flex items-center justify-center gap-2 bg-[#2D4A8A] text-white rounded-xl py-2.5 text-sm font-medium hover:bg-[#1e3a6e] transition-colors"
             >
               <Download size={16} />
               Télécharger
@@ -134,7 +134,7 @@ export default function QrCodePage() {
 
         {/* Instructions */}
         <div className="space-y-5">
-          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+          <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
             <h2 className="font-semibold mb-4">Comment ça marche ?</h2>
             <ol className="space-y-3">
               {[
@@ -144,7 +144,7 @@ export default function QrCodePage() {
                 { n: '4', t: 'Il reçoit son QR code personnel', d: 'Il vous le présente à chaque visite pour gagner des points.' },
               ].map(({ n, t, d }) => (
                 <li key={n} className="flex items-start gap-3">
-                  <div className="w-6 h-6 rounded-full bg-[#534AB7] text-white text-xs font-bold flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <div className="w-6 h-6 rounded-full bg-[#2D4A8A] text-white text-xs font-bold flex items-center justify-center flex-shrink-0 mt-0.5">
                     {n}
                   </div>
                   <div>
@@ -156,7 +156,7 @@ export default function QrCodePage() {
             </ol>
           </div>
 
-          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+          <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
             <h2 className="font-semibold mb-3">Votre programme</h2>
             <div className="space-y-2.5">
               <div className="flex justify-between text-sm">

@@ -43,9 +43,9 @@ function getPaliers(c: CarteAvecCommercant['commercants']): Palier[] {
 function RecompensesSection({ cartes }: { cartes: CarteAvecCommercant[] }) {
   if (cartes.length === 0) {
     return (
-      <div className="mt-6 bg-white rounded-2xl border border-gray-100 shadow-sm p-6 text-center">
-        <div className="w-12 h-12 rounded-2xl bg-[#534AB7]/10 flex items-center justify-center mx-auto mb-3">
-          <Gift size={22} className="text-[#534AB7]" />
+      <div className="mt-6 bg-white rounded-2xl border border-gray-200 shadow-sm p-6 text-center">
+        <div className="w-12 h-12 rounded-2xl bg-[#2D4A8A]/10 flex items-center justify-center mx-auto mb-3">
+          <Gift size={22} className="text-[#2D4A8A]" />
         </div>
         <p className="font-medium text-[#1A1A23] text-sm">Pas encore de points</p>
         <p className="text-xs text-[#6B7280] mt-1">
@@ -60,7 +60,7 @@ function RecompensesSection({ cartes }: { cartes: CarteAvecCommercant[] }) {
       <h2 className="font-semibold text-[#1A1A23]">Mes récompenses</h2>
       {cartes.map((carte) => {
         const paliers = getPaliers(carte.commercants)
-        const color = carte.commercants.couleur_principale || '#534AB7'
+        const color = carte.commercants.couleur_principale || '#2D4A8A'
         const nom = carte.commercants.nom_programme || carte.commercants.nom_commerce
         const maxPalier = paliers[paliers.length - 1]
         const points = carte.nombre_points
@@ -68,7 +68,7 @@ function RecompensesSection({ cartes }: { cartes: CarteAvecCommercant[] }) {
         const pctProgress = Math.min(100, Math.round((points / maxPalier.points) * 100))
 
         return (
-          <div key={carte.id} className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+          <div key={carte.id} className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
             {/* Header commerce */}
             <div className="px-5 py-4 border-b border-gray-50 flex items-center gap-3">
               <div
@@ -283,7 +283,7 @@ export default function RegisterPage() {
         const file = new File([blob], 'ma-carte-fidelite.png', { type: 'image/png' })
         if (navigator.share && navigator.canShare({ files: [file] })) {
           await navigator.share({
-            title: 'Ma carte de fidélité FidèlePro',
+            title: 'Ma carte de fidélité Orlyo',
             text: 'Voici mon QR code de fidélité',
             files: [file],
           })
@@ -298,15 +298,15 @@ export default function RegisterPage() {
 
   if (checking) {
     return (
-      <div className="min-h-screen bg-[#F9F9FB] flex items-center justify-center">
-        <div className="w-8 h-8 rounded-full border-2 border-[#534AB7] border-t-transparent animate-spin" />
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="w-8 h-8 rounded-full border-2 border-[#2D4A8A] border-t-transparent animate-spin" />
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-[#F9F9FB] flex flex-col">
-      <header className="bg-white border-b border-gray-100 px-4 py-4 flex items-center gap-4">
+    <div className="min-h-screen bg-white flex flex-col">
+      <header className="bg-white border-b border-gray-200 px-4 py-4 flex items-center gap-4">
         <Link href="/" className="w-8 h-8 rounded-full hover:bg-gray-100 flex items-center justify-center transition-colors">
           <ArrowLeft size={18} />
         </Link>
@@ -316,9 +316,9 @@ export default function RegisterPage() {
       <div className="flex-1 flex flex-col items-center justify-center px-4 py-10">
 
         {step === 'form' && (
-          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-8 w-full max-w-md">
+          <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-8 w-full max-w-md">
             <div className="text-center mb-6">
-              <div className="w-14 h-14 rounded-2xl bg-[#534AB7]/10 flex items-center justify-center mx-auto mb-4">
+              <div className="w-14 h-14 rounded-2xl bg-[#2D4A8A]/10 flex items-center justify-center mx-auto mb-4">
                 <Logo size="sm" />
               </div>
               <h1 className="text-2xl font-bold">Créer ma carte de fidélité</h1>
@@ -342,7 +342,7 @@ export default function RegisterPage() {
                   value={form.nom}
                   onChange={(e) => setForm({ ...form, nom: e.target.value })}
                   placeholder="Ex: Marie Dupont"
-                  className="w-full border border-gray-200 rounded-xl px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-[#534AB7]/30 focus:border-[#534AB7] transition-colors"
+                  className="w-full border border-gray-200 rounded-xl px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-[#2D4A8A]/30 focus:border-[#2D4A8A] transition-colors"
                 />
               </div>
               <div>
@@ -353,7 +353,7 @@ export default function RegisterPage() {
                   value={form.email}
                   onChange={(e) => setForm({ ...form, email: e.target.value })}
                   placeholder="vous@exemple.fr"
-                  className="w-full border border-gray-200 rounded-xl px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-[#534AB7]/30 focus:border-[#534AB7] transition-colors"
+                  className="w-full border border-gray-200 rounded-xl px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-[#2D4A8A]/30 focus:border-[#2D4A8A] transition-colors"
                 />
               </div>
               <label className="flex items-start gap-3 cursor-pointer">
@@ -362,11 +362,11 @@ export default function RegisterPage() {
                   required
                   checked={form.rgpd}
                   onChange={(e) => setForm({ ...form, rgpd: e.target.checked })}
-                  className="mt-0.5 w-4 h-4 rounded border-gray-300 text-[#534AB7] focus:ring-[#534AB7]/30 flex-shrink-0"
+                  className="mt-0.5 w-4 h-4 rounded border-gray-300 text-[#2D4A8A] focus:ring-[#2D4A8A]/30 flex-shrink-0"
                 />
                 <span className="text-sm text-[#6B7280] leading-snug">
                   J&apos;accepte la{' '}
-                  <Link href="/politique-confidentialite" target="_blank" className="text-[#534AB7] hover:underline font-medium">
+                  <Link href="/politique-confidentialite" target="_blank" className="text-[#2D4A8A] hover:underline font-medium">
                     politique de confidentialité
                   </Link>{' '}
                   et le traitement de mes données personnelles dans le cadre du programme de fidélité.
@@ -376,7 +376,7 @@ export default function RegisterPage() {
               <button
                 type="submit"
                 disabled={loading || !form.rgpd}
-                className="w-full bg-[#534AB7] text-white font-bold py-3.5 rounded-xl hover:bg-[#3C3489] transition-colors disabled:opacity-50 disabled:cursor-not-allowed mt-2"
+                className="w-full bg-[#2D4A8A] text-white font-bold py-3.5 rounded-xl hover:bg-[#1e3a6e] transition-colors disabled:opacity-50 disabled:cursor-not-allowed mt-2"
               >
                 {loading ? 'Création...' : 'Obtenir mon QR code'}
               </button>
@@ -402,8 +402,8 @@ export default function RegisterPage() {
             </div>
 
             {/* Carte QR */}
-            <div className="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden">
-              <div className="bg-gradient-to-br from-[#534AB7] to-[#3C3489] p-6 text-white text-center">
+            <div className="bg-white rounded-3xl border border-gray-200 shadow-sm overflow-hidden">
+              <div className="bg-gradient-to-br from-[#2D4A8A] to-[#1e3a6e] p-6 text-white text-center">
                 <Logo white size="sm" />
                 <p className="text-white/70 text-xs mt-1">Carte de fidélité</p>
                 <p className="font-bold text-lg mt-2">{client.nom}</p>
@@ -433,7 +433,7 @@ export default function RegisterPage() {
                 </button>
                 <button
                   onClick={handleDownload}
-                  className="flex-1 flex items-center justify-center gap-2 bg-[#534AB7] text-white rounded-xl py-3 text-sm font-medium hover:bg-[#3C3489] transition-colors"
+                  className="flex-1 flex items-center justify-center gap-2 bg-[#2D4A8A] text-white rounded-xl py-3 text-sm font-medium hover:bg-[#1e3a6e] transition-colors"
                 >
                   <Download size={16} />
                   Sauvegarder
@@ -444,7 +444,7 @@ export default function RegisterPage() {
             {/* Lien page en temps réel */}
             <Link
               href={`/mon-qr-code/${client.qr_code_id}`}
-              className="mt-4 flex items-center justify-center gap-2 w-full bg-[#534AB7]/5 border border-[#534AB7]/20 text-[#534AB7] font-semibold rounded-xl py-3 text-sm hover:bg-[#534AB7]/10 transition-colors"
+              className="mt-4 flex items-center justify-center gap-2 w-full bg-[#2D4A8A]/5 border border-[#2D4A8A]/20 text-[#2D4A8A] font-semibold rounded-xl py-3 text-sm hover:bg-[#2D4A8A]/10 transition-colors"
             >
               <span className="w-2 h-2 rounded-full bg-[#0F6E56] animate-pulse" />
               Voir mes points en temps réel
@@ -454,8 +454,8 @@ export default function RegisterPage() {
             <RecompensesSection cartes={cartes} />
 
             {/* Instructions */}
-            <div className="mt-6 bg-[#534AB7]/5 border border-[#534AB7]/20 rounded-2xl p-5 text-sm text-[#6B7280]">
-              <p className="font-semibold text-[#534AB7] mb-2">Comment ça marche ?</p>
+            <div className="mt-6 bg-[#2D4A8A]/5 border border-[#2D4A8A]/20 rounded-2xl p-5 text-sm text-[#6B7280]">
+              <p className="font-semibold text-[#2D4A8A] mb-2">Comment ça marche ?</p>
               <ol className="space-y-1.5 list-decimal list-inside">
                 <li>Sauvegardez ce QR code dans vos photos</li>
                 <li>Présentez-le en caisse chez nos commerçants partenaires</li>

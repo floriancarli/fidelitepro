@@ -90,8 +90,8 @@ export default function PricingPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#F9F9FB] flex flex-col">
-      <header className="bg-white border-b border-gray-100 px-6 py-4 flex items-center gap-4">
+    <div className="min-h-screen bg-white flex flex-col">
+      <header className="bg-white border-b border-gray-200 px-6 py-4 flex items-center gap-4">
         <Link href="/" className="w-8 h-8 rounded-full hover:bg-gray-100 flex items-center justify-center transition-colors">
           <ArrowLeft size={18} />
         </Link>
@@ -118,7 +118,7 @@ export default function PricingPage() {
               key={plan.id}
               className={`rounded-2xl p-8 relative flex flex-col ${
                 plan.highlight
-                  ? 'bg-[#534AB7] text-white shadow-2xl shadow-[#534AB7]/25 ring-2 ring-[#534AB7]'
+                  ? 'bg-[#2D4A8A] text-white shadow-2xl shadow-[#2D4A8A]/25 ring-2 ring-[#2D4A8A]'
                   : 'bg-white border border-gray-200 shadow-sm'
               }`}
             >
@@ -186,8 +186,8 @@ export default function PricingPage() {
                 disabled={loading === plan.id || checkingAuth}
                 className={`w-full py-3.5 rounded-xl font-semibold text-sm transition-colors disabled:opacity-60 disabled:cursor-not-allowed ${
                   plan.highlight
-                    ? 'bg-white text-[#534AB7] hover:bg-gray-50'
-                    : 'bg-[#534AB7] text-white hover:bg-[#3C3489]'
+                    ? 'bg-white text-[#2D4A8A] hover:bg-gray-50'
+                    : 'bg-[#2D4A8A] text-white hover:bg-[#1e3a6e]'
                 }`}
               >
                 {loading === plan.id ? 'Redirection...' : plan.cta}

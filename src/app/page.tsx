@@ -49,19 +49,19 @@ export default function LandingPage() {
   return (
     <div className="min-h-screen">
       {/* Header */}
-      <header className="border-b border-gray-100 bg-white/80 backdrop-blur-sm sticky top-0 z-50">
+      <header className="border-b border-gray-200 bg-white/80 backdrop-blur-sm sticky top-0 z-50">
         <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
           <Logo size="md" />
           <div className="flex items-center gap-4">
-            <Link href="/demo" className="text-sm font-medium text-gray-600 hover:text-[#534AB7] transition-colors">
+            <Link href="/demo" className="text-sm font-medium text-gray-600 hover:text-[#2D4A8A] transition-colors">
               Voir la démo
             </Link>
-            <Link href="/login" className="text-sm font-medium text-gray-600 hover:text-[#534AB7] transition-colors">
+            <Link href="/login" className="text-sm font-medium text-gray-600 hover:text-[#2D4A8A] transition-colors">
               Connexion
             </Link>
             <Link
               href="/pricing"
-              className="bg-[#534AB7] text-white text-sm font-semibold px-4 py-2 rounded-lg hover:bg-[#3C3489] transition-colors"
+              className="bg-[#2D4A8A] text-white text-sm font-semibold px-4 py-2 rounded-lg hover:bg-[#1e3a6e] transition-colors"
             >
               Commencer
             </Link>
@@ -70,7 +70,7 @@ export default function LandingPage() {
       </header>
 
       {/* Hero */}
-      <section className="bg-gradient-to-br from-[#534AB7] to-[#3C3489] text-white py-24 px-6">
+      <section className="bg-gradient-to-br from-[#2D4A8A] to-[#1e3a6e] text-white py-24 px-6">
         <div className="max-w-4xl mx-auto text-center">
           <div className="inline-flex items-center gap-2 bg-white/10 border border-white/20 rounded-full px-4 py-1.5 text-sm font-medium mb-8">
             <Star size={14} className="text-yellow-300" fill="currentColor" />
@@ -85,7 +85,7 @@ export default function LandingPage() {
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
               href="/pricing"
-              className="bg-white text-[#534AB7] font-semibold px-8 py-3.5 rounded-xl hover:bg-gray-50 transition-colors flex items-center justify-center gap-2"
+              className="bg-white text-[#2D4A8A] font-semibold px-8 py-3.5 rounded-xl hover:bg-gray-50 transition-colors flex items-center justify-center gap-2"
             >
               Voir les tarifs
               <ArrowRight size={18} />
@@ -101,7 +101,7 @@ export default function LandingPage() {
       </section>
 
       {/* Comment ça marche */}
-      <section id="comment" className="py-20 px-6 bg-[#F9F9FB]">
+      <section id="comment" className="py-20 px-6 bg-white">
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-3xl font-bold mb-4">Comment ça marche ?</h2>
           <p className="text-[#6B7280] mb-12">En 3 étapes simples</p>
@@ -111,8 +111,8 @@ export default function LandingPage() {
               { num: '2', titre: 'Affichez votre QR code', desc: 'Imprimez ou affichez votre QR code en caisse. Vos clients le scannent avec leur téléphone.' },
               { num: '3', titre: 'Fidélisez vos clients', desc: 'Vos clients accumulent des points et reviennent pour débloquer leurs récompenses.' },
             ].map(({ num, titre, desc }) => (
-              <div key={num} className="bg-white rounded-2xl p-8 border border-gray-100 shadow-sm">
-                <div className="w-12 h-12 rounded-full bg-[#534AB7] text-white font-bold text-xl flex items-center justify-center mx-auto mb-4">
+              <div key={num} className="bg-white rounded-2xl p-8 border border-gray-200 shadow-sm">
+                <div className="w-12 h-12 rounded-full bg-[#2D4A8A] text-white font-bold text-xl flex items-center justify-center mx-auto mb-4">
                   {num}
                 </div>
                 <h3 className="font-semibold text-lg mb-2">{titre}</h3>
@@ -132,9 +132,9 @@ export default function LandingPage() {
           </div>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {avantages.map(({ icon: Icon, titre, desc }) => (
-              <div key={titre} className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
-                <div className="w-12 h-12 rounded-xl bg-[#534AB7]/10 flex items-center justify-center mb-4">
-                  <Icon size={22} className="text-[#534AB7]" />
+              <div key={titre} className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+                <div className="w-12 h-12 rounded-xl bg-[#2D4A8A]/10 flex items-center justify-center mb-4">
+                  <Icon size={22} className="text-[#2D4A8A]" />
                 </div>
                 <h3 className="font-semibold mb-2">{titre}</h3>
                 <p className="text-[#6B7280] text-sm leading-relaxed">{desc}</p>
@@ -145,7 +145,7 @@ export default function LandingPage() {
       </section>
 
       {/* Pricing */}
-      <section className="py-20 px-6 bg-[#F9F9FB]">
+      <section className="py-20 px-6 bg-white">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold mb-4">Tarifs simples et transparents</h2>
@@ -157,8 +157,8 @@ export default function LandingPage() {
                 key={p.nom}
                 className={`rounded-2xl p-8 relative ${
                   p.highlight
-                    ? 'bg-[#534AB7] text-white shadow-xl ring-2 ring-[#534AB7]'
-                    : 'bg-white border border-gray-100 shadow-sm'
+                    ? 'bg-[#2D4A8A] text-white shadow-xl ring-2 ring-[#2D4A8A]'
+                    : 'bg-white border border-gray-200 shadow-sm'
                 }`}
               >
                 {p.highlight && (
@@ -189,8 +189,8 @@ export default function LandingPage() {
                   href="/pricing"
                   className={`block text-center font-semibold py-3 rounded-xl transition-colors ${
                     p.highlight
-                      ? 'bg-white text-[#534AB7] hover:bg-gray-50'
-                      : 'bg-[#534AB7] text-white hover:bg-[#3C3489]'
+                      ? 'bg-white text-[#2D4A8A] hover:bg-gray-50'
+                      : 'bg-[#2D4A8A] text-white hover:bg-[#1e3a6e]'
                   }`}
                 >
                   {p.cta}
@@ -205,13 +205,13 @@ export default function LandingPage() {
       </section>
 
       {/* CTA final */}
-      <section className="py-20 px-6 bg-[#534AB7] text-white text-center">
+      <section className="py-20 px-6 bg-[#2D4A8A] text-white text-center">
         <div className="max-w-2xl mx-auto">
           <h2 className="text-3xl font-bold mb-4">Prêt à fidéliser vos clients ?</h2>
-          <p className="text-white/80 mb-8">Rejoignez des centaines de commerçants qui font confiance à FidèlePro.</p>
+          <p className="text-white/80 mb-8">Rejoignez des centaines de commerçants qui font confiance à Orlyo.</p>
           <Link
             href="/pricing"
-            className="inline-flex items-center gap-2 bg-white text-[#534AB7] font-semibold px-8 py-3.5 rounded-xl hover:bg-gray-50 transition-colors"
+            className="inline-flex items-center gap-2 bg-white text-[#2D4A8A] font-semibold px-8 py-3.5 rounded-xl hover:bg-gray-50 transition-colors"
           >
             Voir les tarifs
             <ArrowRight size={18} />
@@ -220,14 +220,14 @@ export default function LandingPage() {
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-gray-100 py-8 px-6">
+      <footer className="border-t border-gray-200 py-8 px-6">
         <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
           <Logo size="sm" />
-          <p className="text-[#6B7280] text-sm">© 2025 FidèlePro SAS. Tous droits réservés.</p>
+          <p className="text-[#6B7280] text-sm">© 2025 Orlyo SAS. Tous droits réservés.</p>
           <div className="flex gap-6 text-sm text-[#6B7280]">
-            <Link href="/mentions-legales" className="hover:text-[#534AB7]">Mentions légales</Link>
-            <Link href="/politique-confidentialite" className="hover:text-[#534AB7]">Confidentialité</Link>
-            <a href="mailto:contact@fidelepro.fr" className="hover:text-[#534AB7]">Contact</a>
+            <Link href="/mentions-legales" className="hover:text-[#2D4A8A]">Mentions légales</Link>
+            <Link href="/politique-confidentialite" className="hover:text-[#2D4A8A]">Confidentialité</Link>
+            <a href="mailto:contact@fidelepro.fr" className="hover:text-[#2D4A8A]">Contact</a>
           </div>
         </div>
       </footer>
