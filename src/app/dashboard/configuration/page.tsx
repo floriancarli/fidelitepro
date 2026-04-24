@@ -3,6 +3,8 @@
 import { useEffect, useState, useCallback, useRef } from 'react'
 import { Plus, Trash2, Save, CheckCircle, Upload, ImageIcon } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
+import { isDemoEmail } from '@/lib/useDemo'
+import DemoToast from '@/components/DemoToast'
 import type { Commercant, Palier } from '@/lib/types'
 
 type FormState = {
@@ -27,12 +29,15 @@ export default function ConfigurationPage() {
   const [logoUrl, setLogoUrl] = useState<string | null>(null)
   const [logoUploading, setLogoUploading] = useState(false)
   const [logoError, setLogoError] = useState('')
+  const [isDemo, setIsDemo] = useState(false)
+  const [demoToast, setDemoToast] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const load = useCallback(async () => {
     const supabase = createClient()
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return
+    setIsDemo(isDemoEmail(user.email))
     const { data } = await supabase.from('commercants').select('*').eq('id', user.id).single()
     if (data) {
       setCommercant(data)
@@ -53,6 +58,10 @@ export default function ConfigurationPage() {
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault()
+    if (isDemo) {
+      setDemoToast(true)
+      return
+    }
     setError('')
     setSaving(true)
     setSaved(false)
@@ -182,6 +191,7 @@ export default function ConfigurationPage() {
 
   return (
     <div className="p-8 max-w-2xl">
+      {demoToast && <DemoToast onClose={() => setDemoToast(false)} />}
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-[#1A1A23]">Configuration</h1>
         <p className="text-[#6B7280] text-sm mt-1">Personnalisez votre programme de fidélité</p>

@@ -5,6 +5,7 @@ import { useRouter, usePathname } from 'next/navigation'
 import Link from 'next/link'
 import { LayoutDashboard, QrCode, Gift, UserCircle, LogOut, BadgeCheck, Settings } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
+import { isDemoEmail } from '@/lib/useDemo'
 import Logo from './Logo'
 import type { Commercant } from '@/lib/types'
 
@@ -20,11 +21,13 @@ export default function DashboardSidebar() {
   const router = useRouter()
   const pathname = usePathname()
   const [commercant, setCommercant] = useState<Commercant | null>(null)
+  const [isDemo, setIsDemo] = useState(false)
 
   useEffect(() => {
     const supabase = createClient()
     supabase.auth.getUser().then(async ({ data: { user } }) => {
       if (!user) return
+      setIsDemo(isDemoEmail(user.email))
       const { data } = await supabase
         .from('commercants')
         .select('*')
@@ -58,7 +61,14 @@ export default function DashboardSidebar() {
             <p className="text-white/60 text-xs truncate">{commercant?.secteur_activite || ''}</p>
           </div>
         </div>
-        {commercant?.abonnement_actif ? (
+        {isDemo ? (
+          <Link
+            href="/pricing"
+            className="mt-3 flex items-center gap-1.5 bg-amber-400/20 border border-amber-400/30 rounded-lg px-3 py-1.5 text-xs hover:bg-amber-400/30 transition-colors"
+          >
+            <span className="text-amber-300 font-medium">🎭 Mode démo — Créer un compte</span>
+          </Link>
+        ) : commercant?.abonnement_actif ? (
           <div className="mt-3 flex items-center gap-1.5 bg-white/10 rounded-lg px-3 py-1.5 text-xs">
             <BadgeCheck size={14} className="text-green-300" />
             <span className="text-green-300 font-medium">Abonnement actif</span>

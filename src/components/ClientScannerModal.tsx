@@ -6,16 +6,17 @@ import type { ScanResult } from '@/lib/types'
 
 interface Props {
   onClose: (result?: ScanResult) => void
+  demoResult?: ScanResult
 }
 
 type State = 'scanning' | 'processing' | 'success' | 'error'
 
-export default function ClientScannerModal({ onClose }: Props) {
+export default function ClientScannerModal({ onClose, demoResult }: Props) {
   const scannerRef = useRef<{ stop: () => Promise<void> } | null>(null)
   const isScannerRunning = useRef(false)
   const hasDecoded = useRef(false)
-  const [state, setState] = useState<State>('scanning')
-  const [result, setResult] = useState<ScanResult | null>(null)
+  const [state, setState] = useState<State>(demoResult ? 'success' : 'scanning')
+  const [result, setResult] = useState<ScanResult | null>(demoResult ?? null)
   const [errorMsg, setErrorMsg] = useState('')
   const [countdown, setCountdown] = useState(5)
 
@@ -75,8 +76,9 @@ export default function ClientScannerModal({ onClose }: Props) {
     }
   }
 
-  // Lancer le scanner au montage
+  // Lancer le scanner au montage — ignoré en mode démo
   useEffect(() => {
+    if (demoResult) return
     startScanner(handleDecode)
     return () => { stopScanner() }
     // eslint-disable-next-line react-hooks/exhaustive-deps

@@ -4,6 +4,8 @@ import { useEffect, useState, useCallback, useRef } from 'react'
 import dynamic from 'next/dynamic'
 import { Users, QrCode, TrendingUp, Search, Star, ScanLine, CheckCircle, Gift, Trash2 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
+import { isDemoEmail } from '@/lib/useDemo'
+import DemoToast from '@/components/DemoToast'
 import type { Commercant, CarteFidelite, ScanResult } from '@/lib/types'
 
 const ClientScannerModal = dynamic(() => import('@/components/ClientScannerModal'), { ssr: false })
@@ -55,6 +57,37 @@ function ScanSuccessBanner({ result, onDismiss }: { result: ScanResult; onDismis
   )
 }
 
+const DEMO_SCAN_RESULT: ScanResult = {
+  client: {
+    id: 'demo-client-01',
+    email: 'marie.dupont.demo@fidelitepro.fr',
+    nom: 'Marie Dupont',
+    qr_code_id: 'QR-DEMO-CLI-01',
+    created_at: new Date().toISOString(),
+  },
+  carte: {
+    id: 'demo-carte-01',
+    commercant_id: 'demo',
+    client_id: 'demo-client-01',
+    client_email: 'marie.dupont.demo@fidelitepro.fr',
+    client_nom: 'Marie Dupont',
+    nombre_points: 9,
+    points_cumules_total: 24,
+    derniere_visite: new Date().toISOString(),
+    recompenses_obtenues: 1,
+    created_at: new Date().toISOString(),
+  },
+  pointsAjoutes: 1,
+  recompenseDeclenchee: false,
+  libelleRecompense: '',
+  pointsPourRecompense: 10,
+  paliers: [
+    { points: 5, libelle: 'Café offert' },
+    { points: 10, libelle: 'Croissant offert' },
+    { points: 20, libelle: 'Baguette offerte' },
+  ],
+}
+
 export default function DashboardPage() {
   const [commercant, setCommercant] = useState<Commercant | null>(null)
   const [cartes, setCartes] = useState<CarteFidelite[]>([])
@@ -64,7 +97,9 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true)
   const [scannerOpen, setScannerOpen] = useState(false)
   const [lastScanResult, setLastScanResult] = useState<ScanResult | null>(null)
-  const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null) // carte id à confirmer
+  const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null)
+  const [isDemo, setIsDemo] = useState(false)
+  const [demoToast, setDemoToast] = useState(false)
   const bannerDismissRef = useRef<(() => void) | null>(null)
 
   const load = useCallback(async () => {
@@ -80,6 +115,7 @@ export default function DashboardPage() {
         .gte('created_at', new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString()),
     ])
 
+    setIsDemo(isDemoEmail(user.email))
     setCommercant(comm)
     setCartes(cartesData || [])
     setScansCount(scans || 0)
@@ -121,7 +157,6 @@ export default function DashboardPage() {
 
   const handleDeleteClient = async (carteId: string) => {
     const supabase = createClient()
-    // Supprime la carte + cascade sur scans et recompenses (FK ON DELETE CASCADE)
     await supabase.from('cartes_fidelite').delete().eq('id', carteId)
     setDeleteConfirm(null)
     load()
@@ -145,7 +180,13 @@ export default function DashboardPage() {
 
   return (
     <>
-      {scannerOpen && <ClientScannerModal onClose={handleScannerClose} />}
+      {demoToast && <DemoToast onClose={() => setDemoToast(false)} />}
+      {scannerOpen && (
+        <ClientScannerModal
+          onClose={handleScannerClose}
+          demoResult={isDemo ? DEMO_SCAN_RESULT : undefined}
+        />
+      )}
 
       {deleteConfirm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
@@ -307,7 +348,7 @@ export default function DashboardPage() {
                         </td>
                         <td className="px-4 py-4">
                           <button
-                            onClick={() => setDeleteConfirm(carte.id)}
+                            onClick={() => isDemo ? setDemoToast(true) : setDeleteConfirm(carte.id)}
                             title="Supprimer les données de ce client (RGPD)"
                             className="w-8 h-8 rounded-lg hover:bg-red-50 flex items-center justify-center text-gray-300 hover:text-red-500 transition-colors"
                           >

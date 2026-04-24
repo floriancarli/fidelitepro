@@ -3,6 +3,8 @@
 import { useEffect, useState, useCallback } from 'react'
 import { Gift, Check, Clock } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
+import { isDemoEmail } from '@/lib/useDemo'
+import DemoToast from '@/components/DemoToast'
 
 interface RecompenseWithClient {
   id: string
@@ -24,11 +26,14 @@ export default function RecompensesPage() {
   const [recompenses, setRecompenses] = useState<RecompenseWithClient[]>([])
   const [loading, setLoading] = useState(true)
   const [filter, setFilter] = useState<'all' | 'pending' | 'used'>('all')
+  const [isDemo, setIsDemo] = useState(false)
+  const [demoToast, setDemoToast] = useState(false)
 
   const load = useCallback(async () => {
     const supabase = createClient()
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return
+    setIsDemo(isDemoEmail(user.email))
 
     const { data } = await supabase
       .from('recompenses')
@@ -43,6 +48,10 @@ export default function RecompensesPage() {
   useEffect(() => { load() }, [load])
 
   const handleToggle = async (id: string, utilisee: boolean) => {
+    if (isDemo) {
+      setDemoToast(true)
+      return
+    }
     const supabase = createClient()
     await supabase
       .from('recompenses')
@@ -69,6 +78,7 @@ export default function RecompensesPage() {
 
   return (
     <div className="p-8">
+      {demoToast && <DemoToast onClose={() => setDemoToast(false)} />}
       <div className="mb-8">
         <h1 className="text-2xl font-bold">Récompenses</h1>
         <p className="text-[#6B7280] text-sm mt-1">

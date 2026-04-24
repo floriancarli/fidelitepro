@@ -60,12 +60,6 @@ export default function LandingPage() {
               Connexion
             </Link>
             <Link
-              href="/demo"
-              className="text-sm font-medium text-gray-600 hover:text-[#534AB7] transition-colors"
-            >
-              Voir la démo
-            </Link>
-            <Link
               href="/pricing"
               className="bg-[#534AB7] text-white text-sm font-semibold px-4 py-2 rounded-lg hover:bg-[#3C3489] transition-colors"
             >
