@@ -2,15 +2,13 @@
 
 import { useEffect, useState, useRef, useCallback } from 'react'
 import { QRCodeCanvas } from 'qrcode.react'
-import { Download, Printer, Copy, Check, UserPlus } from 'lucide-react'
+import { Download, Printer, Copy, Check } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import type { Commercant } from '@/lib/types'
 
 export default function QrCodePage() {
   const [commercant, setCommercant] = useState<Commercant | null>(null)
   const [copied, setCopied] = useState(false)
-  const [copiedJoin, setCopiedJoin] = useState(false)
-  const joinQrRef = useRef<HTMLDivElement>(null)
   const qrRef = useRef<HTMLDivElement>(null)
 
   const load = useCallback(async () => {
@@ -24,14 +22,13 @@ export default function QrCodePage() {
   useEffect(() => { load() }, [load])
 
   const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
-  const scanUrl = commercant ? `${appUrl}/scan/${commercant.qr_code_id}` : ''
   const joinUrl = commercant ? `${appUrl}/join/${commercant.id}` : ''
 
   const handleDownload = () => {
     const canvas = qrRef.current?.querySelector('canvas')
     if (!canvas) return
     const link = document.createElement('a')
-    link.download = `qrcode-${commercant?.qr_code_id}.png`
+    link.download = `qrcode-inscription-${commercant?.nom_commerce}.png`
     link.href = canvas.toDataURL('image/png')
     link.click()
   }
@@ -43,38 +40,31 @@ export default function QrCodePage() {
     const win = window.open('', '_blank')
     if (!win) return
     win.document.write(`
-      <html><head><title>QR Code — ${commercant?.nom_commerce}</title>
-      <style>body{margin:0;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;font-family:sans-serif}
-      img{width:300px;height:300px}h1{margin:20px 0 8px;font-size:24px}p{color:#6b7280;margin:0}</style>
+      <html><head><title>QR Code inscription — ${commercant?.nom_commerce}</title>
+      <style>
+        body { margin: 0; display: flex; flex-direction: column; align-items: center;
+               justify-content: center; min-height: 100vh; font-family: sans-serif; }
+        img  { width: 280px; height: 280px; }
+        h1   { margin: 20px 0 6px; font-size: 22px; text-align: center; }
+        p    { color: #6b7280; margin: 0; font-size: 13px; text-align: center; }
+        .badge { margin-top: 12px; background: #f0fdf4; border: 1px solid #bbf7d0;
+                 color: #166534; font-size: 12px; padding: 4px 12px; border-radius: 999px; }
+      </style>
       </head><body>
-      <img src="${dataUrl}" />
-      <h1>${commercant?.nom_commerce}</h1>
-      <p>${commercant?.qr_code_id}</p>
-      <script>window.onload=()=>{window.print();window.close()}</script>
+        <img src="${dataUrl}" />
+        <h1>${commercant?.nom_commerce}</h1>
+        <p>Scannez pour créer votre carte de fidélité gratuite</p>
+        <div class="badge">Inscription en 30 secondes</div>
+        <script>window.onload = () => { window.print(); window.close() }</script>
       </body></html>
     `)
     win.document.close()
   }
 
   const handleCopy = async () => {
-    await navigator.clipboard.writeText(scanUrl)
+    await navigator.clipboard.writeText(joinUrl)
     setCopied(true)
     setTimeout(() => setCopied(false), 2000)
-  }
-
-  const handleCopyJoin = async () => {
-    await navigator.clipboard.writeText(joinUrl)
-    setCopiedJoin(true)
-    setTimeout(() => setCopiedJoin(false), 2000)
-  }
-
-  const handleDownloadJoin = () => {
-    const canvas = joinQrRef.current?.querySelector('canvas')
-    if (!canvas) return
-    const link = document.createElement('a')
-    link.download = `qrcode-inscription-${commercant?.nom_commerce}.png`
-    link.href = canvas.toDataURL('image/png')
-    link.click()
   }
 
   if (!commercant) {
@@ -88,17 +78,20 @@ export default function QrCodePage() {
   return (
     <div className="p-8">
       <div className="mb-8">
-        <h1 className="text-2xl font-bold">Mon QR Code</h1>
-        <p className="text-[#6B7280] text-sm mt-1">Affichez ce QR code en caisse pour que vos clients scannent</p>
+        <h1 className="text-2xl font-bold">QR code d&apos;inscription</h1>
+        <p className="text-[#6B7280] text-sm mt-1">
+          Affichez ce QR code en caisse — vos clients le scannent pour créer leur carte de fidélité
+        </p>
       </div>
 
-      <div className="grid lg:grid-cols-2 gap-8">
+      <div className="grid lg:grid-cols-2 gap-8 items-start">
+
         {/* QR Code */}
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-8 flex flex-col items-center">
-          <div ref={qrRef} className="p-4 bg-white rounded-2xl shadow-inner border border-gray-100 mb-6">
+          <div ref={qrRef} className="p-5 bg-white rounded-2xl shadow-inner border border-gray-100 mb-6">
             <QRCodeCanvas
-              value={scanUrl}
-              size={220}
+              value={joinUrl}
+              size={230}
               bgColor="#FFFFFF"
               fgColor="#1A1A23"
               level="H"
@@ -106,9 +99,19 @@ export default function QrCodePage() {
             />
           </div>
 
-          <div className="text-center mb-6">
-            <p className="text-sm font-medium text-[#1A1A23]">{commercant.nom_commerce}</p>
-            <p className="text-xs text-[#6B7280] mt-1 font-mono">{commercant.qr_code_id}</p>
+          <div className="text-center mb-6 w-full">
+            <p className="text-sm font-semibold text-[#1A1A23]">{commercant.nom_commerce}</p>
+            <p className="text-xs text-[#6B7280] mt-1">Scannez pour créer votre carte de fidélité</p>
+            <div className="mt-3 flex items-center gap-2 bg-[#F9F9FB] border border-gray-200 rounded-xl px-3 py-2">
+              <span className="flex-1 text-xs text-[#6B7280] font-mono truncate">{joinUrl}</span>
+              <button
+                onClick={handleCopy}
+                className="flex-shrink-0 text-[#534AB7] hover:text-[#3C3489] transition-colors"
+                title="Copier le lien"
+              >
+                {copied ? <Check size={14} className="text-[#0F6E56]" /> : <Copy size={14} />}
+              </button>
+            </div>
           </div>
 
           <div className="flex gap-3 w-full">
@@ -129,110 +132,47 @@ export default function QrCodePage() {
           </div>
         </div>
 
-        {/* Infos */}
-        <div className="space-y-6">
+        {/* Instructions */}
+        <div className="space-y-5">
           <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
-            <h2 className="font-semibold mb-4">Lien de scan</h2>
-            <div className="flex items-center gap-2 bg-[#F9F9FB] border border-gray-200 rounded-xl px-4 py-3">
-              <span className="flex-1 text-xs text-[#6B7280] font-mono truncate">{scanUrl}</span>
-              <button onClick={handleCopy} className="flex-shrink-0 text-[#534AB7] hover:text-[#3C3489] transition-colors">
-                {copied ? <Check size={16} className="text-[#0F6E56]" /> : <Copy size={16} />}
-              </button>
-            </div>
+            <h2 className="font-semibold mb-4">Comment ça marche ?</h2>
+            <ol className="space-y-3">
+              {[
+                { n: '1', t: 'Affichez ce QR code en caisse', d: 'Imprimez-le ou posez-le sur votre comptoir.' },
+                { n: '2', t: 'Le client le scanne', d: 'Avec l\'appareil photo de son téléphone — aucune app nécessaire.' },
+                { n: '3', t: 'Il crée son compte en 30s', d: 'Prénom, email, mot de passe. C\'est tout.' },
+                { n: '4', t: 'Il reçoit son QR code personnel', d: 'Il vous le présente à chaque visite pour gagner des points.' },
+              ].map(({ n, t, d }) => (
+                <li key={n} className="flex items-start gap-3">
+                  <div className="w-6 h-6 rounded-full bg-[#534AB7] text-white text-xs font-bold flex items-center justify-center flex-shrink-0 mt-0.5">
+                    {n}
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-[#1A1A23]">{t}</p>
+                    <p className="text-xs text-[#6B7280] mt-0.5">{d}</p>
+                  </div>
+                </li>
+              ))}
+            </ol>
           </div>
 
           <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
-            <h2 className="font-semibold mb-4">Configuration fidélité</h2>
-            <div className="space-y-3">
+            <h2 className="font-semibold mb-3">Votre programme</h2>
+            <div className="space-y-2.5">
               <div className="flex justify-between text-sm">
                 <span className="text-[#6B7280]">Points par visite</span>
-                <span className="font-semibold">{commercant.points_par_visite} pt{commercant.points_par_visite > 1 ? 's' : ''}</span>
+                <span className="font-semibold">
+                  {commercant.points_par_visite} pt{commercant.points_par_visite > 1 ? 's' : ''}
+                </span>
               </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-[#6B7280]">Palier récompense</span>
-                <span className="font-semibold">{commercant.points_pour_recompense} pts</span>
-              </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-[#6B7280]">Récompense</span>
-                <span className="font-semibold">{commercant.libelle_recompense}</span>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-[#534AB7]/5 border border-[#534AB7]/20 rounded-2xl p-6">
-            <h3 className="font-semibold text-[#534AB7] mb-2">Comment utiliser ?</h3>
-            <ol className="text-sm text-[#6B7280] space-y-2 list-decimal list-inside">
-              <li>Téléchargez ou imprimez votre QR code</li>
-              <li>Affichez-le à votre caisse</li>
-              <li>Vos clients le scannent avec leur téléphone</li>
-              <li>Ils saisissent leur prénom et email</li>
-              <li>Leurs points sont automatiquement ajoutés</li>
-            </ol>
-          </div>
-        </div>
-      </div>
-
-      {/* QR code d'inscription */}
-      <div className="mt-10">
-        <div className="flex items-center gap-3 mb-6">
-          <div className="w-10 h-10 rounded-xl bg-[#0F6E56]/10 flex items-center justify-center flex-shrink-0">
-            <UserPlus size={20} className="text-[#0F6E56]" />
-          </div>
-          <div>
-            <h2 className="text-xl font-bold">QR code d&apos;inscription</h2>
-            <p className="text-[#6B7280] text-sm mt-0.5">
-              Vos nouveaux clients scannent ce code pour créer leur carte de fidélité
-            </p>
-          </div>
-        </div>
-
-        <div className="grid lg:grid-cols-2 gap-8">
-          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-8 flex flex-col items-center">
-            <div ref={joinQrRef} className="p-4 bg-white rounded-2xl shadow-inner border border-gray-100 mb-6">
-              <QRCodeCanvas
-                value={joinUrl}
-                size={220}
-                bgColor="#FFFFFF"
-                fgColor="#0F6E56"
-                level="H"
-                includeMargin={false}
-              />
-            </div>
-            <div className="text-center mb-6">
-              <p className="text-sm font-medium text-[#1A1A23]">Inscription — {commercant?.nom_commerce}</p>
-              <p className="text-xs text-[#6B7280] mt-1 font-mono break-all">{joinUrl}</p>
-            </div>
-            <div className="flex gap-3 w-full">
-              <button
-                onClick={handleDownloadJoin}
-                className="flex-1 flex items-center justify-center gap-2 border border-gray-200 rounded-xl py-2.5 text-sm font-medium text-[#1A1A23] hover:bg-gray-50 transition-colors"
-              >
-                <Download size={16} />
-                Télécharger
-              </button>
-              <button
-                onClick={handleCopyJoin}
-                className="flex-1 flex items-center justify-center gap-2 bg-[#0F6E56] text-white rounded-xl py-2.5 text-sm font-medium hover:bg-[#0a5c47] transition-colors"
-              >
-                {copiedJoin ? <Check size={16} /> : <Copy size={16} />}
-                {copiedJoin ? 'Copié !' : 'Copier le lien'}
-              </button>
-            </div>
-          </div>
-
-          <div className="bg-[#0F6E56]/5 border border-[#0F6E56]/20 rounded-2xl p-6 self-start">
-            <h3 className="font-semibold text-[#0F6E56] mb-3">Comment ça marche ?</h3>
-            <ol className="text-sm text-[#6B7280] space-y-2.5 list-decimal list-inside">
-              <li>Affichez ce QR code à côté de votre caisse</li>
-              <li>Un nouveau client le scanne avec son téléphone</li>
-              <li>Il crée son compte en 30 secondes (prénom, email, mot de passe)</li>
-              <li>Il reçoit immédiatement son QR code personnel</li>
-              <li>Il vous présente son QR code à chaque visite pour gagner des points</li>
-            </ol>
-            <div className="mt-4 pt-4 border-t border-[#0F6E56]/20">
-              <p className="text-xs text-[#6B7280]">
-                Ce QR est différent du QR de scan — celui-ci est pour les <strong>nouveaux clients</strong>, l&apos;autre est scanné par vous <strong>à chaque visite</strong>.
-              </p>
+              {(commercant.paliers?.length > 0 ? commercant.paliers : [{ points: commercant.points_pour_recompense, libelle: commercant.libelle_recompense }])
+                .sort((a, b) => a.points - b.points)
+                .map((p) => (
+                  <div key={p.points} className="flex justify-between text-sm">
+                    <span className="text-[#6B7280]">{p.points} pts</span>
+                    <span className="font-semibold text-[#0F6E56]">🎁 {p.libelle}</span>
+                  </div>
+                ))}
             </div>
           </div>
         </div>
