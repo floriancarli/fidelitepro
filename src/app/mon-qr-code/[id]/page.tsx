@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback, useRef } from 'react'
 import dynamic from 'next/dynamic'
-import { useParams } from 'next/navigation'
+import { useParams, useRouter } from 'next/navigation'
 import { ArrowLeft, Star, ChevronRight } from 'lucide-react'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
@@ -178,6 +178,7 @@ function AnimationOverlay({ data, onDismiss }: { data: AnimData; onDismiss: () =
 
 export default function MonQrCodePage() {
   const params = useParams()
+  const router = useRouter()
   const qrCodeId = params.id as string
 
   const [client, setClient] = useState<Client | null>(null)
@@ -192,6 +193,12 @@ export default function MonQrCodePage() {
 
   const load = useCallback(async () => {
     const supabase = createClient()
+
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) {
+      router.replace(`/login?next=/mon-qr-code/${qrCodeId}`)
+      return
+    }
 
     const { data: clientData } = await supabase
       .from('clients')
@@ -220,7 +227,7 @@ export default function MonQrCodePage() {
 
     setCartes((cartesData || []) as unknown as CarteInfo[])
     setLoading(false)
-  }, [qrCodeId])
+  }, [qrCodeId, router])
 
   useEffect(() => { load() }, [load])
 

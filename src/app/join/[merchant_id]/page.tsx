@@ -1,0 +1,308 @@
+'use client'
+
+import { useEffect, useState } from 'react'
+import { useParams, useRouter } from 'next/navigation'
+import Link from 'next/link'
+import { ArrowLeft, Eye, EyeOff } from 'lucide-react'
+import { createClient } from '@/lib/supabase/client'
+import Logo from '@/components/Logo'
+
+const LS_KEY = 'fidelite_client'
+
+type CommercantInfo = {
+  nom_commerce: string
+  secteur_activite: string
+  couleur_principale: string
+  logo_url: string | null
+}
+
+export default function JoinPage() {
+  const params = useParams()
+  const merchantId = params.merchant_id as string
+  const router = useRouter()
+
+  const [commercant, setCommercant] = useState<CommercantInfo | null>(null)
+  const [notFound, setNotFound] = useState(false)
+  const [form, setForm] = useState({ nom: '', email: '', password: '', confirm: '' })
+  const [showPassword, setShowPassword] = useState(false)
+  const [showConfirm, setShowConfirm] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
+  const [needsConfirm, setNeedsConfirm] = useState(false)
+
+  // Already logged in → redirect to their QR code
+  useEffect(() => {
+    const supabase = createClient()
+    supabase.auth.getUser().then(async ({ data: { user } }) => {
+      if (!user) return
+      const { data: client } = await supabase
+        .from('clients')
+        .select('qr_code_id')
+        .eq('email', user.email!)
+        .maybeSingle()
+      if (client) router.replace(`/mon-qr-code/${client.qr_code_id}`)
+    })
+  }, [router])
+
+  // Load merchant info
+  useEffect(() => {
+    const supabase = createClient()
+    supabase
+      .from('commercants')
+      .select('nom_commerce, secteur_activite, couleur_principale, logo_url')
+      .eq('id', merchantId)
+      .single()
+      .then(({ data }) => {
+        if (data) setCommercant(data as CommercantInfo)
+        else setNotFound(true)
+      })
+  }, [merchantId])
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setError('')
+
+    if (form.password !== form.confirm) {
+      setError('Les mots de passe ne correspondent pas.')
+      return
+    }
+    if (form.password.length < 6) {
+      setError('Le mot de passe doit contenir au moins 6 caractères.')
+      return
+    }
+
+    setLoading(true)
+    try {
+      const supabase = createClient()
+      const email = form.email.toLowerCase().trim()
+
+      const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+        email,
+        password: form.password,
+        options: { data: { nom: form.nom } },
+      })
+
+      if (signUpError) {
+        if (signUpError.message.toLowerCase().includes('already registered')) {
+          setError('Cet email est déjà utilisé.')
+          return
+        }
+        throw signUpError
+      }
+
+      // Get or create client record
+      const { data: existing } = await supabase
+        .from('clients')
+        .select('qr_code_id')
+        .eq('email', email)
+        .maybeSingle()
+
+      let qrCodeId: string
+      if (existing) {
+        qrCodeId = existing.qr_code_id
+      } else {
+        const newId = 'QR-' + crypto.randomUUID().replace(/-/g, '').slice(0, 8).toUpperCase()
+        const { data: newClient, error: insertErr } = await supabase
+          .from('clients')
+          .insert({ email, nom: form.nom, qr_code_id: newId })
+          .select('qr_code_id')
+          .single()
+        if (insertErr) throw insertErr
+        qrCodeId = newClient.qr_code_id
+      }
+
+      localStorage.setItem(LS_KEY, JSON.stringify({ qr_code_id: qrCodeId, email }))
+
+      if (signUpData.session) {
+        router.replace(`/mon-qr-code/${qrCodeId}`)
+      } else {
+        setNeedsConfirm(true)
+      }
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Une erreur est survenue')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  if (notFound) {
+    return (
+      <div className="min-h-screen bg-[#F9F9FB] flex flex-col items-center justify-center gap-4 px-4">
+        <p className="text-[#6B7280]">Commerce introuvable.</p>
+        <Link href="/" className="text-[#534AB7] font-medium hover:underline text-sm">
+          Retour à l&apos;accueil →
+        </Link>
+      </div>
+    )
+  }
+
+  if (needsConfirm) {
+    return (
+      <div className="min-h-screen bg-[#F9F9FB] flex items-center justify-center px-4">
+        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-8 w-full max-w-md text-center">
+          <div className="text-5xl mb-4">📧</div>
+          <h1 className="text-xl font-bold mb-2">Vérifiez vos emails</h1>
+          <p className="text-[#6B7280] text-sm leading-relaxed">
+            Un lien de confirmation a été envoyé à{' '}
+            <strong className="text-[#1A1A23]">{form.email}</strong>.
+            Cliquez dessus pour activer votre compte et accéder à votre carte.
+          </p>
+        </div>
+      </div>
+    )
+  }
+
+  const color = commercant?.couleur_principale || '#534AB7'
+
+  return (
+    <div className="min-h-screen bg-[#F9F9FB] flex flex-col">
+      <header className="bg-white border-b border-gray-100 px-4 py-4 flex items-center gap-4">
+        <button
+          onClick={() => router.back()}
+          className="w-8 h-8 rounded-full hover:bg-gray-100 flex items-center justify-center transition-colors"
+        >
+          <ArrowLeft size={18} />
+        </button>
+        <Logo size="sm" />
+      </header>
+
+      <div className="flex-1 flex flex-col items-center justify-center px-4 py-10">
+        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-8 w-full max-w-md">
+
+          {/* Merchant header */}
+          <div className="text-center mb-7">
+            {!commercant ? (
+              <div className="w-8 h-8 border-4 border-[#534AB7] border-t-transparent rounded-full animate-spin mx-auto" />
+            ) : (
+              <>
+                {commercant.logo_url ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={`/api/logo/${merchantId}`}
+                    alt={commercant.nom_commerce}
+                    className="w-16 h-16 rounded-2xl object-cover mx-auto mb-3"
+                  />
+                ) : (
+                  <div
+                    className="w-16 h-16 rounded-2xl flex items-center justify-center text-white font-bold text-xl mx-auto mb-3"
+                    style={{ backgroundColor: color }}
+                  >
+                    {commercant.nom_commerce.slice(0, 2).toUpperCase()}
+                  </div>
+                )}
+                <h1 className="text-xl font-bold text-[#1A1A23]">{commercant.nom_commerce}</h1>
+                <p className="text-[#6B7280] text-sm">{commercant.secteur_activite}</p>
+                <p className="text-sm mt-3 font-medium text-[#1A1A23]">
+                  Créez votre carte de fidélité gratuite
+                </p>
+              </>
+            )}
+          </div>
+
+          {error && (
+            <div className="bg-red-50 border border-red-200 text-red-700 rounded-xl px-4 py-3 text-sm mb-5">
+              {error}
+              {error.includes('déjà utilisé') && (
+                <>
+                  {' '}
+                  <Link
+                    href={`/login?next=/mon-qr-code`}
+                    className="underline font-medium"
+                  >
+                    Se connecter
+                  </Link>
+                </>
+              )}
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-[#1A1A23] mb-1.5">Prénom</label>
+              <input
+                type="text"
+                required
+                value={form.nom}
+                onChange={(e) => setForm({ ...form, nom: e.target.value })}
+                placeholder="Marie"
+                className="w-full border border-gray-200 rounded-xl px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-[#534AB7]/30 focus:border-[#534AB7] transition-colors"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-[#1A1A23] mb-1.5">Email</label>
+              <input
+                type="email"
+                required
+                value={form.email}
+                onChange={(e) => setForm({ ...form, email: e.target.value })}
+                placeholder="vous@exemple.fr"
+                className="w-full border border-gray-200 rounded-xl px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-[#534AB7]/30 focus:border-[#534AB7] transition-colors"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-[#1A1A23] mb-1.5">Mot de passe</label>
+              <div className="relative">
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  required
+                  value={form.password}
+                  onChange={(e) => setForm({ ...form, password: e.target.value })}
+                  placeholder="6 caractères minimum"
+                  className="w-full border border-gray-200 rounded-xl px-4 py-3 pr-12 text-base focus:outline-none focus:ring-2 focus:ring-[#534AB7]/30 focus:border-[#534AB7] transition-colors"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((v) => !v)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[#6B7280] hover:text-[#1A1A23] transition-colors"
+                >
+                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-[#1A1A23] mb-1.5">
+                Confirmer le mot de passe
+              </label>
+              <div className="relative">
+                <input
+                  type={showConfirm ? 'text' : 'password'}
+                  required
+                  value={form.confirm}
+                  onChange={(e) => setForm({ ...form, confirm: e.target.value })}
+                  placeholder="Répétez votre mot de passe"
+                  className="w-full border border-gray-200 rounded-xl px-4 py-3 pr-12 text-base focus:outline-none focus:ring-2 focus:ring-[#534AB7]/30 focus:border-[#534AB7] transition-colors"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowConfirm((v) => !v)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[#6B7280] hover:text-[#1A1A23] transition-colors"
+                >
+                  {showConfirm ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
+              </div>
+            </div>
+
+            <button
+              type="submit"
+              disabled={loading || !commercant}
+              className="w-full text-white font-bold py-3.5 rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed mt-2"
+              style={{ backgroundColor: color }}
+            >
+              {loading ? 'Création…' : 'Obtenir ma carte de fidélité'}
+            </button>
+          </form>
+
+          <p className="text-center text-xs text-[#6B7280] mt-6">
+            Déjà inscrit ?{' '}
+            <Link href="/login" className="text-[#534AB7] font-medium hover:underline">
+              Se connecter
+            </Link>
+          </p>
+        </div>
+      </div>
+    </div>
+  )
+}
