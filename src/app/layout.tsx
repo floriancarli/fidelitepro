@@ -21,17 +21,6 @@ export const metadata: Metadata = {
     title: 'Orlyo',
     statusBarStyle: 'default',
   },
-  icons: {
-    icon: [
-      { url: '/favicon.ico', sizes: '48x48', type: 'image/x-icon' },
-      { url: '/favicon.svg', type: 'image/svg+xml' },
-      { url: '/icons/icon-192.png', sizes: '192x192', type: 'image/png' },
-    ],
-    shortcut: '/favicon.ico',
-    apple: [
-      { url: '/icons/icon-192.png', sizes: '192x192', type: 'image/png' },
-    ],
-  },
   other: {
     'mobile-web-app-capable': 'yes',
   },
