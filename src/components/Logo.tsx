@@ -11,7 +11,7 @@ export default function Logo({ size = 'md', white = false }: LogoProps) {
 
   return (
     <span className={`font-bold tracking-tight ${sizes[size]} ${color}`}>
-      Orlyo
+      Orl<span className="text-[#F59E0B]">yo</span>
     </span>
   )
 }
