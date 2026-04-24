@@ -1,13 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-  <rect width="512" height="512" rx="114" fill="#534AB7"/>
-  <!-- Carte fidélité stylisée -->
-  <rect x="88" y="168" width="336" height="220" rx="20" fill="white" fill-opacity="0.15"/>
-  <rect x="88" y="168" width="336" height="72" rx="20" fill="white" fill-opacity="0.25"/>
-  <!-- Étoile récompense -->
-  <path d="M256 96 L272 144 L323 144 L282 172 L298 220 L256 193 L214 220 L230 172 L189 144 L240 144 Z" fill="#F59E0B"/>
-  <!-- Points décoratifs sur la carte -->
-  <circle cx="136" cy="316" r="18" fill="white" fill-opacity="0.7"/>
-  <circle cx="186" cy="316" r="18" fill="white" fill-opacity="0.45"/>
-  <rect x="216" y="302" width="164" height="12" rx="6" fill="white" fill-opacity="0.3"/>
-  <rect x="216" y="328" width="100" height="10" rx="5" fill="white" fill-opacity="0.2"/>
+  <rect width="512" height="512" rx="110" fill="#2D4A8A"/>
+  <text font-family="system-ui,-apple-system,'Segoe UI',sans-serif" font-size="232" font-weight="800" text-anchor="middle" x="256" y="334">
+    <tspan fill="white">Orl</tspan><tspan fill="#F59E0B">yo</tspan>
+  </text>
 </svg>

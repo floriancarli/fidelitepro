@@ -70,32 +70,103 @@ export default function LandingPage() {
       </header>
 
       {/* Hero */}
-      <section className="bg-gradient-to-br from-[#2D4A8A] to-[#1e3a6e] text-white py-24 px-6">
-        <div className="max-w-4xl mx-auto text-center">
-          <div className="inline-flex items-center gap-2 bg-white/10 border border-white/20 rounded-full px-4 py-1.5 text-sm font-medium mb-8">
-            <Star size={14} className="text-yellow-300" fill="currentColor" />
-            La solution fidélité n°1 pour les commerçants
-          </div>
-          <h1 className="text-5xl font-bold leading-tight mb-6">
-            Fidélisez vos clients,<br />simplement.
-          </h1>
-          <p className="text-xl text-white/80 mb-10 max-w-2xl mx-auto">
-            Un QR code unique affiché en caisse. Vos clients scannent, accumulent des points et reviennent pour leurs récompenses.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link
-              href="/pricing"
-              className="bg-white text-[#2D4A8A] font-semibold px-8 py-3.5 rounded-xl hover:bg-gray-50 transition-colors flex items-center justify-center gap-2"
-            >
-              Voir les tarifs
-              <ArrowRight size={18} />
-            </Link>
-            <Link
-              href="/demo"
-              className="border border-white/30 text-white font-semibold px-8 py-3.5 rounded-xl hover:bg-white/10 transition-colors flex items-center justify-center"
-            >
-              Voir la démo
-            </Link>
+      <section className="bg-gradient-to-br from-[#2D4A8A] to-[#1e3a6e] text-white py-20 px-6">
+        <div className="max-w-6xl mx-auto">
+          <div className="flex flex-col lg:flex-row items-center gap-12">
+
+            {/* Texte */}
+            <div className="flex-1 lg:max-w-xl">
+              <div className="inline-flex items-center gap-2 bg-white/10 border border-white/20 rounded-full px-4 py-1.5 text-sm font-medium mb-8">
+                <Star size={14} className="text-yellow-300" fill="currentColor" />
+                La carte de fidélité digitale pour les commerçants indépendants
+              </div>
+              <h1 className="text-5xl font-bold leading-tight mb-6">
+                Fidélisez vos clients,<br />simplement.
+              </h1>
+              <p className="text-xl text-white/80 mb-10">
+                Un QR code unique affiché en caisse. Vos clients scannent, accumulent des points et reviennent pour leurs récompenses.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4">
+                <Link
+                  href="/pricing"
+                  className="bg-white text-[#2D4A8A] font-semibold px-8 py-3.5 rounded-xl hover:bg-gray-50 transition-colors flex items-center justify-center gap-2"
+                >
+                  Voir les tarifs
+                  <ArrowRight size={18} />
+                </Link>
+                <Link
+                  href="/demo"
+                  className="border border-white/30 text-white font-semibold px-8 py-3.5 rounded-xl hover:bg-white/10 transition-colors flex items-center justify-center"
+                >
+                  Voir la démo
+                </Link>
+              </div>
+            </div>
+
+            {/* Mockup dashboard */}
+            <div className="flex-1 w-full lg:max-w-lg">
+              <div className="bg-white rounded-2xl shadow-2xl overflow-hidden text-[#1A1A23] ring-1 ring-white/10">
+
+                {/* Barre supérieure */}
+                <div className="bg-[#F9FAFB] border-b border-gray-200 px-4 py-3 flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <div className="w-5 h-5 rounded bg-[#2D4A8A]/10 flex items-center justify-center">
+                      <BarChart3 size={12} className="text-[#2D4A8A]" />
+                    </div>
+                    <span className="text-xs font-semibold text-[#1A1A23]">Dashboard — CroustyBrawl</span>
+                  </div>
+                  <div className="flex items-center gap-1 bg-[#F59E0B] text-[#1B2B4B] text-[10px] font-bold px-2.5 py-1 rounded-lg">
+                    <QrCode size={10} />
+                    Scanner un client
+                  </div>
+                </div>
+
+                {/* Stats */}
+                <div className="grid grid-cols-3 gap-2 p-3">
+                  {[
+                    { label: 'Clients fidèles', value: '47', colorText: 'text-[#2D4A8A]', colorBg: 'bg-[#2D4A8A]/8' },
+                    { label: 'Scans ce mois', value: '128', colorText: 'text-[#0F6E56]', colorBg: 'bg-[#0F6E56]/8' },
+                    { label: 'Points distribués', value: '892', colorText: 'text-yellow-600', colorBg: 'bg-yellow-50' },
+                  ].map(({ label, value, colorText, colorBg }) => (
+                    <div key={label} className={`${colorBg} rounded-xl p-2.5`}>
+                      <p className={`text-base font-bold ${colorText}`}>{value}</p>
+                      <p className="text-[10px] text-[#6B7280] leading-tight mt-0.5">{label}</p>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Liste clients */}
+                <div className="px-3 pb-3">
+                  <p className="text-[10px] font-semibold text-[#9CA3AF] uppercase tracking-wide mb-2">Mes clients fidèles</p>
+                  <div className="space-y-1.5">
+                    {[
+                      { nom: 'Marie Dupont', pts: 9, max: 10, pct: 90 },
+                      { nom: 'Thomas Bernard', pts: 5, max: 10, pct: 50 },
+                      { nom: 'Sophie Leclerc', pts: 3, max: 10, pct: 30 },
+                      { nom: 'Julien Martin', pts: 7, max: 10, pct: 70 },
+                    ].map(({ nom, pts, max, pct }) => (
+                      <div key={nom} className="flex items-center gap-2.5 py-1.5 border-b border-gray-50 last:border-0">
+                        <div className="w-6 h-6 rounded-full bg-[#2D4A8A]/10 text-[#2D4A8A] text-[9px] font-bold flex items-center justify-center flex-shrink-0">
+                          {nom.slice(0, 2).toUpperCase()}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-[11px] font-medium truncate">{nom}</p>
+                          <div className="flex items-center gap-1.5 mt-0.5">
+                            <div className="flex-1 bg-gray-100 rounded-full h-1">
+                              <div className="h-1 rounded-full bg-[#2D4A8A] transition-all" style={{ width: `${pct}%` }} />
+                            </div>
+                            <span className="text-[9px] text-[#9CA3AF] whitespace-nowrap tabular-nums">{pts}/{max}</span>
+                          </div>
+                        </div>
+                        <Star size={10} className="text-yellow-400 flex-shrink-0" fill="currentColor" />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
           </div>
         </div>
       </section>
