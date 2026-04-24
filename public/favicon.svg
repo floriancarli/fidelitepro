@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <!-- Fond bleu arrondi -->
+  <rect width="32" height="32" rx="7" fill="#2D4A8A"/>
+  <!-- Anneau blanc = le "O" -->
+  <circle cx="15" cy="15" r="7.5" fill="none" stroke="white" stroke-width="3.5"/>
+  <!-- Point orange = le "yo" -->
+  <circle cx="23" cy="23" r="3.5" fill="#F59E0B"/>
+</svg>

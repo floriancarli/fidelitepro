@@ -23,10 +23,11 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: [
-      { url: '/icons/icon.svg', type: 'image/svg+xml' },
+      { url: '/favicon.ico', sizes: '48x48', type: 'image/x-icon' },
+      { url: '/favicon.svg', type: 'image/svg+xml' },
       { url: '/icons/icon-192.png', sizes: '192x192', type: 'image/png' },
     ],
-    shortcut: '/icons/icon.svg',
+    shortcut: '/favicon.ico',
     apple: [
       { url: '/icons/icon-192.png', sizes: '192x192', type: 'image/png' },
     ],
