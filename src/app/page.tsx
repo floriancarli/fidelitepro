@@ -53,9 +53,6 @@ export default function LandingPage() {
         <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
           <Link href="/"><Logo size="md" /></Link>
           <div className="flex items-center gap-4">
-            <Link href="/demo" className="text-sm font-medium text-gray-600 hover:text-[#2D4A8A] transition-colors">
-              Voir la démo
-            </Link>
             <Link href="/login" className="text-sm font-medium text-gray-600 hover:text-[#2D4A8A] transition-colors">
               Connexion
             </Link>
@@ -88,17 +85,11 @@ export default function LandingPage() {
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
                 <Link
-                  href="/register"
+                  href="/demo"
                   className="bg-white text-[#2D4A8A] font-semibold px-8 py-3.5 rounded-xl hover:bg-gray-50 transition-colors flex items-center justify-center gap-2"
                 >
-                  Commencer gratuitement
-                  <ArrowRight size={18} />
-                </Link>
-                <Link
-                  href="/demo"
-                  className="border border-white/30 text-white font-semibold px-8 py-3.5 rounded-xl hover:bg-white/10 transition-colors flex items-center justify-center"
-                >
                   Voir la démo
+                  <ArrowRight size={18} />
                 </Link>
               </div>
             </div>
