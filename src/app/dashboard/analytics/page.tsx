@@ -137,19 +137,16 @@ export default function AnalyticsPage() {
 
       {/* Upsell banner — non-annual users */}
       {!isPro && (
-        <div className="rounded-2xl bg-[#F59E0B] px-5 py-4 flex flex-col sm:flex-row sm:items-center gap-4">
-          <div className="flex items-center gap-3 flex-1">
-            <span className="text-2xl">⭐</span>
-            <div>
-              <p className="font-bold text-white">Plan annuel</p>
-              <p className="text-sm text-white/80 mt-0.5">Passez au plan annuel pour accéder à vos vraies données et débloquer tous les graphiques.</p>
-            </div>
+        <div className="space-y-3">
+          <div className="rounded-2xl bg-[#F59E0B] px-5 py-4 flex items-center gap-3">
+            <span className="text-xl">⭐</span>
+            <p className="font-bold text-white">Fonctionnalité réservée au plan annuel</p>
           </div>
           <Link
             href="/pricing"
-            className="inline-flex items-center gap-2 bg-white text-[#1B2B4B] font-semibold px-5 py-2.5 rounded-xl hover:bg-gray-50 transition-colors flex-shrink-0 text-sm"
+            className="inline-flex items-center gap-2 bg-[#2D4A8A] text-white font-semibold px-5 py-2.5 rounded-xl hover:bg-[#1e3a6e] transition-colors text-sm"
           >
-            Voir les tarifs
+            Passer au plan annuel
             <ArrowRight size={15} />
           </Link>
         </div>
