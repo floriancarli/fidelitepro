@@ -11,7 +11,7 @@ export async function GET() {
   const resend = new Resend(apiKey)
 
   const { data, error } = await resend.emails.send({
-    from: 'onboarding@resend.dev',
+    from: 'Orlyo <noreply@getorlyo.com>',
     to: 'floriancarlipro@gmail.com',
     subject: 'Test Resend — Orlyo',
     html: '<p>Si vous recevez cet email, la clé API Resend fonctionne correctement.</p>',

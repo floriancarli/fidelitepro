@@ -7,7 +7,7 @@ function getResend() {
 }
 
 function fromAddress(nomCommerce: string) {
-  return `${nomCommerce} <onboarding@resend.dev>`
+  return `${nomCommerce} <noreply@getorlyo.com>`
 }
 
 function baseTemplate(color: string, body: string) {
