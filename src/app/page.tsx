@@ -43,7 +43,7 @@ const pricing = [
     badge: 'Meilleure valeur',
     badgeStyle: 'value',
     facturation: 'Facturé 348€/an',
-    features: ['Clients illimités', 'Programmes multiples', 'Notifications email', 'Analytics avancés', 'Export CSV', 'Support prioritaire'],
+    features: ['Clients illimités', 'Programmes multiples', 'Notifications email', 'Analytics avancés', 'Export CSV', 'Support prioritaire', '🔜 Apple Wallet & Google Wallet — Bientôt disponible'],
     cta: 'Commencer',
     highlight: false,
   },
