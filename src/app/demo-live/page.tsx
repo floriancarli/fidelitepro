@@ -111,7 +111,10 @@ function DemoLiveContent() {
     setTotalScans(0)
   }, [])
 
+  // QR-DEMOLIVE-JEAN is the real client QR code for use with the dashboard scanner.
+  // The broadcast scan URL is used for phone-based demos.
   const scanUrl = `${APP_URL}/api/demo-live/scan?key=${SECRET_KEY}`
+  const clientQR = 'QR-DEMOLIVE-JEAN'
   const rewardsEarned = PALIERS.filter(p => p.points <= points).length
 
   if (!authorized) {
@@ -236,7 +239,7 @@ function DemoLiveContent() {
 
             <div className={`inline-block p-4 rounded-2xl border-2 transition-all duration-300 ${flash ? 'border-green-500 shadow-lg shadow-green-500/25' : 'border-gray-100'}`}>
               <QRCodeSVG
-                value={scanUrl}
+                value={clientQR}
                 size={210}
                 bgColor="#ffffff"
                 fgColor="#2D4A8A"
@@ -245,7 +248,7 @@ function DemoLiveContent() {
             </div>
 
             <p className="text-xs text-[#6B7280] mt-4 mb-5 leading-relaxed">
-              Scannez avec l'appareil photo de votre téléphone pour ajouter un point en temps réel
+              Scannez ce QR code avec le scanner du dashboard commerçant pour ajouter un point en temps réel
             </p>
 
             <button

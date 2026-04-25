@@ -2,12 +2,14 @@
 
 import { useEffect, useState, useCallback, useRef } from 'react'
 import dynamic from 'next/dynamic'
-import { Users, QrCode, TrendingUp, Search, Star, ScanLine, CheckCircle, Gift, Trash2, Download, ArrowRight } from 'lucide-react'
+import { Users, QrCode, TrendingUp, Search, Star, ScanLine, CheckCircle, Gift, Trash2, Download, ArrowRight, RefreshCw } from 'lucide-react'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 import { isDemoEmail } from '@/lib/useDemo'
 import DemoToast from '@/components/DemoToast'
 import type { Commercant, CarteFidelite, ScanResult } from '@/lib/types'
+
+const DEMO_LIVE_EMAIL = 'demo-live@getorlyo.com'
 
 const ClientScannerModal = dynamic(() => import('@/components/ClientScannerModal'), { ssr: false })
 
@@ -100,7 +102,9 @@ export default function DashboardPage() {
   const [lastScanResult, setLastScanResult] = useState<ScanResult | null>(null)
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null)
   const [isDemo, setIsDemo] = useState(false)
+  const [isDemoLive, setIsDemoLive] = useState(false)
   const [demoToast, setDemoToast] = useState(false)
+  const [resetting, setResetting] = useState(false)
   const bannerDismissRef = useRef<(() => void) | null>(null)
 
   const load = useCallback(async () => {
@@ -117,6 +121,7 @@ export default function DashboardPage() {
     ])
 
     setIsDemo(isDemoEmail(user.email))
+    setIsDemoLive(user.email === DEMO_LIVE_EMAIL)
     setCommercant(comm)
     setCartes(cartesData || [])
     setScansCount(scans || 0)
@@ -155,6 +160,13 @@ export default function DashboardPage() {
 
   const dismissBanner = useCallback(() => setLastScanResult(null), [])
   bannerDismissRef.current = dismissBanner
+
+  const handleDemoLiveReset = async () => {
+    setResetting(true)
+    await fetch('/api/demo-live/reset', { method: 'POST' })
+    await load()
+    setResetting(false)
+  }
 
   const handleDeleteClient = async (carteId: string) => {
     const supabase = createClient()
@@ -252,13 +264,25 @@ export default function DashboardPage() {
             </h1>
             <p className="text-[#6B7280] text-sm mt-1 capitalize">{mois}</p>
           </div>
-          <button
-            onClick={() => setScannerOpen(true)}
-            className="sm:ml-auto flex items-center gap-2.5 bg-[#F59E0B] text-[#1B2B4B] font-semibold px-5 py-3 rounded-xl hover:bg-[#e08900] transition-colors shadow-md shadow-[#F59E0B]/20"
-          >
-            <ScanLine size={20} />
-            Scanner un client
-          </button>
+          <div className="sm:ml-auto flex items-center gap-3">
+            {isDemoLive && (
+              <button
+                onClick={handleDemoLiveReset}
+                disabled={resetting}
+                className="flex items-center gap-2 border border-gray-200 bg-white text-[#6B7280] text-sm font-medium px-4 py-2.5 rounded-xl hover:bg-gray-50 hover:text-[#1A1A23] transition-colors shadow-sm disabled:opacity-50"
+              >
+                <RefreshCw size={15} className={resetting ? 'animate-spin' : ''} />
+                {resetting ? 'Réinitialisation…' : 'Réinitialiser la démo'}
+              </button>
+            )}
+            <button
+              onClick={() => setScannerOpen(true)}
+              className="flex items-center gap-2.5 bg-[#F59E0B] text-[#1B2B4B] font-semibold px-5 py-3 rounded-xl hover:bg-[#e08900] transition-colors shadow-md shadow-[#F59E0B]/20"
+            >
+              <ScanLine size={20} />
+              Scanner un client
+            </button>
+          </div>
         </div>
 
         {/* Bannière upsell annuel — mensuel depuis 30+ jours */}
