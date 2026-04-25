@@ -285,34 +285,28 @@ export default function LandingPage() {
           <div className="grid md:grid-cols-3 gap-6">
             {[
               {
-                nom: 'Sophie Marchand',
-                commerce: 'Boulangerie Le Fournil',
-                citation: 'Mes clients adorent. En 3 semaines, j\'avais 40 inscrits et les ventes du mardi ont augmenté de 20 %. La mise en place a pris 10 minutes.',
-                initiales: 'SM',
+                commerce: 'Une boulangerie en Moselle',
+                citation: 'En trois semaines on avait une quarantaine de clients inscrits. La mise en place a pris dix minutes, pas plus.',
+                icone: '🥖',
               },
               {
-                nom: 'Karim Benali',
-                commerce: 'Salon Coiffure K',
-                citation: 'Avant j\'offrais une coupe gratuite à l\'œil. Maintenant tout est tracé, automatique. Mes clients reviennent plus régulièrement.',
-                initiales: 'KB',
+                commerce: 'Un salon de coiffure à Lyon',
+                citation: 'Avant j\'offrais des coupes à l\'œil. Maintenant tout est automatique et traçable. Les clients reviennent plus souvent.',
+                icone: '✂️',
               },
               {
-                nom: 'Lucie Fontaine',
-                commerce: 'Restaurant La Tablée',
-                citation: 'Le QR code est affiché à l\'entrée. Les clients s\'inscrivent en attendant leur table. Simple, efficace, et vraiment différenciant.',
-                initiales: 'LF',
+                commerce: 'Un restaurant à Bordeaux',
+                citation: 'Le QR code est posé à l\'entrée. Les clients s\'inscrivent en attendant leur table. Simple et vraiment efficace.',
+                icone: '🍽️',
               },
-            ].map(({ nom, commerce, citation, initiales }) => (
-              <div key={nom} className="bg-gray-50 rounded-2xl p-6 border border-gray-100 flex flex-col gap-4">
+            ].map(({ commerce, citation, icone }) => (
+              <div key={commerce} className="bg-gray-50 rounded-2xl p-6 border border-gray-100 flex flex-col gap-4">
                 <p className="text-[#374151] text-sm leading-relaxed flex-1">« {citation} »</p>
                 <div className="flex items-center gap-3 pt-2 border-t border-gray-200">
-                  <div className="w-10 h-10 rounded-full bg-[#2D4A8A] text-white font-bold text-sm flex items-center justify-center flex-shrink-0">
-                    {initiales}
+                  <div className="w-10 h-10 rounded-full bg-[#2D4A8A]/10 flex items-center justify-center flex-shrink-0 text-xl">
+                    {icone}
                   </div>
-                  <div>
-                    <p className="text-sm font-semibold text-[#1A1A23]">{nom}</p>
-                    <p className="text-xs text-[#6B7280]">{commerce}</p>
-                  </div>
+                  <p className="text-sm font-semibold text-[#1A1A23]">{commerce}</p>
                 </div>
               </div>
             ))}
