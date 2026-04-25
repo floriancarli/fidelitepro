@@ -21,7 +21,7 @@ export default function QrCodePage() {
 
   useEffect(() => { load() }, [load])
 
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://getorlyo.com'
   const joinUrl = commercant ? `${appUrl}/join/${commercant.id}` : ''
 
   const handleDownload = () => {

@@ -168,6 +168,8 @@ export default function DashboardPage() {
       c.client_nom.toLowerCase().includes(search.toLowerCase())
   )
 
+  const brandColor = (commercant?.couleur_principale ?? '#2D4A8A').replace(/^#534ab7$/i, '#2D4A8A')
+
   const mois = new Intl.DateTimeFormat('fr-FR', { month: 'long', year: 'numeric' }).format(new Date())
 
   if (loading) {
@@ -334,7 +336,7 @@ export default function DashboardPage() {
                           <ProgressBar
                             value={carte.nombre_points}
                             max={commercant?.points_pour_recompense || 10}
-                            color={commercant?.couleur_principale || '#2D4A8A'}
+                            color={brandColor}
                           />
                         </td>
                         <td className="px-6 py-4">

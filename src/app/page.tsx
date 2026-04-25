@@ -279,7 +279,7 @@ export default function LandingPage() {
       <section className="py-20 px-6 bg-[#2D4A8A] text-white text-center">
         <div className="max-w-2xl mx-auto">
           <h2 className="text-3xl font-bold mb-4">Prêt à fidéliser vos clients ?</h2>
-          <p className="text-white/80 mb-8">Rejoignez des centaines de commerçants qui font confiance à Orlyo.</p>
+          <p className="text-white/80 mb-8">Rejoignez les premiers commerçants qui font confiance à Orlyo.</p>
           <Link
             href="/pricing"
             className="inline-flex items-center gap-2 bg-white text-[#2D4A8A] font-semibold px-8 py-3.5 rounded-xl hover:bg-gray-50 transition-colors"
@@ -294,7 +294,7 @@ export default function LandingPage() {
       <footer className="border-t border-gray-200 py-8 px-6">
         <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
           <Logo size="sm" />
-          <p className="text-[#6B7280] text-sm">© 2025 Orlyo SAS. Tous droits réservés.</p>
+          <p className="text-[#6B7280] text-sm">© 2026 Orlyo. Tous droits réservés.</p>
           <div className="flex gap-6 text-sm text-[#6B7280]">
             <Link href="/mentions-legales" className="hover:text-[#2D4A8A]">Mentions légales</Link>
             <Link href="/politique-confidentialite" className="hover:text-[#2D4A8A]">Confidentialité</Link>

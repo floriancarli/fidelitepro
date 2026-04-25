@@ -32,7 +32,7 @@ export default function MonComptePage() {
         libelle_recompense: data.libelle_recompense,
         points_par_visite: data.points_par_visite,
         points_pour_recompense: data.points_pour_recompense,
-        couleur_principale: data.couleur_principale,
+        couleur_principale: (data.couleur_principale ?? '#2D4A8A').replace(/^#534ab7$/i, '#2D4A8A'),
       })
     }
   }, [])
@@ -62,30 +62,6 @@ export default function MonComptePage() {
     } finally {
       setSaving(false)
     }
-  }
-
-  const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!e.target.files?.[0] || !commercant) return
-    const file = e.target.files[0]
-    const supabase = createClient()
-
-    const ext = file.name.split('.').pop()
-    const path = `logos/${commercant.id}.${ext}`
-
-    const { error: uploadError } = await supabase.storage
-      .from('logos')
-      .upload(path, file, { upsert: true })
-
-    if (uploadError) { setError('Erreur upload logo'); return }
-
-    const { data: urlData } = supabase.storage.from('logos').getPublicUrl(path)
-
-    await supabase
-      .from('commercants')
-      .update({ logo_url: urlData.publicUrl })
-      .eq('id', commercant.id)
-
-    load()
   }
 
   if (!commercant) {
@@ -142,18 +118,6 @@ export default function MonComptePage() {
             />
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-[#1A1A23] mb-1.5">Logo</label>
-            <input
-              type="file"
-              accept="image/*"
-              onChange={handleLogoUpload}
-              className="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none file:mr-4 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-[#2D4A8A]/10 file:text-[#2D4A8A] hover:file:bg-[#2D4A8A]/20"
-            />
-            {commercant.logo_url && (
-              <img src={commercant.logo_url} alt="Logo" className="mt-2 h-16 object-contain rounded-lg border border-gray-200" />
-            )}
-          </div>
         </div>
 
         {/* Programme fidélité */}
