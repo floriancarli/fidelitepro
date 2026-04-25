@@ -47,7 +47,7 @@ export default function MentionsLegalesPage() {
             <InfoRow label="Capital social" value="À compléter" />
             <InfoRow label="Siège social" value="À compléter" />
             <InfoRow label="SIRET" value="À compléter" />
-            <InfoRow label="Email" value="contact@fidelepro.fr" />
+            <InfoRow label="Email" value="contact@getorlyo.com" />
             <InfoRow label="Directeur de publication" value="À compléter" />
           </div>
         </Section>
@@ -96,7 +96,7 @@ export default function MentionsLegalesPage() {
           </p>
           <p>
             Responsable du traitement : Orlyo SAS —{' '}
-            <a href="mailto:dpo@fidelepro.fr" className="text-[#2D4A8A] hover:underline">dpo@fidelepro.fr</a>
+            <a href="mailto:dpo@getorlyo.com" className="text-[#2D4A8A] hover:underline">dpo@getorlyo.com</a>
           </p>
         </Section>
 

@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { QrCode, BarChart3, Gift, Mail, Check, ArrowRight, Star } from 'lucide-react'
+import { QrCode, BarChart3, Gift, Mail, Check, ArrowRight, Star, ChevronDown } from 'lucide-react'
 import Logo from '@/components/Logo'
 
 const avantages = [
@@ -88,17 +88,17 @@ export default function LandingPage() {
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
                 <Link
-                  href="/demo"
+                  href="/register"
                   className="bg-white text-[#2D4A8A] font-semibold px-8 py-3.5 rounded-xl hover:bg-gray-50 transition-colors flex items-center justify-center gap-2"
                 >
-                  Voir la démo
+                  Commencer gratuitement
                   <ArrowRight size={18} />
                 </Link>
                 <Link
-                  href="/pricing"
+                  href="/demo"
                   className="border border-white/30 text-white font-semibold px-8 py-3.5 rounded-xl hover:bg-white/10 transition-colors flex items-center justify-center"
                 >
-                  Voir les tarifs
+                  Voir la démo
                 </Link>
               </div>
             </div>
@@ -275,16 +275,103 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* Témoignages */}
+      <section className="py-20 px-6 bg-white">
+        <div className="max-w-5xl mx-auto">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold mb-4">Ils nous font confiance</h2>
+            <p className="text-[#6B7280]">Des commerçants qui ont adopté Orlyo</p>
+          </div>
+          <div className="grid md:grid-cols-3 gap-6">
+            {[
+              {
+                nom: 'Sophie Marchand',
+                commerce: 'Boulangerie Le Fournil',
+                citation: 'Mes clients adorent. En 3 semaines, j\'avais 40 inscrits et les ventes du mardi ont augmenté de 20 %. La mise en place a pris 10 minutes.',
+                initiales: 'SM',
+              },
+              {
+                nom: 'Karim Benali',
+                commerce: 'Salon Coiffure K',
+                citation: 'Avant j\'offrais une coupe gratuite à l\'œil. Maintenant tout est tracé, automatique. Mes clients reviennent plus régulièrement.',
+                initiales: 'KB',
+              },
+              {
+                nom: 'Lucie Fontaine',
+                commerce: 'Restaurant La Tablée',
+                citation: 'Le QR code est affiché à l\'entrée. Les clients s\'inscrivent en attendant leur table. Simple, efficace, et vraiment différenciant.',
+                initiales: 'LF',
+              },
+            ].map(({ nom, commerce, citation, initiales }) => (
+              <div key={nom} className="bg-gray-50 rounded-2xl p-6 border border-gray-100 flex flex-col gap-4">
+                <p className="text-[#374151] text-sm leading-relaxed flex-1">« {citation} »</p>
+                <div className="flex items-center gap-3 pt-2 border-t border-gray-200">
+                  <div className="w-10 h-10 rounded-full bg-[#2D4A8A] text-white font-bold text-sm flex items-center justify-center flex-shrink-0">
+                    {initiales}
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold text-[#1A1A23]">{nom}</p>
+                    <p className="text-xs text-[#6B7280]">{commerce}</p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* FAQ */}
+      <section className="py-20 px-6">
+        <div className="max-w-2xl mx-auto">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold mb-4">Questions fréquentes</h2>
+            <p className="text-[#6B7280]">Tout ce que vous devez savoir avant de commencer</p>
+          </div>
+          <div className="space-y-3">
+            {[
+              {
+                q: 'Est-ce que mes clients ont besoin d\'une application ?',
+                r: 'Non. Vos clients scannent votre QR code avec l\'appareil photo de leur téléphone, s\'inscrivent en 30 secondes via leur navigateur, et reçoivent leur QR code personnel par email. Aucune app à télécharger.',
+              },
+              {
+                q: 'Puis-je personnaliser mes récompenses ?',
+                r: 'Oui, entièrement. Vous définissez vos propres paliers (ex : 5 points → café offert, 10 points → viennoiserie) et pouvez les modifier à tout moment depuis votre dashboard.',
+              },
+              {
+                q: 'Comment mes clients accumulent-ils des points ?',
+                r: 'À chaque visite, vous scannez leur QR code depuis votre dashboard. Un point (ou le nombre configuré) est automatiquement crédité. C\'est rapide : moins de 3 secondes en caisse.',
+              },
+              {
+                q: 'Puis-je annuler à tout moment ?',
+                r: 'Oui. L\'abonnement mensuel est sans engagement. L\'abonnement annuel peut être résilié à tout moment ; les mois restants ne sont pas remboursés mais votre accès reste actif jusqu\'à la fin de la période.',
+              },
+              {
+                q: 'Mes données sont-elles sécurisées ?',
+                r: 'Toutes les données sont hébergées en Europe (Irlande) chez Supabase, certifié SOC 2 Type II. Les connexions sont chiffrées en TLS. Nous ne revendons aucune donnée à des tiers.',
+              },
+            ].map(({ q, r }) => (
+              <details key={q} className="group bg-white border border-gray-200 rounded-2xl overflow-hidden">
+                <summary className="flex items-center justify-between gap-4 px-6 py-4 cursor-pointer font-medium text-[#1A1A23] list-none hover:bg-gray-50 transition-colors">
+                  {q}
+                  <ChevronDown size={18} className="flex-shrink-0 text-[#6B7280] transition-transform group-open:rotate-180" />
+                </summary>
+                <p className="px-6 pb-5 text-sm text-[#6B7280] leading-relaxed">{r}</p>
+              </details>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* CTA final */}
       <section className="py-20 px-6 bg-[#2D4A8A] text-white text-center">
         <div className="max-w-2xl mx-auto">
           <h2 className="text-3xl font-bold mb-4">Prêt à fidéliser vos clients ?</h2>
           <p className="text-white/80 mb-8">Rejoignez les premiers commerçants qui font confiance à Orlyo.</p>
           <Link
-            href="/demo"
+            href="/register"
             className="inline-flex items-center gap-2 bg-white text-[#2D4A8A] font-semibold px-8 py-3.5 rounded-xl hover:bg-gray-50 transition-colors"
           >
-            Essayer la démo
+            Commencer gratuitement
             <ArrowRight size={18} />
           </Link>
         </div>
