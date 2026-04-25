@@ -4,44 +4,11 @@ import { createClient } from '@/lib/supabase/server'
 
 const PLANS = {
   mensuel: {
-    lookupKey: 'fidelitepro_mensuel',
-    name: 'Orlyo — Plan Mensuel',
-    description: 'Clients illimités, 1 programme de fidélité, notifications email, support email.',
-    amount: 3900,
-    interval: 'month' as const,
+    priceId: process.env.STRIPE_PRICE_MONTHLY || 'price_1TQ4fOE63QUBXRWn4UMmc8Hi',
   },
   annuel: {
-    lookupKey: 'fidelitepro_annuel',
-    name: 'Orlyo — Plan Annuel',
-    description: 'Clients illimités, programmes multiples, analytics avancés, export CSV, support prioritaire.',
-    amount: 34800,
-    interval: 'year' as const,
+    priceId: process.env.STRIPE_PRICE_YEARLY || 'price_1TQ4gFE63QUBXRWnD9NzVCFY',
   },
-}
-
-async function getOrCreatePrice(stripe: Stripe, planKey: keyof typeof PLANS): Promise<string> {
-  const def = PLANS[planKey]
-
-  // Try to find an existing active price with this lookup_key
-  const existing = await stripe.prices.list({ lookup_keys: [def.lookupKey], limit: 1 })
-  if (existing.data.length > 0) {
-    console.log(`[checkout] found existing price for ${def.lookupKey}: ${existing.data[0].id}`)
-    return existing.data[0].id
-  }
-
-  // Not found — create product + price
-  console.log(`[checkout] creating price for ${def.lookupKey}`)
-  const product = await stripe.products.create({ name: def.name, description: def.description })
-  const price = await stripe.prices.create({
-    product: product.id,
-    unit_amount: def.amount,
-    currency: 'eur',
-    recurring: { interval: def.interval },
-    lookup_key: def.lookupKey,
-    transfer_lookup_key: true,
-  })
-  console.log(`[checkout] created price ${price.id} for ${def.lookupKey}`)
-  return price.id
 }
 
 export async function POST(req: NextRequest) {
@@ -64,13 +31,7 @@ export async function POST(req: NextRequest) {
 
   const stripe = new Stripe(process.env.STRIPE_SECRET_KEY)
 
-  let priceId: string
-  try {
-    priceId = await getOrCreatePrice(stripe, plan)
-  } catch (err) {
-    console.error('[checkout] getOrCreatePrice error:', err)
-    return NextResponse.json({ error: 'Impossible de récupérer le prix Stripe' }, { status: 500 })
-  }
+  const priceId = PLANS[plan].priceId
 
   const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://getorlyo.com'
 
