@@ -1,0 +1,222 @@
+'use client'
+
+import { useEffect, useState, useCallback } from 'react'
+import {
+  LineChart, Line, BarChart, Bar,
+  XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
+} from 'recharts'
+import { TrendingUp, Users, Gift, Star, Lock, ArrowRight } from 'lucide-react'
+import Link from 'next/link'
+import { createClient } from '@/lib/supabase/client'
+import type { Commercant, CarteFidelite, Scan } from '@/lib/types'
+
+function fmt(iso: string) {
+  return new Intl.DateTimeFormat('fr-FR', { day: '2-digit', month: 'short' }).format(new Date(iso))
+}
+function fmtWeek(iso: string) {
+  return new Intl.DateTimeFormat('fr-FR', { day: '2-digit', month: 'short' }).format(new Date(iso))
+}
+
+export default function AnalyticsPage() {
+  const [commercant, setCommercant] = useState<Commercant | null>(null)
+  const [loading, setLoading] = useState(true)
+
+  const [scansByDay, setScansByDay] = useState<{ day: string; scans: number }[]>([])
+  const [pointsByWeek, setPointsByWeek] = useState<{ week: string; points: number }[]>([])
+  const [top10, setTop10] = useState<CarteFidelite[]>([])
+  const [activeCount, setActiveCount] = useState(0)
+  const [inactiveCount, setInactiveCount] = useState(0)
+  const [rewardsMois, setRewardsMois] = useState(0)
+
+  const load = useCallback(async () => {
+    const supabase = createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return
+
+    const { data: comm } = await supabase.from('commercants').select('*').eq('id', user.id).single()
+    setCommercant(comm)
+
+    if (comm?.plan_actif !== 'annuel') { setLoading(false); return }
+
+    const now = new Date()
+    const day30ago = new Date(now); day30ago.setDate(now.getDate() - 30)
+    const week8ago = new Date(now); week8ago.setDate(now.getDate() - 56)
+    const month1ago = new Date(now.getFullYear(), now.getMonth(), 1)
+
+    const [{ data: scans30 }, { data: scans8w }, { data: cartes }, { data: scansMonth }] = await Promise.all([
+      supabase.from('scans').select('created_at').eq('commercant_id', user.id).gte('created_at', day30ago.toISOString()),
+      supabase.from('scans').select('created_at, points_ajoutes').eq('commercant_id', user.id).gte('created_at', week8ago.toISOString()),
+      supabase.from('cartes_fidelite').select('*').eq('commercant_id', user.id).order('points_cumules_total', { ascending: false }),
+      supabase.from('scans').select('recompense_declenchee').eq('commercant_id', user.id).gte('created_at', month1ago.toISOString()),
+    ])
+
+    // Scans per day
+    const dayMap: Record<string, number> = {}
+    for (let i = 29; i >= 0; i--) {
+      const d = new Date(now); d.setDate(now.getDate() - i)
+      dayMap[d.toISOString().slice(0, 10)] = 0
+    }
+    ;(scans30 ?? []).forEach((s: Pick<Scan, 'created_at'>) => {
+      const k = s.created_at.slice(0, 10)
+      if (k in dayMap) dayMap[k]++
+    })
+    setScansByDay(Object.entries(dayMap).map(([day, scans]) => ({ day: fmt(day + 'T12:00:00'), scans })))
+
+    // Points per week
+    const weekMap: Record<string, number> = {}
+    for (let i = 7; i >= 0; i--) {
+      const d = new Date(now); d.setDate(now.getDate() - i * 7)
+      const mon = new Date(d); mon.setDate(d.getDate() - ((d.getDay() + 6) % 7))
+      weekMap[mon.toISOString().slice(0, 10)] = 0
+    }
+    ;(scans8w ?? []).forEach((s: Pick<Scan, 'created_at' | 'points_ajoutes'>) => {
+      const d = new Date(s.created_at)
+      const mon = new Date(d); mon.setDate(d.getDate() - ((d.getDay() + 6) % 7))
+      const k = mon.toISOString().slice(0, 10)
+      if (k in weekMap) weekMap[k] += s.points_ajoutes
+    })
+    setPointsByWeek(Object.entries(weekMap).map(([week, points]) => ({ week: fmtWeek(week + 'T12:00:00'), points })))
+
+    // Top 10
+    setTop10((cartes ?? []).slice(0, 10))
+
+    // Active vs inactive
+    const threshold = day30ago.toISOString()
+    const active = (cartes ?? []).filter((c: CarteFidelite) => c.derniere_visite >= threshold).length
+    setActiveCount(active)
+    setInactiveCount((cartes ?? []).length - active)
+
+    // Rewards this month
+    setRewardsMois((scansMonth ?? []).filter((s: Pick<Scan, 'recompense_declenchee'>) => s.recompense_declenchee).length)
+
+    setLoading(false)
+  }, [])
+
+  useEffect(() => { load() }, [load])
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="w-8 h-8 border-4 border-[#2D4A8A] border-t-transparent rounded-full animate-spin" />
+      </div>
+    )
+  }
+
+  if (commercant?.plan_actif !== 'annuel') {
+    return (
+      <div className="p-8 flex items-center justify-center min-h-[60vh]">
+        <div className="text-center max-w-sm">
+          <div className="w-16 h-16 rounded-full bg-[#F59E0B]/10 flex items-center justify-center mx-auto mb-4">
+            <Lock size={28} className="text-[#F59E0B]" />
+          </div>
+          <h2 className="text-xl font-bold mb-2">Fonctionnalité Pro</h2>
+          <p className="text-[#6B7280] text-sm mb-6">
+            Les analytics avancées sont disponibles sur le plan annuel. Passez au plan annuel pour accéder aux graphiques et au classement clients.
+          </p>
+          <Link
+            href="/pricing"
+            className="inline-flex items-center gap-2 bg-[#2D4A8A] text-white font-semibold px-6 py-3 rounded-xl hover:bg-[#1e3a6e] transition-colors"
+          >
+            Voir les plans
+            <ArrowRight size={16} />
+          </Link>
+        </div>
+      </div>
+    )
+  }
+
+  const totalCartes = activeCount + inactiveCount
+  const activePct = totalCartes > 0 ? Math.round((activeCount / totalCartes) * 100) : 0
+
+  return (
+    <div className="p-8 space-y-8">
+      <div>
+        <h1 className="text-2xl font-bold text-[#1A1A23]">Analytics</h1>
+        <p className="text-[#6B7280] text-sm mt-1">Données des 30 derniers jours</p>
+      </div>
+
+      {/* Métriques */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        {[
+          { label: 'Clients actifs', value: `${activePct}%`, sub: `${activeCount} / ${totalCartes}`, icon: Users, color: 'text-[#2D4A8A]', bg: 'bg-[#2D4A8A]/10' },
+          { label: 'Clients inactifs', value: inactiveCount, sub: '+30 jours sans scan', icon: Users, color: 'text-[#6B7280]', bg: 'bg-gray-100' },
+          { label: 'Récompenses ce mois', value: rewardsMois, sub: 'débloquées', icon: Gift, color: 'text-[#0F6E56]', bg: 'bg-[#0F6E56]/10' },
+          { label: 'Points / client', value: totalCartes > 0 ? Math.round(top10.reduce((a, c) => a + c.points_cumules_total, 0) / Math.max(totalCartes, 1)) : 0, sub: 'moyenne cumulée', icon: TrendingUp, color: 'text-[#F59E0B]', bg: 'bg-[#F59E0B]/10' },
+        ].map(({ label, value, sub, icon: Icon, color, bg }) => (
+          <div key={label} className="bg-white rounded-2xl border border-gray-200 shadow-sm p-5">
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-xs text-[#6B7280] font-medium">{label}</span>
+              <div className={`w-8 h-8 rounded-xl ${bg} flex items-center justify-center`}>
+                <Icon size={16} className={color} />
+              </div>
+            </div>
+            <p className="text-2xl font-bold">{value}</p>
+            <p className="text-xs text-[#6B7280] mt-0.5">{sub}</p>
+          </div>
+        ))}
+      </div>
+
+      {/* Scans par jour */}
+      <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
+        <h2 className="font-semibold text-[#1A1A23] mb-6">Scans par jour — 30 derniers jours</h2>
+        <ResponsiveContainer width="100%" height={220}>
+          <LineChart data={scansByDay} margin={{ top: 4, right: 16, left: -20, bottom: 0 }}>
+            <CartesianGrid strokeDasharray="3 3" stroke="#F3F4F6" />
+            <XAxis dataKey="day" tick={{ fontSize: 11, fill: '#9CA3AF' }} tickLine={false} interval={4} />
+            <YAxis tick={{ fontSize: 11, fill: '#9CA3AF' }} tickLine={false} axisLine={false} allowDecimals={false} />
+            <Tooltip contentStyle={{ borderRadius: 12, border: '1px solid #E5E7EB', fontSize: 12 }} />
+            <Line type="monotone" dataKey="scans" stroke="#2D4A8A" strokeWidth={2} dot={false} activeDot={{ r: 4 }} />
+          </LineChart>
+        </ResponsiveContainer>
+      </div>
+
+      {/* Points par semaine */}
+      <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
+        <h2 className="font-semibold text-[#1A1A23] mb-6">Points distribués par semaine — 8 dernières semaines</h2>
+        <ResponsiveContainer width="100%" height={220}>
+          <BarChart data={pointsByWeek} margin={{ top: 4, right: 16, left: -20, bottom: 0 }}>
+            <CartesianGrid strokeDasharray="3 3" stroke="#F3F4F6" vertical={false} />
+            <XAxis dataKey="week" tick={{ fontSize: 11, fill: '#9CA3AF' }} tickLine={false} />
+            <YAxis tick={{ fontSize: 11, fill: '#9CA3AF' }} tickLine={false} axisLine={false} allowDecimals={false} />
+            <Tooltip contentStyle={{ borderRadius: 12, border: '1px solid #E5E7EB', fontSize: 12 }} />
+            <Bar dataKey="points" fill="#F59E0B" radius={[4, 4, 0, 0]} />
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
+
+      {/* Top 10 clients */}
+      <div className="bg-white rounded-2xl border border-gray-200 shadow-sm">
+        <div className="px-6 py-5 border-b border-gray-200">
+          <h2 className="font-semibold text-[#1A1A23]">Top 10 clients</h2>
+          <p className="text-xs text-[#6B7280]">Classés par points cumulés total</p>
+        </div>
+        <div className="divide-y divide-gray-50">
+          {top10.map((c, i) => (
+            <div key={c.id} className="flex items-center gap-4 px-6 py-3">
+              <span className={`w-6 text-sm font-bold tabular-nums ${i < 3 ? 'text-[#F59E0B]' : 'text-[#9CA3AF]'}`}>
+                {i + 1}
+              </span>
+              <div className="w-8 h-8 rounded-full bg-[#2D4A8A]/10 text-[#2D4A8A] text-xs font-bold flex items-center justify-center flex-shrink-0">
+                {(c.client_nom || c.client_email).slice(0, 2).toUpperCase()}
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium truncate">{c.client_nom || c.client_email}</p>
+                <p className="text-xs text-[#6B7280] truncate">{c.client_email}</p>
+              </div>
+              <div className="text-right flex-shrink-0">
+                <p className="text-sm font-bold text-[#2D4A8A]">{c.points_cumules_total} pts</p>
+                <div className="flex items-center gap-1 justify-end">
+                  <Star size={10} className="text-yellow-500" fill="currentColor" />
+                  <span className="text-xs text-[#6B7280]">{c.recompenses_obtenues}</span>
+                </div>
+              </div>
+            </div>
+          ))}
+          {top10.length === 0 && (
+            <p className="text-center text-[#6B7280] text-sm py-10">Aucune donnée disponible</p>
+          )}
+        </div>
+      </div>
+    </div>
+  )
+}

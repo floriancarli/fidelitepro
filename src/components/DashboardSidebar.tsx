@@ -3,18 +3,19 @@
 import { useEffect, useState } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
 import Link from 'next/link'
-import { LayoutDashboard, QrCode, Gift, UserCircle, LogOut, BadgeCheck, Settings } from 'lucide-react'
+import { LayoutDashboard, QrCode, Gift, UserCircle, LogOut, BadgeCheck, Settings, BarChart2 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { isDemoEmail } from '@/lib/useDemo'
 import Logo from './Logo'
 import type { Commercant } from '@/lib/types'
 
 const navItems = [
-  { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-  { href: '/dashboard/qr-code', label: 'Mon QR Code', icon: QrCode },
-  { href: '/dashboard/recompenses', label: 'Récompenses', icon: Gift },
-  { href: '/dashboard/configuration', label: 'Configuration', icon: Settings },
-  { href: '/mon-compte', label: 'Mon Compte', icon: UserCircle },
+  { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard, proOnly: false },
+  { href: '/dashboard/qr-code', label: 'Mon QR Code', icon: QrCode, proOnly: false },
+  { href: '/dashboard/recompenses', label: 'Récompenses', icon: Gift, proOnly: false },
+  { href: '/dashboard/analytics', label: 'Analytics', icon: BarChart2, proOnly: true },
+  { href: '/dashboard/configuration', label: 'Configuration', icon: Settings, proOnly: false },
+  { href: '/mon-compte', label: 'Mon Compte', icon: UserCircle, proOnly: false },
 ]
 
 export default function DashboardSidebar() {
@@ -86,8 +87,9 @@ export default function DashboardSidebar() {
       </div>
 
       <nav className="flex-1 px-4 py-4 space-y-1">
-        {navItems.map(({ href, label, icon: Icon }) => {
+        {navItems.map(({ href, label, icon: Icon, proOnly }) => {
           const active = pathname === href
+          const isPro = commercant?.plan_actif === 'annuel'
           return (
             <Link
               key={href}
@@ -97,7 +99,10 @@ export default function DashboardSidebar() {
               }`}
             >
               <Icon size={18} />
-              {label}
+              <span className="flex-1">{label}</span>
+              {proOnly && !isPro && (
+                <span className="text-[10px] font-semibold bg-[#F59E0B] text-[#1B2B4B] px-1.5 py-0.5 rounded-full leading-none">Pro</span>
+              )}
             </Link>
           )
         })}

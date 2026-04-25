@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback, useRef } from 'react'
 import dynamic from 'next/dynamic'
-import { Users, QrCode, TrendingUp, Search, Star, ScanLine, CheckCircle, Gift, Trash2 } from 'lucide-react'
+import { Users, QrCode, TrendingUp, Search, Star, ScanLine, CheckCircle, Gift, Trash2, Download } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { isDemoEmail } from '@/lib/useDemo'
 import DemoToast from '@/components/DemoToast'
@@ -162,6 +162,29 @@ export default function DashboardPage() {
     load()
   }
 
+  const exportCSV = () => {
+    const header = 'Nom,Email,Points actuels,Points cumulés,Récompenses,Date inscription,Dernière visite'
+    const rows = cartes.map((c) =>
+      [
+        `"${c.client_nom || ''}"`,
+        `"${c.client_email}"`,
+        c.nombre_points,
+        c.points_cumules_total,
+        c.recompenses_obtenues,
+        `"${formatDate(c.created_at)}"`,
+        `"${formatDate(c.derniere_visite)}"`,
+      ].join(',')
+    )
+    const csv = [header, ...rows].join('\n')
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `clients-${new Date().toISOString().slice(0, 10)}.csv`
+    a.click()
+    URL.revokeObjectURL(url)
+  }
+
   const filtered = cartes.filter(
     (c) =>
       c.client_email.toLowerCase().includes(search.toLowerCase()) ||
@@ -285,15 +308,36 @@ export default function DashboardPage() {
               <h2 className="font-semibold text-[#1A1A23]">Mes clients fidèles</h2>
               <p className="text-xs text-[#6B7280]">{cartes.length} client{cartes.length > 1 ? 's' : ''} inscrits</p>
             </div>
-            <div className="sm:ml-auto relative">
-              <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#6B7280]" />
-              <input
-                type="text"
-                placeholder="Rechercher un client..."
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                className="pl-9 pr-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#2D4A8A]/30 focus:border-[#2D4A8A] w-64"
-              />
+            <div className="sm:ml-auto flex items-center gap-3">
+              {commercant?.plan_actif === 'annuel' ? (
+                <button
+                  onClick={exportCSV}
+                  className="flex items-center gap-1.5 border border-gray-200 text-[#1A1A23] text-sm font-medium px-3 py-2 rounded-lg hover:bg-gray-50 transition-colors"
+                >
+                  <Download size={15} />
+                  Exporter CSV
+                </button>
+              ) : (
+                <div title="Disponible sur le plan annuel">
+                  <button
+                    disabled
+                    className="flex items-center gap-1.5 border border-gray-200 text-gray-300 text-sm font-medium px-3 py-2 rounded-lg cursor-not-allowed"
+                  >
+                    <Download size={15} />
+                    Exporter CSV
+                  </button>
+                </div>
+              )}
+              <div className="relative">
+                <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#6B7280]" />
+                <input
+                  type="text"
+                  placeholder="Rechercher un client..."
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  className="pl-9 pr-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#2D4A8A]/30 focus:border-[#2D4A8A] w-64"
+                />
+              </div>
             </div>
           </div>
 

@@ -14,6 +14,7 @@ export interface Commercant {
   couleur_principale: string
   logo_url: string | null
   abonnement_actif: boolean
+  plan_actif: 'mensuel' | 'annuel' | null
   nom_programme: string
   message_bienvenue: string
   paliers: Palier[]
