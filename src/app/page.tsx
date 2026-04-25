@@ -30,18 +30,22 @@ const pricing = [
     nom: 'Mensuel',
     prix: '39',
     desc: 'Sans engagement',
+    badge: 'Le plus populaire',
+    badgeStyle: 'popular',
     features: ['Clients illimités', '1 programme de fidélité', 'Notifications email', 'Support email'],
     cta: 'Commencer',
-    highlight: false,
+    highlight: true,
   },
   {
     nom: 'Annuel',
     prix: '29',
-    desc: 'Économisez 25%',
+    desc: 'Économisez 120€/an',
+    badge: 'Meilleure valeur',
+    badgeStyle: 'value',
     facturation: 'Facturé 348€/an',
     features: ['Clients illimités', 'Programmes multiples', 'Notifications email', 'Analytics avancés', 'Export CSV', 'Support prioritaire'],
     cta: 'Commencer',
-    highlight: true,
+    highlight: false,
   },
 ]
 
@@ -217,20 +221,22 @@ export default function LandingPage() {
             {pricing.map((p) => (
               <div
                 key={p.nom}
-                className={`rounded-2xl p-8 relative ${
+                className={`rounded-2xl p-8 relative flex flex-col ${
                   p.highlight
                     ? 'bg-[#2D4A8A] text-white shadow-xl ring-2 ring-[#2D4A8A]'
-                    : 'bg-white border border-gray-200 shadow-sm'
+                    : 'bg-white border-2 border-[#F59E0B] shadow-sm'
                 }`}
               >
-                {p.highlight && (
-                  <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-yellow-400 text-yellow-900 text-xs font-bold px-4 py-1 rounded-full whitespace-nowrap">
-                    ⭐ {p.desc}
-                  </div>
-                )}
-                <h3 className={`font-bold text-xl mb-1 ${p.highlight ? 'text-white' : ''}`}>{p.nom}</h3>
-                <p className={`text-sm mb-4 ${p.highlight ? 'text-white/70' : 'text-[#6B7280]'}`}>
-                  {p.highlight ? 'Engagement annuel' : p.desc}
+                <div className={`absolute -top-3.5 left-1/2 -translate-x-1/2 text-xs font-bold px-4 py-1 rounded-full whitespace-nowrap ${
+                  p.badgeStyle === 'popular'
+                    ? 'bg-yellow-400 text-yellow-900'
+                    : 'bg-[#F59E0B] text-white'
+                }`}>
+                  ⭐ {p.badge}
+                </div>
+                <h3 className={`font-bold text-xl mb-1 ${p.highlight ? 'text-white' : 'text-[#1A1A23]'}`}>{p.nom}</h3>
+                <p className={`text-sm mb-4 ${p.highlight ? 'text-white/70' : 'text-[#F59E0B] font-medium'}`}>
+                  {p.desc}
                 </p>
                 <div className="flex items-end gap-1 mb-1">
                   <span className={`text-4xl font-bold ${p.highlight ? 'text-white' : 'text-[#1A1A23]'}`}>{p.prix}€</span>
@@ -239,7 +245,7 @@ export default function LandingPage() {
                 {'facturation' in p && p.facturation && (
                   <p className={`text-xs mb-5 ${p.highlight ? 'text-white/60' : 'text-[#6B7280]'}`}>{p.facturation}</p>
                 )}
-                <ul className={`space-y-3 mb-8 ${'facturation' in p && p.facturation ? '' : 'mt-5'}`}>
+                <ul className={`space-y-3 mb-8 flex-1 ${'facturation' in p && p.facturation ? '' : 'mt-5'}`}>
                   {p.features.map((f) => (
                     <li key={f} className={`flex items-start gap-2 text-sm ${p.highlight ? 'text-white/90' : 'text-[#6B7280]'}`}>
                       <Check size={16} className={`mt-0.5 flex-shrink-0 ${p.highlight ? 'text-green-300' : 'text-[#0F6E56]'}`} />
@@ -252,7 +258,7 @@ export default function LandingPage() {
                   className={`block text-center font-semibold py-3 rounded-xl transition-colors ${
                     p.highlight
                       ? 'bg-white text-[#2D4A8A] hover:bg-gray-50'
-                      : 'bg-[#2D4A8A] text-white hover:bg-[#1e3a6e]'
+                      : 'bg-[#F59E0B] text-[#1B2B4B] hover:bg-[#e08900]'
                   }`}
                 >
                   {p.cta}
