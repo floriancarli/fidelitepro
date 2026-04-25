@@ -286,7 +286,7 @@ export default function DashboardPage() {
         </div>
 
         {/* Bannière upsell annuel — mensuel depuis 30+ jours */}
-        {!isDemo && commercant?.plan_actif === 'mensuel' && (() => {
+        {!isDemo && !isDemoLive && commercant?.plan_actif === 'mensuel' && (() => {
           const thirtyDaysAgo = new Date(); thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
           return new Date(commercant.created_at) <= thirtyDaysAgo
         })() && (
@@ -353,7 +353,7 @@ export default function DashboardPage() {
               <p className="text-xs text-[#6B7280]">{cartes.length} client{cartes.length > 1 ? 's' : ''} inscrits</p>
             </div>
             <div className="sm:ml-auto flex items-center gap-3">
-              {commercant?.plan_actif === 'annuel' ? (
+              {(isDemoLive || commercant?.plan_actif === 'annuel') ? (
                 <button
                   onClick={exportCSV}
                   className="flex items-center gap-1.5 border border-gray-200 text-[#1A1A23] text-sm font-medium px-3 py-2 rounded-lg hover:bg-gray-50 transition-colors"

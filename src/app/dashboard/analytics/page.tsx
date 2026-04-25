@@ -48,15 +48,20 @@ export default function AnalyticsPage() {
   const [inactiveCount, setInactiveCount] = useState(0)
   const [rewardsMois, setRewardsMois] = useState(0)
 
+  const [isDemoLive, setIsDemoLive] = useState(false)
+
   const load = useCallback(async () => {
     const supabase = createClient()
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return
 
+    const demoLive = user.email === 'demo-live@getorlyo.com'
+    setIsDemoLive(demoLive)
+
     const { data: comm } = await supabase.from('commercants').select('*').eq('id', user.id).single()
     setCommercant(comm)
 
-    if (comm?.plan_actif === 'annuel') {
+    if (demoLive || comm?.plan_actif === 'annuel') {
       const now = new Date()
       const day30ago = new Date(now); day30ago.setDate(now.getDate() - 30)
       const week8ago = new Date(now); week8ago.setDate(now.getDate() - 56)
@@ -124,7 +129,7 @@ export default function AnalyticsPage() {
     )
   }
 
-  const isPro = false // always show upsell
+  const isPro = isDemoLive || commercant?.plan_actif === 'annuel'
   const totalCartes = activeCount + inactiveCount
   const activePct = totalCartes > 0 ? Math.round((activeCount / totalCartes) * 100) : 0
 
