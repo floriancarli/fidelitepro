@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import Logo from '@/components/Logo'
 
-const DEMO_EMAIL = process.env.NEXT_PUBLIC_DEMO_EMAIL || 'demo@getorlyo.com'
+const DEMO_EMAIL = process.env.NEXT_PUBLIC_DEMO_EMAIL || 'demo@fidelitepro.com'
 const DEMO_PASSWORD = process.env.NEXT_PUBLIC_DEMO_PASSWORD || 'DemoFidelite2024!'
 
 export default function DemoPage() {
