@@ -124,7 +124,7 @@ export default function AnalyticsPage() {
     )
   }
 
-  const isPro = commercant?.plan_actif === 'annuel'
+  const isPro = false // always show upsell
   const totalCartes = activeCount + inactiveCount
   const activePct = totalCartes > 0 ? Math.round((activeCount / totalCartes) * 100) : 0
 
