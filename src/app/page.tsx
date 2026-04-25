@@ -51,7 +51,7 @@ export default function LandingPage() {
       {/* Header */}
       <header className="border-b border-gray-200 bg-white/80 backdrop-blur-sm sticky top-0 z-50">
         <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-          <Logo size="md" />
+          <Link href="/"><Logo size="md" /></Link>
           <div className="flex items-center gap-4">
             <Link href="/demo" className="text-sm font-medium text-gray-600 hover:text-[#2D4A8A] transition-colors">
               Voir la démo

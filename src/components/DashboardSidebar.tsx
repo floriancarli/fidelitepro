@@ -48,7 +48,9 @@ export default function DashboardSidebar() {
   return (
     <aside className="w-64 min-h-screen bg-[#2D4A8A] flex flex-col text-white">
       <div className="px-6 py-6 border-b border-white/10">
-        <Logo white size="md" />
+        <Link href="/">
+          <Logo white size="md" />
+        </Link>
       </div>
 
       <div className="px-6 py-5 border-b border-white/10">
