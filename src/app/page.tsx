@@ -88,17 +88,17 @@ export default function LandingPage() {
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
                 <Link
-                  href="/pricing"
+                  href="/demo"
                   className="bg-white text-[#2D4A8A] font-semibold px-8 py-3.5 rounded-xl hover:bg-gray-50 transition-colors flex items-center justify-center gap-2"
                 >
-                  Voir les tarifs
+                  Voir la démo
                   <ArrowRight size={18} />
                 </Link>
                 <Link
-                  href="/demo"
+                  href="/pricing"
                   className="border border-white/30 text-white font-semibold px-8 py-3.5 rounded-xl hover:bg-white/10 transition-colors flex items-center justify-center"
                 >
-                  Voir la démo
+                  Voir les tarifs
                 </Link>
               </div>
             </div>
@@ -281,10 +281,10 @@ export default function LandingPage() {
           <h2 className="text-3xl font-bold mb-4">Prêt à fidéliser vos clients ?</h2>
           <p className="text-white/80 mb-8">Rejoignez les premiers commerçants qui font confiance à Orlyo.</p>
           <Link
-            href="/pricing"
+            href="/demo"
             className="inline-flex items-center gap-2 bg-white text-[#2D4A8A] font-semibold px-8 py-3.5 rounded-xl hover:bg-gray-50 transition-colors"
           >
-            Voir les tarifs
+            Essayer la démo
             <ArrowRight size={18} />
           </Link>
         </div>
@@ -298,7 +298,7 @@ export default function LandingPage() {
           <div className="flex gap-6 text-sm text-[#6B7280]">
             <Link href="/mentions-legales" className="hover:text-[#2D4A8A]">Mentions légales</Link>
             <Link href="/politique-confidentialite" className="hover:text-[#2D4A8A]">Confidentialité</Link>
-            <a href="mailto:contact@fidelepro.fr" className="hover:text-[#2D4A8A]">Contact</a>
+            <a href="mailto:contact@getorlyo.com" className="hover:text-[#2D4A8A]">Contact</a>
           </div>
         </div>
       </footer>
