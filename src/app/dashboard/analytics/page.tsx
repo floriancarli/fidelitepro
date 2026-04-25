@@ -129,28 +129,29 @@ export default function AnalyticsPage() {
   const activePct = totalCartes > 0 ? Math.round((activeCount / totalCartes) * 100) : 0
 
   return (
-    <div className="p-8 space-y-8">
+    <div className="space-y-8">
+      {/* Sticky upsell banner — non-annual users */}
+      {!isPro && (
+        <div className="sticky top-0 z-20 bg-[#F59E0B] px-6 py-3 flex flex-col sm:flex-row sm:items-center gap-3 shadow-md">
+          <div className="flex items-center gap-2 flex-1">
+            <span className="text-lg">⭐</span>
+            <p className="font-bold text-white text-sm">Fonctionnalité réservée au plan annuel</p>
+          </div>
+          <Link
+            href="/pricing"
+            className="inline-flex items-center gap-2 bg-white text-[#2D4A8A] font-semibold px-4 py-2 rounded-xl hover:bg-gray-50 transition-colors text-sm flex-shrink-0"
+          >
+            Passer au plan annuel
+            <ArrowRight size={14} />
+          </Link>
+        </div>
+      )}
+
+      <div className="px-8 space-y-8">
       <div>
         <h1 className="text-2xl font-bold text-[#1A1A23]">Analytics</h1>
         <p className="text-[#6B7280] text-sm mt-1">Données des 30 derniers jours</p>
       </div>
-
-      {/* Upsell banner — non-annual users */}
-      {!isPro && (
-        <div className="space-y-3">
-          <div className="rounded-2xl bg-[#F59E0B] px-5 py-4 flex items-center gap-3">
-            <span className="text-xl">⭐</span>
-            <p className="font-bold text-white">Fonctionnalité réservée au plan annuel</p>
-          </div>
-          <Link
-            href="/pricing"
-            className="inline-flex items-center gap-2 bg-[#2D4A8A] text-white font-semibold px-5 py-2.5 rounded-xl hover:bg-[#1e3a6e] transition-colors text-sm"
-          >
-            Passer au plan annuel
-            <ArrowRight size={15} />
-          </Link>
-        </div>
-      )}
 
       {/* Métriques */}
       <div className={`grid grid-cols-2 lg:grid-cols-4 gap-4 ${!isPro ? 'opacity-60 pointer-events-none select-none' : ''}`}>

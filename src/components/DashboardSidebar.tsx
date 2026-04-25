@@ -101,7 +101,7 @@ export default function DashboardSidebar() {
               <Icon size={18} />
               <span className="flex-1">{label}</span>
               {proOnly && !isPro && (
-                <span className="text-[10px] font-semibold bg-[#F59E0B] text-[#1B2B4B] px-1.5 py-0.5 rounded-full leading-none">Pro</span>
+                <span className="text-[10px] font-semibold bg-[#F59E0B] text-white px-1.5 py-0.5 rounded-full leading-none">Annuel</span>
               )}
             </Link>
           )
