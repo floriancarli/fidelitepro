@@ -362,10 +362,10 @@ export default function LandingPage() {
           <h2 className="text-3xl font-bold mb-4">Prêt à fidéliser vos clients ?</h2>
           <p className="text-white/80 mb-8">Rejoignez les premiers commerçants qui font confiance à Orlyo.</p>
           <Link
-            href="/register"
+            href="/pricing"
             className="inline-flex items-center gap-2 bg-white text-[#2D4A8A] font-semibold px-8 py-3.5 rounded-xl hover:bg-gray-50 transition-colors"
           >
-            Commencer gratuitement
+            Voir les tarifs
             <ArrowRight size={18} />
           </Link>
         </div>
