@@ -12,13 +12,14 @@ const PLANS = [
   {
     id: 'mensuel' as const,
     nom: 'Mensuel',
-    badge: null,
+    badge: 'Le plus populaire',
+    badgeStyle: 'popular',
     prix: 39,
     prixLabel: '39€',
     periode: '/mois',
     sousTitre: 'Sans engagement',
     facturation: null,
-    highlight: false,
+    highlight: true,
     features: [
       'Clients illimités',
       '1 programme de fidélité',
@@ -30,13 +31,14 @@ const PLANS = [
   {
     id: 'annuel' as const,
     nom: 'Annuel',
-    badge: 'Économisez 25%',
+    badge: 'Meilleure valeur',
+    badgeStyle: 'value',
     prix: 29,
     prixLabel: '29€',
     periode: '/mois',
-    sousTitre: 'Engagement annuel',
+    sousTitre: 'Économisez 120€/an',
     facturation: 'Facturé 348€/an',
-    highlight: true,
+    highlight: false,
     features: [
       'Clients illimités',
       'Programmes de fidélité multiples',
@@ -119,11 +121,15 @@ export default function PricingPage() {
               className={`rounded-2xl p-8 relative flex flex-col ${
                 plan.highlight
                   ? 'bg-[#2D4A8A] text-white shadow-2xl shadow-[#2D4A8A]/25 ring-2 ring-[#2D4A8A]'
-                  : 'bg-white border border-gray-200 shadow-sm'
+                  : 'bg-white border-2 border-[#F59E0B] shadow-sm'
               }`}
             >
               {plan.badge && (
-                <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-yellow-400 text-yellow-900 text-xs font-bold px-4 py-1 rounded-full whitespace-nowrap">
+                <div className={`absolute -top-3.5 left-1/2 -translate-x-1/2 text-xs font-bold px-4 py-1 rounded-full whitespace-nowrap ${
+                  plan.badgeStyle === 'popular'
+                    ? 'bg-yellow-400 text-yellow-900'
+                    : 'bg-[#F59E0B] text-white'
+                }`}>
                   ⭐ {plan.badge}
                 </div>
               )}
@@ -133,9 +139,9 @@ export default function PricingPage() {
                 <div className="flex items-center gap-2 mb-1">
                   {plan.highlight
                     ? <Zap size={16} className="text-yellow-300" />
-                    : <Clock size={16} className="text-[#6B7280]" />
+                    : <Zap size={16} className="text-[#F59E0B]" />
                   }
-                  <span className={`text-sm font-semibold ${plan.highlight ? 'text-white/80' : 'text-[#6B7280]'}`}>
+                  <span className={`text-sm font-semibold ${plan.highlight ? 'text-white/80' : 'text-[#F59E0B]'}`}>
                     {plan.sousTitre}
                   </span>
                 </div>
@@ -175,7 +181,7 @@ export default function PricingPage() {
                 {plan.wallet && (
                   <li className="flex items-start gap-3">
                     <span className="text-base flex-shrink-0 mt-[-1px]">🔜</span>
-                    <span className="text-sm text-white/70 italic">Wallet Apple &amp; Google — Bientôt disponible</span>
+                    <span className={`text-sm italic ${plan.highlight ? 'text-white/70' : 'text-[#6B7280]'}`}>Wallet Apple &amp; Google — Bientôt disponible</span>
                   </li>
                 )}
               </ul>
@@ -187,7 +193,7 @@ export default function PricingPage() {
                 className={`w-full py-3.5 rounded-xl font-semibold text-sm transition-colors disabled:opacity-60 disabled:cursor-not-allowed ${
                   plan.highlight
                     ? 'bg-white text-[#2D4A8A] hover:bg-gray-50'
-                    : 'bg-[#2D4A8A] text-white hover:bg-[#1e3a6e]'
+                    : 'bg-[#F59E0B] text-[#1B2B4B] hover:bg-[#e08900]'
                 }`}
               >
                 {loading === plan.id ? 'Redirection...' : plan.cta}

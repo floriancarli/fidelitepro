@@ -2,7 +2,8 @@
 
 import { useEffect, useState, useCallback, useRef } from 'react'
 import dynamic from 'next/dynamic'
-import { Users, QrCode, TrendingUp, Search, Star, ScanLine, CheckCircle, Gift, Trash2, Download } from 'lucide-react'
+import { Users, QrCode, TrendingUp, Search, Star, ScanLine, CheckCircle, Gift, Trash2, Download, ArrowRight } from 'lucide-react'
+import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 import { isDemoEmail } from '@/lib/useDemo'
 import DemoToast from '@/components/DemoToast'
@@ -259,6 +260,25 @@ export default function DashboardPage() {
             Scanner un client
           </button>
         </div>
+
+        {/* Bannière upsell annuel — mensuel depuis 30+ jours */}
+        {!isDemo && commercant?.plan_actif === 'mensuel' && (() => {
+          const thirtyDaysAgo = new Date(); thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
+          return new Date(commercant.created_at) <= thirtyDaysAgo
+        })() && (
+          <div className="bg-[#FFF8EC] border border-[#F59E0B]/40 rounded-2xl px-5 py-4 flex flex-col sm:flex-row sm:items-center gap-4 mb-6">
+            <p className="flex-1 text-sm text-[#1A1A23]">
+              🎉 <span className="font-semibold">Vous utilisez Orlyo depuis 30 jours !</span> Passez au plan annuel et économisez <span className="font-semibold text-[#F59E0B]">120€/an</span>.
+            </p>
+            <Link
+              href="/pricing"
+              className="inline-flex items-center gap-2 bg-[#2D4A8A] text-white font-semibold px-4 py-2.5 rounded-xl hover:bg-[#1e3a6e] transition-colors text-sm flex-shrink-0"
+            >
+              Passer au plan annuel
+              <ArrowRight size={15} />
+            </Link>
+          </div>
+        )}
 
         {/* Bannière résultat scan */}
         {lastScanResult && (
