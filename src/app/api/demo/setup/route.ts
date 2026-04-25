@@ -7,8 +7,8 @@ function isAuthorized(req: NextRequest) {
   return req.headers.get('authorization') === `Bearer ${secret}`
 }
 
-const DEMO_EMAIL = process.env.NEXT_PUBLIC_DEMO_EMAIL || 'demo@fidelitepro.fr'
-const DEMO_PASSWORD = process.env.DEMO_PASSWORD || 'DemoFidelite2024!'
+const DEMO_EMAIL = process.env.NEXT_PUBLIC_DEMO_EMAIL || 'demo@getorlyo.com'
+const DEMO_PASSWORD = process.env.DEMO_PASSWORD || 'DemoOrlyo2024!'
 const DEMO_QR = 'QR-DEMO-BOULANGERIE'
 
 const DEMO_PALIERS = [
@@ -18,14 +18,14 @@ const DEMO_PALIERS = [
 ]
 
 const DEMO_CLIENTS = [
-  { nom: 'Marie Dupont',   email: 'marie.dupont.demo@fidelitepro.fr',   qr: 'QR-DEMO-CLI-01', points: 8,  cumul: 23, recompenses: 1 },
-  { nom: 'Thomas Bernard', email: 'thomas.bernard.demo@fidelitepro.fr', qr: 'QR-DEMO-CLI-02', points: 4,  cumul: 14, recompenses: 1 },
-  { nom: 'Sophie Leblanc', email: 'sophie.leblanc.demo@fidelitepro.fr', qr: 'QR-DEMO-CLI-03', points: 9,  cumul: 19, recompenses: 0 },
-  { nom: 'Lucas Petit',    email: 'lucas.petit.demo@fidelitepro.fr',    qr: 'QR-DEMO-CLI-04', points: 2,  cumul: 32, recompenses: 3 },
-  { nom: 'Emma Rousseau',  email: 'emma.rousseau.demo@fidelitepro.fr',  qr: 'QR-DEMO-CLI-05', points: 6,  cumul: 16, recompenses: 1 },
-  { nom: 'Nathan Leblanc', email: 'nathan.leblanc.demo@fidelitepro.fr', qr: 'QR-DEMO-CLI-06', points: 1,  cumul: 6,  recompenses: 0 },
-  { nom: 'Camille Moreau', email: 'camille.moreau.demo@fidelitepro.fr', qr: 'QR-DEMO-CLI-07', points: 7,  cumul: 27, recompenses: 2 },
-  { nom: 'Julien Garcia',  email: 'julien.garcia.demo@fidelitepro.fr',  qr: 'QR-DEMO-CLI-08', points: 3,  cumul: 8,  recompenses: 0 },
+  { nom: 'Marie Dupont',   email: 'marie.dupont@gmail.com',   qr: 'QR-DEMO-CLI-01', points: 8,  cumul: 23, recompenses: 1 },
+  { nom: 'Thomas Bernard', email: 'thomas.bernard@gmail.com', qr: 'QR-DEMO-CLI-02', points: 4,  cumul: 14, recompenses: 1 },
+  { nom: 'Sophie Leblanc', email: 'sophie.leblanc@gmail.com', qr: 'QR-DEMO-CLI-03', points: 9,  cumul: 19, recompenses: 0 },
+  { nom: 'Lucas Petit',    email: 'lucas.petit@gmail.com',    qr: 'QR-DEMO-CLI-04', points: 2,  cumul: 32, recompenses: 3 },
+  { nom: 'Emma Rousseau',  email: 'emma.rousseau@gmail.com',  qr: 'QR-DEMO-CLI-05', points: 6,  cumul: 16, recompenses: 1 },
+  { nom: 'Nathan Leblanc', email: 'nathan.leblanc@gmail.com', qr: 'QR-DEMO-CLI-06', points: 1,  cumul: 6,  recompenses: 0 },
+  { nom: 'Camille Moreau', email: 'camille.moreau@gmail.com', qr: 'QR-DEMO-CLI-07', points: 7,  cumul: 27, recompenses: 2 },
+  { nom: 'Julien Garcia',  email: 'julien.garcia@gmail.com',  qr: 'QR-DEMO-CLI-08', points: 3,  cumul: 8,  recompenses: 0 },
 ]
 
 export async function POST(req: NextRequest) {

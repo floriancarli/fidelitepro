@@ -37,7 +37,7 @@ export default function PolitiqueConfidentialitePage() {
           </p>
           <div className="bg-white rounded-xl p-4 text-sm font-mono">
             <p>Orlyo SAS</p>
-            <p>Contact : <a href="mailto:dpo@fidelepro.fr" className="text-[#2D4A8A] hover:underline">dpo@fidelepro.fr</a></p>
+            <p>Contact : <a href="mailto:dpo@getorlyo.com" className="text-[#2D4A8A] hover:underline">dpo@getorlyo.com</a></p>
           </div>
         </Section>
 
@@ -102,7 +102,7 @@ export default function PolitiqueConfidentialitePage() {
           </ul>
           <p className="mt-3">
             Pour exercer ces droits, contactez notre DPO à{' '}
-            <a href="mailto:dpo@fidelepro.fr" className="text-[#2D4A8A] hover:underline">dpo@fidelepro.fr</a>.
+            <a href="mailto:dpo@getorlyo.com" className="text-[#2D4A8A] hover:underline">dpo@getorlyo.com</a>.
             Nous répondrons dans un délai maximum de 30 jours.
           </p>
           <p className="mt-2">

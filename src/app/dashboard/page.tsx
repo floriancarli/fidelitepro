@@ -60,7 +60,7 @@ function ScanSuccessBanner({ result, onDismiss }: { result: ScanResult; onDismis
 const DEMO_SCAN_RESULT: ScanResult = {
   client: {
     id: 'demo-client-01',
-    email: 'marie.dupont.demo@fidelitepro.fr',
+    email: 'marie.dupont@gmail.com',
     nom: 'Marie Dupont',
     qr_code_id: 'QR-DEMO-CLI-01',
     created_at: new Date().toISOString(),
@@ -69,7 +69,7 @@ const DEMO_SCAN_RESULT: ScanResult = {
     id: 'demo-carte-01',
     commercant_id: 'demo',
     client_id: 'demo-client-01',
-    client_email: 'marie.dupont.demo@fidelitepro.fr',
+    client_email: 'marie.dupont@gmail.com',
     client_nom: 'Marie Dupont',
     nombre_points: 9,
     points_cumules_total: 24,
