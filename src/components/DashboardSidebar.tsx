@@ -49,7 +49,11 @@ export default function DashboardSidebar() {
   return (
     <aside className="w-64 min-h-screen bg-[#2D4A8A] flex flex-col text-white">
       <div className="px-6 py-6">
-        <Logo size="md" />
+        <Link href="/">
+          <div style={{background: 'white', borderRadius: '8px', padding: '4px', display: 'inline-block'}}>
+            <img src="/logo-orlyo.png" alt="Orlyo" width={50} height={50} style={{objectFit: 'contain', display: 'block'}} />
+          </div>
+        </Link>
       </div>
 
       <div className="px-6 py-5 border-b border-white/10">
