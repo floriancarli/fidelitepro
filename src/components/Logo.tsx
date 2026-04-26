@@ -1,4 +1,3 @@
-import Image from 'next/image'
 import Link from 'next/link'
 
 export function Logo({ size = 'md' }: { size?: 'sm' | 'md' | 'lg', white?: boolean, iconOnly?: boolean }) {
@@ -6,8 +5,7 @@ export function Logo({ size = 'md' }: { size?: 'sm' | 'md' | 'lg', white?: boole
   const px = sizes[size]
   return (
     <Link href="/">
-      <Image src="/logo-orlyo.png" alt="Orlyo" width={px} height={px} />
+      <img src="/logo-orlyo.png" alt="Orlyo" width={px} height={px} />
     </Link>
   )
 }
-
