@@ -8,7 +8,7 @@ interface LogoProps {
 
 export default function Logo({ size = 'md', white = false, iconOnly = false }: LogoProps) {
   const textSizes = { sm: 'text-lg', md: 'text-xl', lg: 'text-3xl' }
-  const iconSizes = { sm: 24, md: 32, lg: 48 }
+  const iconSizes = { sm: 24, md: 46, lg: 56 }
   const px = iconSizes[size]
 
   const arcColor  = white ? '#FFFFFF' : '#2D4A8A'
