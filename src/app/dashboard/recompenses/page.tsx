@@ -25,7 +25,7 @@ function formatDate(iso: string) {
 export default function RecompensesPage() {
   const [recompenses, setRecompenses] = useState<RecompenseWithClient[]>([])
   const [loading, setLoading] = useState(true)
-  const [filter, setFilter] = useState<'all' | 'pending' | 'used'>('all')
+  const [filter, setFilter] = useState<'all' | 'pending' | 'used'>('pending')
   const [isDemo, setIsDemo] = useState(false)
   const [demoToast, setDemoToast] = useState(false)
 
@@ -155,7 +155,7 @@ export default function RecompensesPage() {
                 }`}
               >
                 <Check size={14} />
-                {r.utilisee ? 'Marquer non remise' : 'Marquer remise'}
+                {r.utilisee ? 'Marquer non remise' : 'Marquer comme remis'}
               </button>
             </div>
           ))}
