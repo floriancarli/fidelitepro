@@ -4,7 +4,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { ArrowLeft, CheckCircle } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
-import Logo from '@/components/Logo'
+import { Logo } from '@/components/Logo'
 
 export default function MotDePasseOubliePage() {
   const [email, setEmail] = useState('')

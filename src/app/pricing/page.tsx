@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Check, ArrowLeft, Zap, Clock } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
-import Logo from '@/components/Logo'
+import { Logo } from '@/components/Logo'
 import Footer from '@/components/Footer'
 
 const PLANS = [

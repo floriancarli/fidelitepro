@@ -4,7 +4,7 @@ import { Suspense, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
-import Logo from '@/components/Logo'
+import { Logo } from '@/components/Logo'
 import Footer from '@/components/Footer'
 
 const LS_KEY = 'fidelite_client'

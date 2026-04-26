@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { QrCode, BarChart3, Gift, Mail, Check, ArrowRight, Star, ChevronDown } from 'lucide-react'
-import Logo from '@/components/Logo'
+import { Logo } from '@/components/Logo'
 
 const avantages = [
   {

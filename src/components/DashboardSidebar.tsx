@@ -6,7 +6,7 @@ import Link from 'next/link'
 import { LayoutDashboard, QrCode, Gift, UserCircle, LogOut, BadgeCheck, Settings, BarChart2 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { isDemoEmail } from '@/lib/useDemo'
-import Logo from './Logo'
+import { Logo } from './Logo'
 import type { Commercant } from '@/lib/types'
 
 const navItems = [

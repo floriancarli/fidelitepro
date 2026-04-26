@@ -6,7 +6,7 @@ import { useParams, useRouter } from 'next/navigation'
 import { ArrowLeft, Star, ChevronRight } from 'lucide-react'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
-import Logo from '@/components/Logo'
+import { Logo } from '@/components/Logo'
 import InstallPrompt from '@/components/InstallPrompt'
 import type { Client, Palier } from '@/lib/types'
 

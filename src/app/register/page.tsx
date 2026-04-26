@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation'
 import { ArrowLeft, Download, Share2, CheckCircle, Gift, Star, ChevronRight } from 'lucide-react'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
-import Logo from '@/components/Logo'
+import { Logo } from '@/components/Logo'
 import Footer from '@/components/Footer'
 import type { Client, Palier } from '@/lib/types'
 
