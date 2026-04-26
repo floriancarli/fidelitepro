@@ -52,11 +52,21 @@ export default function RecompensesPage() {
       setDemoToast(true)
       return
     }
-    const supabase = createClient()
-    await supabase
-      .from('recompenses')
-      .update({ utilisee: !utilisee, date_utilisation: !utilisee ? new Date().toISOString() : null })
-      .eq('id', id)
+    if (!utilisee) {
+      // Validate via API — deducts points from loyalty card
+      await fetch('/api/recompenses/valider', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ recompenseId: id }),
+      })
+    } else {
+      // Un-mark as used directly
+      const supabase = createClient()
+      await supabase
+        .from('recompenses')
+        .update({ utilisee: false, date_utilisation: null })
+        .eq('id', id)
+    }
     load()
   }
 

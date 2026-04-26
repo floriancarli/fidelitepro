@@ -88,16 +88,18 @@ export async function POST(request: NextRequest) {
     }
     carteCourante = newCarte
   } else {
-    let newPoints = carteCourante.nombre_points + pointsParVisite
+    const oldPoints = carteCourante.nombre_points
+    let newPoints = oldPoints + pointsParVisite
     let recompensesObtenues = carteCourante.recompenses_obtenues
 
-    // Trouver le palier le plus élevé atteint
-    const palierAtteint = [...paliers].reverse().find((p) => newPoints >= p.points)
+    // Déclencher uniquement au franchissement du seuil (pas si déjà au-dessus)
+    // Cela évite de recréer une récompense à chaque scan tant qu'elle n'est pas validée
+    const palierAtteint = paliers.find((p) => oldPoints < p.points && newPoints >= p.points)
 
     if (palierAtteint) {
       recompenseDeclenchee = true
       libelleRecompenseObtenue = palierAtteint.libelle
-      newPoints = newPoints - palierAtteint.points
+      // Les points NE sont PAS déduits ici — la déduction se fait lors de la validation manuelle
       recompensesObtenues += 1
 
       const { error: recompenseError } = await supabase.from('recompenses').insert({

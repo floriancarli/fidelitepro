@@ -6,35 +6,26 @@ import Link from 'next/link'
 import { LayoutDashboard, QrCode, Gift, UserCircle, LogOut, BadgeCheck, Settings, BarChart2 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { isDemoEmail } from '@/lib/useDemo'
-import { Logo } from './Logo'
 import type { Commercant } from '@/lib/types'
-
-const navItems = [
-  { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard, proOnly: false },
-  { href: '/dashboard/qr-code', label: 'Mon QR Code', icon: QrCode, proOnly: false },
-  { href: '/dashboard/recompenses', label: 'Récompenses', icon: Gift, proOnly: false },
-  { href: '/dashboard/analytics', label: 'Analytics', icon: BarChart2, proOnly: true },
-  { href: '/dashboard/configuration', label: 'Configuration', icon: Settings, proOnly: false },
-  { href: '/mon-compte', label: 'Mon Compte', icon: UserCircle, proOnly: false },
-]
 
 export default function DashboardSidebar() {
   const router = useRouter()
   const pathname = usePathname()
   const [commercant, setCommercant] = useState<Commercant | null>(null)
   const [isDemo, setIsDemo] = useState(false)
+  const [pendingRewards, setPendingRewards] = useState(0)
 
   useEffect(() => {
     const supabase = createClient()
     supabase.auth.getUser().then(async ({ data: { user } }) => {
       if (!user) return
       setIsDemo(isDemoEmail(user.email))
-      const { data } = await supabase
-        .from('commercants')
-        .select('*')
-        .eq('id', user.id)
-        .single()
-      setCommercant(data)
+      const [{ data: comm }, { count }] = await Promise.all([
+        supabase.from('commercants').select('*').eq('id', user.id).single(),
+        supabase.from('recompenses').select('*', { count: 'exact', head: true }).eq('commercant_id', user.id).eq('utilisee', false),
+      ])
+      setCommercant(comm)
+      setPendingRewards(count ?? 0)
     })
   }, [])
 
@@ -46,12 +37,21 @@ export default function DashboardSidebar() {
 
   const initiales = commercant?.nom_commerce?.slice(0, 2).toUpperCase() || '??'
 
+  const navItems = [
+    { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard, proOnly: false, badge: 0 },
+    { href: '/dashboard/qr-code', label: 'Mon QR Code', icon: QrCode, proOnly: false, badge: 0 },
+    { href: '/dashboard/recompenses', label: 'Récompenses', icon: Gift, proOnly: false, badge: pendingRewards },
+    { href: '/dashboard/analytics', label: 'Analytics', icon: BarChart2, proOnly: true, badge: 0 },
+    { href: '/dashboard/configuration', label: 'Configuration', icon: Settings, proOnly: false, badge: 0 },
+    { href: '/mon-compte', label: 'Mon Compte', icon: UserCircle, proOnly: false, badge: 0 },
+  ]
+
   return (
     <aside className="w-64 min-h-screen bg-[#2D4A8A] flex flex-col text-white">
       <div className="px-6 py-6">
         <Link href="/">
-          <div style={{background: 'white', borderRadius: '8px', padding: '4px', display: 'inline-block'}}>
-            <img src="/logo-orlyo.png" alt="Orlyo" width={50} height={50} style={{objectFit: 'contain', display: 'block'}} />
+          <div style={{ background: 'white', borderRadius: '8px', padding: '4px', display: 'inline-block' }}>
+            <img src="/logo-orlyo.png" alt="Orlyo" width={50} height={50} style={{ objectFit: 'contain', display: 'block' }} />
           </div>
         </Link>
       </div>
@@ -67,10 +67,7 @@ export default function DashboardSidebar() {
           </div>
         </div>
         {isDemo ? (
-          <Link
-            href="/pricing"
-            className="mt-3 flex items-center gap-1.5 bg-amber-400/20 border border-amber-400/30 rounded-lg px-3 py-1.5 text-xs hover:bg-amber-400/30 transition-colors"
-          >
+          <Link href="/pricing" className="mt-3 flex items-center gap-1.5 bg-amber-400/20 border border-amber-400/30 rounded-lg px-3 py-1.5 text-xs hover:bg-amber-400/30 transition-colors">
             <span className="text-amber-300 font-medium">🎭 Mode démo — Créer un compte</span>
           </Link>
         ) : commercant?.abonnement_actif ? (
@@ -79,17 +76,14 @@ export default function DashboardSidebar() {
             <span className="text-green-300 font-medium">Abonnement actif</span>
           </div>
         ) : commercant && (
-          <Link
-            href="/pricing"
-            className="mt-3 flex items-center gap-1.5 bg-yellow-400/20 border border-yellow-400/30 rounded-lg px-3 py-1.5 text-xs hover:bg-yellow-400/30 transition-colors"
-          >
+          <Link href="/pricing" className="mt-3 flex items-center gap-1.5 bg-yellow-400/20 border border-yellow-400/30 rounded-lg px-3 py-1.5 text-xs hover:bg-yellow-400/30 transition-colors">
             <span className="text-yellow-300 font-medium">⚡ Activer mon compte</span>
           </Link>
         )}
       </div>
 
       <nav className="flex-1 px-4 py-4 space-y-1">
-        {navItems.map(({ href, label, icon: Icon, proOnly }) => {
+        {navItems.map(({ href, label, icon: Icon, proOnly, badge }) => {
           const active = pathname === href
           const isPro = commercant?.plan_actif === 'annuel'
           return (
@@ -102,7 +96,12 @@ export default function DashboardSidebar() {
             >
               <Icon size={18} />
               <span className="flex-1">{label}</span>
-              {proOnly && !isPro && (
+              {badge > 0 && (
+                <span className="text-[10px] font-bold bg-[#F59E0B] text-white px-1.5 py-0.5 rounded-full leading-none min-w-[18px] text-center">
+                  {badge}
+                </span>
+              )}
+              {proOnly && !isPro && !badge && (
                 <span className="text-[10px] font-semibold bg-[#F59E0B] text-white px-1.5 py-0.5 rounded-full leading-none">Annuel</span>
               )}
             </Link>

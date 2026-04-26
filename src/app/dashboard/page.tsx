@@ -106,6 +106,7 @@ export default function DashboardPage() {
   const [isDemoLive, setIsDemoLive] = useState(false)
   const [demoToast, setDemoToast] = useState(false)
   const [resetting, setResetting] = useState(false)
+  const [pendingByCarteId, setPendingByCarteId] = useState<Set<string>>(new Set())
   const bannerDismissRef = useRef<(() => void) | null>(null)
 
   const load = useCallback(async () => {
@@ -113,12 +114,13 @@ export default function DashboardPage() {
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return
 
-    const [{ data: comm }, { data: cartesData }, { count: scans }] = await Promise.all([
+    const [{ data: comm }, { data: cartesData }, { count: scans }, { data: pendingRecompenses }] = await Promise.all([
       supabase.from('commercants').select('*').eq('id', user.id).single(),
       supabase.from('cartes_fidelite').select('*').eq('commercant_id', user.id).order('derniere_visite', { ascending: false }),
       supabase.from('scans').select('*', { count: 'exact', head: true })
         .eq('commercant_id', user.id)
         .gte('created_at', new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString()),
+      supabase.from('recompenses').select('carte_fidelite_id').eq('commercant_id', user.id).eq('utilisee', false),
     ])
 
     setIsDemo(isDemoEmail(user.email))
@@ -127,6 +129,7 @@ export default function DashboardPage() {
     setCartes(cartesData || [])
     setScansCount(scans || 0)
     setTotalPoints((cartesData || []).reduce((acc, c) => acc + (c.points_cumules_total || 0), 0))
+    setPendingByCarteId(new Set((pendingRecompenses || []).map((r) => r.carte_fidelite_id)))
     setLoading(false)
   }, [])
 
@@ -408,12 +411,20 @@ export default function DashboardPage() {
                   {filtered.map((carte) => {
                     const nom = carte.client_nom || carte.client_email
                     const initiales = nom.slice(0, 2).toUpperCase()
+                    const hasPending = pendingByCarteId.has(carte.id)
                     return (
                       <tr key={carte.id} className="hover:bg-gray-50/50 transition-colors">
                         <td className="px-6 py-4">
                           <div className="flex items-center gap-3">
-                            <div className="w-9 h-9 rounded-full bg-[#2D4A8A]/10 flex items-center justify-center text-[#2D4A8A] font-semibold text-sm">
-                              {initiales}
+                            <div className="relative">
+                              <div className="w-9 h-9 rounded-full bg-[#2D4A8A]/10 flex items-center justify-center text-[#2D4A8A] font-semibold text-sm">
+                                {initiales}
+                              </div>
+                              {hasPending && (
+                                <span className="absolute -top-1 -right-1 w-4 h-4 bg-[#F59E0B] rounded-full flex items-center justify-center">
+                                  <Gift size={9} className="text-white" />
+                                </span>
+                              )}
                             </div>
                             <div>
                               <p className="text-sm font-medium">{nom}</p>
