@@ -1,0 +1,42 @@
+<svg viewBox="0 0 220 70" xmlns="http://www.w3.org/2000/svg">
+  <!--
+    Orlyo — Horizontal Wordmark
+    Icon: Arc Return (V1) — 300° blue arc + orange reward dot
+    Text: "O" in brand orange, "rlyo" in brand blue
+    Font: Inter / system-ui (requires Inter to be loaded for best rendering)
+  -->
+
+  <!-- ── ICON (center 35,35 r=20) ── -->
+  <!-- Arc gap from 240° to 300° (top of circle), going clockwise 300° -->
+  <path
+    d="M 23.4 18.2 A 20 20 0 1 1 46.6 18.2"
+    fill="none"
+    stroke="#2D4A8A"
+    stroke-width="4"
+    stroke-linecap="round"
+  />
+  <!-- Orange reward dot at top gap midpoint -->
+  <circle cx="35" cy="15" r="4.5" fill="#F59E0B"/>
+
+  <!-- ── WORDMARK ── -->
+  <!-- "O" in orange — echoes the arc loop icon -->
+  <text
+    x="66"
+    y="46"
+    font-family="'Inter', 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif"
+    font-size="36"
+    font-weight="800"
+    letter-spacing="-1"
+    fill="#F59E0B"
+  >O</text>
+  <!-- "rlyo" in brand blue -->
+  <text
+    x="89"
+    y="46"
+    font-family="'Inter', 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif"
+    font-size="36"
+    font-weight="800"
+    letter-spacing="-1"
+    fill="#2D4A8A"
+  >rlyo</text>
+</svg>
