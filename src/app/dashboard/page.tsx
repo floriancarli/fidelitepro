@@ -2,7 +2,8 @@
 
 import { useEffect, useState, useCallback, useRef } from 'react'
 import dynamic from 'next/dynamic'
-import { Users, QrCode, TrendingUp, Search, Star, ScanLine, CheckCircle, Gift, Trash2, Download, ArrowRight, RefreshCw } from 'lucide-react'
+import { Users, QrCode, TrendingUp, Search, Star, ScanLine, CheckCircle, Gift, Trash2, Download, ArrowRight, RefreshCw, Smartphone } from 'lucide-react'
+import { QRCodeSVG } from 'qrcode.react'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 import { isDemoEmail } from '@/lib/useDemo'
@@ -452,6 +453,20 @@ export default function DashboardPage() {
               </table>
             </div>
           )}
+        </div>
+
+        {/* Scan mobile PWA */}
+        <div className="mt-6 bg-white rounded-2xl border border-gray-200 shadow-sm px-6 py-5 flex items-center gap-6">
+          <QRCodeSVG value="https://getorlyo.com/scan" size={72} fgColor="#2D4A8A" bgColor="transparent" />
+          <div>
+            <div className="flex items-center gap-2 mb-1">
+              <Smartphone size={16} className="text-[#2D4A8A]" />
+              <span className="font-semibold text-[#1A1A23] text-sm">Scanner depuis votre téléphone</span>
+            </div>
+            <p className="text-xs text-[#6B7280] leading-relaxed">
+              Scannez ce QR code avec votre téléphone pour installer l&apos;app de scan en caisse.
+            </p>
+          </div>
         </div>
       </div>
     </>
