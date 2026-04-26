@@ -106,7 +106,8 @@ export default function DashboardPage() {
   const [isDemoLive, setIsDemoLive] = useState(false)
   const [demoToast, setDemoToast] = useState(false)
   const [resetting, setResetting] = useState(false)
-  const [pendingByCarteId, setPendingByCarteId] = useState<Set<string>>(new Set())
+  // Maps carte_fidelite_id → recompense_id for pending rewards
+  const [pendingMap, setPendingMap] = useState<Map<string, string>>(new Map())
   const bannerDismissRef = useRef<(() => void) | null>(null)
 
   const load = useCallback(async () => {
@@ -120,7 +121,7 @@ export default function DashboardPage() {
       supabase.from('scans').select('*', { count: 'exact', head: true })
         .eq('commercant_id', user.id)
         .gte('created_at', new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString()),
-      supabase.from('recompenses').select('carte_fidelite_id').eq('commercant_id', user.id).eq('utilisee', false),
+      supabase.from('recompenses').select('id, carte_fidelite_id').eq('commercant_id', user.id).eq('utilisee', false),
     ])
 
     setIsDemo(isDemoEmail(user.email))
@@ -129,7 +130,12 @@ export default function DashboardPage() {
     setCartes(cartesData || [])
     setScansCount(scans || 0)
     setTotalPoints((cartesData || []).reduce((acc, c) => acc + (c.points_cumules_total || 0), 0))
-    setPendingByCarteId(new Set((pendingRecompenses || []).map((r) => r.carte_fidelite_id)))
+    // Keep only the first pending reward per carte (oldest first = natural insert order)
+    const map = new Map<string, string>()
+    for (const r of (pendingRecompenses || [])) {
+      if (!map.has(r.carte_fidelite_id)) map.set(r.carte_fidelite_id, r.id)
+    }
+    setPendingMap(map)
     setLoading(false)
   }, [])
 
@@ -170,6 +176,26 @@ export default function DashboardPage() {
     await fetch('/api/demo-live/reset', { method: 'POST' })
     await load()
     setResetting(false)
+  }
+
+  const handleValidateReward = async (carteId: string) => {
+    if (isDemo) { setDemoToast(true); return }
+    const recompenseId = pendingMap.get(carteId)
+    if (!recompenseId) return
+    // Optimistically remove the gift icon for this client
+    setPendingMap((prev) => { const next = new Map(prev); next.delete(carteId); return next })
+    const res = await fetch('/api/recompenses/valider', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ recompenseId }),
+    })
+    if (res.ok) {
+      window.dispatchEvent(new CustomEvent('reward:validated'))
+    } else {
+      // Restore on failure
+      setPendingMap((prev) => { const next = new Map(prev); next.set(carteId, recompenseId); return next })
+    }
+    load()
   }
 
   const handleDeleteClient = async (carteId: string) => {
@@ -411,7 +437,7 @@ export default function DashboardPage() {
                   {filtered.map((carte) => {
                     const nom = carte.client_nom || carte.client_email
                     const initiales = nom.slice(0, 2).toUpperCase()
-                    const hasPending = pendingByCarteId.has(carte.id)
+                    const hasPending = pendingMap.has(carte.id)
                     return (
                       <tr key={carte.id} className="hover:bg-gray-50/50 transition-colors">
                         <td className="px-6 py-4">
@@ -449,13 +475,25 @@ export default function DashboardPage() {
                           {formatDate(carte.derniere_visite)}
                         </td>
                         <td className="px-4 py-4">
-                          <button
-                            onClick={() => isDemo ? setDemoToast(true) : setDeleteConfirm(carte.id)}
-                            title="Supprimer les données de ce client (RGPD)"
-                            className="w-8 h-8 rounded-lg hover:bg-red-50 flex items-center justify-center text-gray-300 hover:text-red-500 transition-colors"
-                          >
-                            <Trash2 size={15} />
-                          </button>
+                          <div className="flex items-center gap-1">
+                            {hasPending && (
+                              <button
+                                onClick={() => handleValidateReward(carte.id)}
+                                title="Remettre la récompense et déduire les points"
+                                className="flex items-center gap-1.5 bg-[#0F6E56] text-white text-xs font-medium px-3 py-1.5 rounded-lg hover:bg-[#0a5c47] transition-colors whitespace-nowrap"
+                              >
+                                <Gift size={13} />
+                                Remettre
+                              </button>
+                            )}
+                            <button
+                              onClick={() => isDemo ? setDemoToast(true) : setDeleteConfirm(carte.id)}
+                              title="Supprimer les données de ce client (RGPD)"
+                              className="w-8 h-8 rounded-lg hover:bg-red-50 flex items-center justify-center text-gray-300 hover:text-red-500 transition-colors"
+                            >
+                              <Trash2 size={15} />
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     )

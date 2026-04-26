@@ -29,6 +29,12 @@ export default function DashboardSidebar() {
     })
   }, [])
 
+  useEffect(() => {
+    const handleValidated = () => setPendingRewards((n) => Math.max(0, n - 1))
+    window.addEventListener('reward:validated', handleValidated)
+    return () => window.removeEventListener('reward:validated', handleValidated)
+  }, [])
+
   const handleLogout = async () => {
     const supabase = createClient()
     await supabase.auth.signOut()

@@ -14,8 +14,8 @@ interface RecompenseWithClient {
   date_utilisation: string | null
   cartes_fidelite: {
     client_email: string
-    clients: { nom: string } | null
-  }
+    client_nom: string
+  } | null
 }
 
 function formatDate(iso: string) {
@@ -35,12 +35,13 @@ export default function RecompensesPage() {
     if (!user) return
     setIsDemo(isDemoEmail(user.email))
 
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from('recompenses')
-      .select('*, cartes_fidelite(client_email, clients(nom))')
+      .select('*, cartes_fidelite(client_email, client_nom)')
       .eq('commercant_id', user.id)
       .order('date_obtention', { ascending: false })
 
+    if (error) console.error('[recompenses] load error:', error)
     setRecompenses((data as RecompenseWithClient[]) || [])
     setLoading(false)
   }, [])
@@ -53,14 +54,15 @@ export default function RecompensesPage() {
       return
     }
     if (!utilisee) {
-      // Validate via API — deducts points from loyalty card
-      await fetch('/api/recompenses/valider', {
+      const res = await fetch('/api/recompenses/valider', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ recompenseId: id }),
       })
+      if (res.ok) {
+        window.dispatchEvent(new CustomEvent('reward:validated'))
+      }
     } else {
-      // Un-mark as used directly
       const supabase = createClient()
       await supabase
         .from('recompenses')
@@ -92,7 +94,7 @@ export default function RecompensesPage() {
       <div className="mb-8">
         <h1 className="text-2xl font-bold">Récompenses</h1>
         <p className="text-[#6B7280] text-sm mt-1">
-          {pendingCount} récompense{pendingCount > 1 ? 's' : ''} en attente de remise
+          {pendingCount} récompense{pendingCount !== 1 ? 's' : ''} en attente de remise
         </p>
       </div>
 
@@ -108,7 +110,7 @@ export default function RecompensesPage() {
                 : 'bg-white border border-gray-200 text-[#6B7280] hover:border-[#2D4A8A] hover:text-[#2D4A8A]'
             }`}
           >
-            {label}
+            {label}{val === 'pending' && pendingCount > 0 && ` (${pendingCount})`}
           </button>
         ))}
       </div>
@@ -117,7 +119,7 @@ export default function RecompensesPage() {
         <div className="bg-white rounded-2xl border border-gray-200 shadow-sm text-center py-16 text-[#6B7280]">
           <Gift size={40} className="mx-auto mb-3 opacity-30" />
           <p className="font-medium">Aucune récompense</p>
-          <p className="text-sm mt-1">Les récompenses apparaîtront ici quand vos clients atteindront le palier</p>
+          <p className="text-sm mt-1">Les récompenses apparaîtront ici quand vos clients atteindront un palier</p>
         </div>
       ) : (
         <div className="space-y-3">
@@ -137,7 +139,7 @@ export default function RecompensesPage() {
               <div className="flex-1 min-w-0">
                 <p className="font-medium text-sm">{r.libelle}</p>
                 <p className="text-xs text-[#6B7280] mt-0.5">
-                  {r.cartes_fidelite?.clients?.nom ?? r.cartes_fidelite?.client_email}
+                  {r.cartes_fidelite?.client_nom || r.cartes_fidelite?.client_email || '—'}
                 </p>
                 <div className="flex items-center gap-1 mt-1 text-xs text-[#6B7280]">
                   <Clock size={12} />
