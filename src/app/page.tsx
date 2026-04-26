@@ -90,7 +90,7 @@ export default function LandingPage() {
               <div className="flex flex-col sm:flex-row gap-4">
                 <Link
                   href="/demo"
-                  className="bg-white text-[#2D4A8A] font-semibold px-8 py-3.5 rounded-xl hover:bg-gray-50 transition-colors flex items-center justify-center gap-2"
+                  className="bg-[#F59E0B] text-white font-semibold px-8 py-3.5 rounded-xl hover:bg-[#e08900] transition-colors flex items-center justify-center gap-2"
                 >
                   Voir la démo
                   <ArrowRight size={18} />
