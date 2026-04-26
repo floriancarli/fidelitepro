@@ -1,5 +1,3 @@
-'use client'
-
 import Image from 'next/image'
 import Link from 'next/link'
 
@@ -10,8 +8,7 @@ interface LogoProps {
 }
 
 export default function Logo({ size = 'md' }: LogoProps) {
-  const sizes = { sm: 80, md: 120, lg: 160 }
-  const px = sizes[size]
+  const px = { sm: 80, md: 120, lg: 160 }[size]
 
   return (
     <Link href="/" style={{ display: 'inline-block', lineHeight: 0 }}>
