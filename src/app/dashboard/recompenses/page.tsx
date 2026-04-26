@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState, useCallback } from 'react'
-import { Gift, Check, Clock } from 'lucide-react'
+import { Gift, Check, Clock, SkipForward, X } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { isDemoEmail } from '@/lib/useDemo'
 import DemoToast from '@/components/DemoToast'
@@ -28,6 +28,8 @@ export default function RecompensesPage() {
   const [filter, setFilter] = useState<'all' | 'pending' | 'used'>('pending')
   const [isDemo, setIsDemo] = useState(false)
   const [demoToast, setDemoToast] = useState(false)
+  // IDs hidden for this session only (Reporter)
+  const [deferred, setDeferred] = useState<Set<string>>(new Set())
 
   const load = useCallback(async () => {
     const supabase = createClient()
@@ -48,37 +50,52 @@ export default function RecompensesPage() {
 
   useEffect(() => { load() }, [load])
 
-  const handleToggle = async (id: string, utilisee: boolean) => {
-    if (isDemo) {
-      setDemoToast(true)
-      return
-    }
-    if (!utilisee) {
-      const res = await fetch('/api/recompenses/valider', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ recompenseId: id }),
-      })
-      if (res.ok) {
-        window.dispatchEvent(new CustomEvent('reward:validated'))
-      }
-    } else {
-      const supabase = createClient()
-      await supabase
-        .from('recompenses')
-        .update({ utilisee: false, date_utilisation: null })
-        .eq('id', id)
-    }
+  const handleValidate = async (id: string) => {
+    if (isDemo) { setDemoToast(true); return }
+    const res = await fetch('/api/recompenses/valider', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ recompenseId: id }),
+    })
+    if (res.ok) window.dispatchEvent(new CustomEvent('reward:validated'))
     load()
   }
 
+  const handleUnmark = async (id: string) => {
+    if (isDemo) { setDemoToast(true); return }
+    const supabase = createClient()
+    await supabase
+      .from('recompenses')
+      .update({ utilisee: false, date_utilisation: null })
+      .eq('id', id)
+    load()
+  }
+
+  // Hide from current session — no API call, reward stays pending in DB
+  const handleDefer = (id: string) => {
+    setDeferred((prev) => new Set(prev).add(id))
+  }
+
+  // Delete the reward — no point deduction, client keeps accumulating
+  const handleIgnore = async (id: string) => {
+    if (isDemo) { setDemoToast(true); return }
+    const res = await fetch('/api/recompenses/ignorer', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ recompenseId: id }),
+    })
+    if (res.ok) window.dispatchEvent(new CustomEvent('reward:validated'))
+    load()
+  }
+
+  const pendingCount = recompenses.filter((r) => !r.utilisee && !deferred.has(r.id)).length
+
   const filtered = recompenses.filter((r) => {
+    if (deferred.has(r.id)) return false
     if (filter === 'pending') return !r.utilisee
     if (filter === 'used') return r.utilisee
     return true
   })
-
-  const pendingCount = recompenses.filter((r) => !r.utilisee).length
 
   if (loading) {
     return (
@@ -148,17 +165,43 @@ export default function RecompensesPage() {
                 </div>
               </div>
 
-              <button
-                onClick={() => handleToggle(r.id, r.utilisee)}
-                className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-colors flex-shrink-0 ${
-                  r.utilisee
-                    ? 'border border-gray-200 text-[#6B7280] hover:border-[#2D4A8A] hover:text-[#2D4A8A]'
-                    : 'bg-[#0F6E56] text-white hover:bg-[#0a5c47]'
-                }`}
-              >
-                <Check size={14} />
-                {r.utilisee ? 'Marquer non remise' : 'Marquer comme remis'}
-              </button>
+              {r.utilisee ? (
+                <button
+                  onClick={() => handleUnmark(r.id)}
+                  className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium border border-gray-200 text-[#6B7280] hover:border-[#2D4A8A] hover:text-[#2D4A8A] transition-colors flex-shrink-0"
+                >
+                  <Check size={14} />
+                  Marquer non remise
+                </button>
+              ) : (
+                <div className="flex flex-col gap-1.5 flex-shrink-0 items-end">
+                  <button
+                    onClick={() => handleValidate(r.id)}
+                    className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium bg-[#0F6E56] text-white hover:bg-[#0a5c47] transition-colors"
+                  >
+                    <Check size={14} />
+                    Marquer comme remis
+                  </button>
+                  <div className="flex gap-1.5">
+                    <button
+                      onClick={() => handleDefer(r.id)}
+                      title="Masquer pour cette session — la récompense reste en attente"
+                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border border-gray-200 text-[#6B7280] hover:border-[#2D4A8A] hover:text-[#2D4A8A] transition-colors"
+                    >
+                      <SkipForward size={12} />
+                      Reporter
+                    </button>
+                    <button
+                      onClick={() => handleIgnore(r.id)}
+                      title="Le client ne veut pas — supprime la récompense sans déduire de points"
+                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border border-red-200 text-red-400 hover:bg-red-50 hover:text-red-600 transition-colors"
+                    >
+                      <X size={12} />
+                      Ignorer
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
           ))}
         </div>
