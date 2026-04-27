@@ -52,12 +52,14 @@ export default function AnalyticsPage() {
   const [passageUniqueCount, setPassageUniqueCount] = useState(0)
 
   const [isDemoLive, setIsDemoLive] = useState(false)
+  const [userId, setUserId] = useState<string | null>(null)
 
   const load = useCallback(async () => {
     const supabase = createClient()
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return
 
+    setUserId(user.id)
     const demoLive = user.email === 'demo-live@getorlyo.com'
     setIsDemoLive(demoLive)
 
@@ -75,7 +77,7 @@ export default function AnalyticsPage() {
         supabase.from('scans').select('created_at, points_ajoutes').eq('commercant_id', user.id).gte('created_at', week8ago.toISOString()),
         supabase.from('cartes_fidelite').select('*').eq('commercant_id', user.id).order('points_cumules_total', { ascending: false }),
         supabase.from('scans').select('recompense_declenchee').eq('commercant_id', user.id).gte('created_at', month1ago.toISOString()),
-        supabase.from('scans').select('carte_id').eq('commercant_id', user.id),
+        supabase.from('scans').select('carte_fidelite_id').eq('commercant_id', user.id),
       ])
 
       const dayMap: Record<string, number> = {}
@@ -113,7 +115,8 @@ export default function AnalyticsPage() {
 
       const scanCountByCarte: Record<string, number> = {}
       for (const s of allScans ?? []) {
-        if (s.carte_id) scanCountByCarte[s.carte_id] = (scanCountByCarte[s.carte_id] ?? 0) + 1
+        const id = (s as { carte_fidelite_id: string }).carte_fidelite_id
+        if (id) scanCountByCarte[id] = (scanCountByCarte[id] ?? 0) + 1
       }
       const fidelises = Object.values(scanCountByCarte).filter((n) => n >= 2).length
       const passageUnique = Object.values(scanCountByCarte).filter((n) => n === 1).length
@@ -138,6 +141,16 @@ export default function AnalyticsPage() {
   }, [])
 
   useEffect(() => { load() }, [load])
+
+  useEffect(() => {
+    if (!userId) return
+    const supabase = createClient()
+    const channel = supabase
+      .channel(`analytics-scans-${userId}`)
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'scans', filter: `commercant_id=eq.${userId}` }, () => { load() })
+      .subscribe()
+    return () => { supabase.removeChannel(channel) }
+  }, [userId, load])
 
   if (loading) {
     return (
@@ -223,9 +236,12 @@ export default function AnalyticsPage() {
               <span className="w-2.5 h-2.5 rounded-full bg-green-500 inline-block" />
               <span className="text-[#6B7280]">{fidelisesCount} fidélisés</span>
             </div>
-            <div className="flex items-center gap-1.5">
+            <div className="flex items-center gap-1.5 group relative">
               <span className="w-2.5 h-2.5 rounded-full bg-gray-300 inline-block" />
-              <span className="text-[#6B7280]">{passageUniqueCount} passage unique</span>
+              <span className="text-[#6B7280] underline decoration-dotted cursor-help">{passageUniqueCount} passage unique</span>
+              <div className="absolute bottom-full left-0 mb-1.5 hidden group-hover:block z-10 bg-[#1A1A23] text-white text-xs rounded-lg px-2.5 py-1.5 whitespace-nowrap shadow-lg">
+                Client inscrit mais venu une seule fois
+              </div>
             </div>
           </div>
           <div className="w-full bg-gray-100 rounded-full h-2">
