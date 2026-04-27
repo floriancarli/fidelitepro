@@ -5,7 +5,7 @@ import {
   LineChart, Line, BarChart, Bar,
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
 } from 'recharts'
-import { TrendingUp, Users, Gift, Star, ArrowRight } from 'lucide-react'
+import { TrendingUp, Users, Gift, Star, ArrowRight, AlertTriangle, Heart } from 'lucide-react'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 import type { Commercant, CarteFidelite, Scan } from '@/lib/types'
@@ -47,6 +47,9 @@ export default function AnalyticsPage() {
   const [activeCount, setActiveCount] = useState(0)
   const [inactiveCount, setInactiveCount] = useState(0)
   const [rewardsMois, setRewardsMois] = useState(0)
+  const [fidelisationRate, setFidelisationRate] = useState(0)
+  const [fidelisesCount, setFidelisesCount] = useState(0)
+  const [passageUniqueCount, setPassageUniqueCount] = useState(0)
 
   const [isDemoLive, setIsDemoLive] = useState(false)
 
@@ -67,11 +70,12 @@ export default function AnalyticsPage() {
       const week8ago = new Date(now); week8ago.setDate(now.getDate() - 56)
       const month1ago = new Date(now.getFullYear(), now.getMonth(), 1)
 
-      const [{ data: scans30 }, { data: scans8w }, { data: cartes }, { data: scansMonth }] = await Promise.all([
+      const [{ data: scans30 }, { data: scans8w }, { data: cartes }, { data: scansMonth }, { data: allScans }] = await Promise.all([
         supabase.from('scans').select('created_at').eq('commercant_id', user.id).gte('created_at', day30ago.toISOString()),
         supabase.from('scans').select('created_at, points_ajoutes').eq('commercant_id', user.id).gte('created_at', week8ago.toISOString()),
         supabase.from('cartes_fidelite').select('*').eq('commercant_id', user.id).order('points_cumules_total', { ascending: false }),
         supabase.from('scans').select('recompense_declenchee').eq('commercant_id', user.id).gte('created_at', month1ago.toISOString()),
+        supabase.from('scans').select('carte_id').eq('commercant_id', user.id),
       ])
 
       const dayMap: Record<string, number> = {}
@@ -106,6 +110,17 @@ export default function AnalyticsPage() {
       setActiveCount(active)
       setInactiveCount((cartes ?? []).length - active)
       setRewardsMois((scansMonth ?? []).filter((s: Pick<Scan, 'recompense_declenchee'>) => s.recompense_declenchee).length)
+
+      const scanCountByCarte: Record<string, number> = {}
+      for (const s of allScans ?? []) {
+        if (s.carte_id) scanCountByCarte[s.carte_id] = (scanCountByCarte[s.carte_id] ?? 0) + 1
+      }
+      const fidelises = Object.values(scanCountByCarte).filter((n) => n >= 2).length
+      const passageUnique = Object.values(scanCountByCarte).filter((n) => n === 1).length
+      const totalFid = fidelises + passageUnique
+      setFidelisesCount(fidelises)
+      setPassageUniqueCount(passageUnique)
+      setFidelisationRate(totalFid > 0 ? Math.round((fidelises / totalFid) * 100) : 0)
     } else {
       // Use demo data for preview
       setScansByDay(DEMO_SCANS_BY_DAY)
@@ -114,6 +129,9 @@ export default function AnalyticsPage() {
       setActiveCount(34)
       setInactiveCount(12)
       setRewardsMois(18)
+      setFidelisesCount(28)
+      setPassageUniqueCount(18)
+      setFidelisationRate(61)
     }
 
     setLoading(false)
@@ -177,6 +195,83 @@ export default function AnalyticsPage() {
             <p className="text-xs text-[#6B7280] mt-0.5">{sub}</p>
           </div>
         ))}
+      </div>
+
+      {/* Taux de fidélisation + Clients inactifs */}
+      <div className={`grid grid-cols-1 md:grid-cols-2 gap-4 ${!isPro ? 'opacity-60 pointer-events-none select-none' : ''}`}>
+        {/* Taux de fidélisation */}
+        <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 flex flex-col gap-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-semibold text-[#1A1A23]">Taux de fidélisation</p>
+              <p className="text-xs text-[#6B7280] mt-0.5">clients fidélisés vs passage unique</p>
+            </div>
+            <div className="w-9 h-9 rounded-xl bg-[#2D4A8A]/10 flex items-center justify-center flex-shrink-0">
+              <Heart size={18} className="text-[#2D4A8A]" />
+            </div>
+          </div>
+          <div className="flex items-end gap-3">
+            <span className={`text-5xl font-bold tabular-nums ${fidelisationRate >= 60 ? 'text-green-600' : fidelisationRate >= 30 ? 'text-[#F59E0B]' : 'text-red-500'}`}>
+              {fidelisationRate}%
+            </span>
+            <span className={`mb-1.5 text-sm font-semibold px-2 py-0.5 rounded-full ${fidelisationRate >= 60 ? 'bg-green-100 text-green-700' : fidelisationRate >= 30 ? 'bg-yellow-100 text-yellow-700' : 'bg-red-100 text-red-600'}`}>
+              {fidelisationRate >= 60 ? 'Excellent' : fidelisationRate >= 30 ? 'Moyen' : 'À améliorer'}
+            </span>
+          </div>
+          <div className="flex items-center gap-4 text-sm">
+            <div className="flex items-center gap-1.5">
+              <span className="w-2.5 h-2.5 rounded-full bg-green-500 inline-block" />
+              <span className="text-[#6B7280]">{fidelisesCount} fidélisés</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <span className="w-2.5 h-2.5 rounded-full bg-gray-300 inline-block" />
+              <span className="text-[#6B7280]">{passageUniqueCount} passage unique</span>
+            </div>
+          </div>
+          <div className="w-full bg-gray-100 rounded-full h-2">
+            <div
+              className={`h-2 rounded-full transition-all duration-500 ${fidelisationRate >= 60 ? 'bg-green-500' : fidelisationRate >= 30 ? 'bg-[#F59E0B]' : 'bg-red-500'}`}
+              style={{ width: `${fidelisationRate}%` }}
+            />
+          </div>
+        </div>
+
+        {/* Clients inactifs */}
+        <div className={`rounded-2xl border shadow-sm p-6 flex flex-col gap-4 ${inactiveCount > 0 ? 'bg-orange-50 border-orange-200' : 'bg-white border-gray-200'}`}>
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-semibold text-[#1A1A23]">Clients inactifs</p>
+              <p className="text-xs text-[#6B7280] mt-0.5">clients à risque de perdre</p>
+            </div>
+            <div className={`w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 ${inactiveCount > 0 ? 'bg-orange-100' : 'bg-gray-100'}`}>
+              <AlertTriangle size={18} className={inactiveCount > 0 ? 'text-orange-500' : 'text-gray-400'} />
+            </div>
+          </div>
+          <div className="flex items-end gap-3">
+            <span className={`text-5xl font-bold tabular-nums ${inactiveCount > 0 ? 'text-orange-500' : 'text-gray-400'}`}>
+              {inactiveCount}
+            </span>
+            {inactiveCount > 0 && (
+              <span className="mb-1.5 text-sm font-semibold px-2 py-0.5 rounded-full bg-orange-100 text-orange-700">
+                +30j sans scan
+              </span>
+            )}
+          </div>
+          <p className="text-sm text-[#6B7280]">
+            {inactiveCount === 0
+              ? 'Tous vos clients sont actifs — bravo !'
+              : `${inactiveCount} client${inactiveCount > 1 ? 's' : ''} n'ont pas scanné depuis plus de 30 jours.`}
+          </p>
+          {inactiveCount > 0 && (
+            <Link
+              href="/dashboard"
+              className="inline-flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white text-sm font-semibold px-4 py-2.5 rounded-xl transition-colors self-start"
+            >
+              Voir les clients inactifs
+              <ArrowRight size={14} />
+            </Link>
+          )}
+        </div>
       </div>
 
       {/* Charts wrapper — blurred overlay for non-pro */}
