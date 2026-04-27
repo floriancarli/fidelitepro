@@ -54,7 +54,7 @@ export async function POST(req: NextRequest) {
   // 2. Upsert commercant
   const { error: commErr } = await admin.from('commercants').upsert({
     id: userId,
-    nom_commerce: 'Boulangerie Artisanale',
+    nom_commerce: 'Boulangerie du coin',
     secteur_activite: 'Boulangerie / Pâtisserie',
     qr_code_id: MERCHANT_QR,
     couleur_principale: '#2D4A8A',
