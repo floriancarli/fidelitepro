@@ -63,8 +63,14 @@ export default function ConfirmationPage() {
   }
 
   const couleur = commercant.couleur_principale || '#2D4A8A'
-  const pointsRestants = commercant.points_pour_recompense - carte.nombre_points
-  const progressPct = Math.min(100, Math.round((carte.nombre_points / commercant.points_pour_recompense) * 100))
+  type Palier = { points: number; libelle: string }
+  const paliers: Palier[] = Array.isArray(commercant.paliers) && (commercant.paliers as Palier[]).length > 0
+    ? [...(commercant.paliers as Palier[])].sort((a, b) => a.points - b.points)
+    : [{ points: commercant.points_pour_recompense, libelle: commercant.libelle_recompense }]
+  const nextPalier = paliers.find((p) => p.points > carte.nombre_points)
+  const progressTarget = nextPalier?.points ?? paliers[paliers.length - 1].points
+  const pointsRestants = progressTarget - carte.nombre_points
+  const progressPct = Math.min(100, Math.round((carte.nombre_points / progressTarget) * 100))
 
   return (
     <div className="min-h-screen bg-white pb-10">
@@ -99,7 +105,7 @@ export default function ConfirmationPage() {
 
           <div className="text-center mb-4">
             <p className="text-5xl font-bold">{carte.nombre_points}</p>
-            <p className="text-white/70 text-sm">/ {commercant.points_pour_recompense} points</p>
+            <p className="text-white/70 text-sm">/ {progressTarget} points</p>
           </div>
 
           {/* Barre de progression */}

@@ -441,7 +441,8 @@ export default function MonQrCodePage() {
                 const programmeNom = carte.commercants.nom_programme || carte.commercants.nom_commerce
                 const maxPalier = paliers[paliers.length - 1]
                 const nextPalier = paliers.find((p) => p.points > carte.nombre_points)
-                const pct = Math.min(100, Math.round((carte.nombre_points / maxPalier.points) * 100))
+                const progressTarget = nextPalier?.points ?? maxPalier.points
+                const pct = Math.min(100, Math.round((carte.nombre_points / progressTarget) * 100))
 
                 return (
                   <div key={carte.id} className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
@@ -473,7 +474,7 @@ export default function MonQrCodePage() {
                         <div className="flex justify-between text-xs mb-1.5">
                           <span className="text-[#6B7280]">Progression</span>
                           <span className="font-medium text-[#1A1A23]">
-                            {carte.nombre_points} / {maxPalier.points} pts
+                            {carte.nombre_points} / {progressTarget} pts
                           </span>
                         </div>
                         <div className="h-3 bg-gray-100 rounded-full overflow-hidden">

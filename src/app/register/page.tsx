@@ -65,7 +65,8 @@ function RecompensesSection({ cartes }: { cartes: CarteAvecCommercant[] }) {
         const maxPalier = paliers[paliers.length - 1]
         const points = carte.nombre_points
         const nextPalier = paliers.find((p) => p.points > points)
-        const pctProgress = Math.min(100, Math.round((points / maxPalier.points) * 100))
+        const progressTarget = nextPalier?.points ?? maxPalier.points
+        const pctProgress = Math.min(100, Math.round((points / progressTarget) * 100))
 
         return (
           <div key={carte.id} className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
@@ -92,7 +93,7 @@ function RecompensesSection({ cartes }: { cartes: CarteAvecCommercant[] }) {
               <div>
                 <div className="flex items-center justify-between mb-1.5">
                   <span className="text-xs text-[#6B7280]">Progression</span>
-                  <span className="text-xs font-medium text-[#1A1A23]">{points} / {maxPalier.points} pts</span>
+                  <span className="text-xs font-medium text-[#1A1A23]">{points} / {progressTarget} pts</span>
                 </div>
                 <div className="h-2.5 bg-gray-100 rounded-full overflow-hidden">
                   <div

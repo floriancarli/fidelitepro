@@ -236,6 +236,16 @@ export default function DashboardPage() {
 
   const brandColor = (commercant?.couleur_principale ?? '#2D4A8A').replace(/^#534ab7$/i, '#2D4A8A')
 
+  type Palier = { points: number; libelle: string }
+  const paliers: Palier[] = Array.isArray(commercant?.paliers) && (commercant.paliers as Palier[]).length > 0
+    ? [...(commercant.paliers as Palier[])].sort((a, b) => a.points - b.points)
+    : [{ points: commercant?.points_pour_recompense || 10, libelle: '' }]
+
+  const getProgressMax = (currentPoints: number) => {
+    const next = paliers.find((p) => p.points > currentPoints)
+    return next?.points ?? paliers[paliers.length - 1].points
+  }
+
   const mois = new Intl.DateTimeFormat('fr-FR', { month: 'long', year: 'numeric' }).format(new Date())
 
   if (loading) {
@@ -461,7 +471,7 @@ export default function DashboardPage() {
                         <td className="px-6 py-4 min-w-[180px]">
                           <ProgressBar
                             value={carte.nombre_points}
-                            max={commercant?.points_pour_recompense || 10}
+                            max={getProgressMax(carte.nombre_points)}
                             color={brandColor}
                           />
                         </td>
