@@ -3,12 +3,17 @@
 import { useEffect, useState } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
 import Link from 'next/link'
-import { LayoutDashboard, QrCode, Gift, UserCircle, LogOut, BadgeCheck, Settings, BarChart2 } from 'lucide-react'
+import { LayoutDashboard, QrCode, Gift, UserCircle, LogOut, BadgeCheck, Settings, BarChart2, X } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { isDemoEmail } from '@/lib/useDemo'
 import type { Commercant } from '@/lib/types'
 
-export default function DashboardSidebar() {
+interface Props {
+  open: boolean
+  onClose: () => void
+}
+
+export default function DashboardSidebar({ open, onClose }: Props) {
   const router = useRouter()
   const pathname = usePathname()
   const [commercant, setCommercant] = useState<Commercant | null>(null)
@@ -35,6 +40,9 @@ export default function DashboardSidebar() {
     return () => window.removeEventListener('reward:validated', handleValidated)
   }, [])
 
+  // Close drawer on navigation (mobile)
+  useEffect(() => { onClose() }, [pathname]) // eslint-disable-line react-hooks/exhaustive-deps
+
   const handleLogout = async () => {
     const supabase = createClient()
     await supabase.auth.signOut()
@@ -53,18 +61,37 @@ export default function DashboardSidebar() {
   ]
 
   return (
-    <aside className="w-64 min-h-screen bg-[#2D4A8A] flex flex-col text-white">
-      <div className="px-6 py-6">
-        <Link href="/">
+    <aside
+      className={[
+        // Base: fixed drawer on mobile, static sidebar on desktop
+        'fixed inset-y-0 left-0 z-40 w-64 flex flex-col bg-[#2D4A8A] text-white',
+        'transition-transform duration-300 ease-in-out',
+        // Desktop: always visible, relative flow
+        'lg:relative lg:translate-x-0 lg:z-auto',
+        // Mobile: translate based on open state
+        open ? 'translate-x-0' : '-translate-x-full lg:translate-x-0',
+      ].join(' ')}
+    >
+      {/* Header: logo + mobile close button */}
+      <div className="px-6 py-6 flex items-center justify-between flex-shrink-0">
+        <Link href="/" onClick={onClose}>
           <div style={{ background: 'white', borderRadius: '8px', padding: '4px', display: 'inline-block' }}>
             <img src="/logo-orlyo.png" alt="Orlyo" width={50} height={50} style={{ objectFit: 'contain', display: 'block' }} />
           </div>
         </Link>
+        <button
+          onClick={onClose}
+          className="lg:hidden w-8 h-8 flex items-center justify-center rounded-lg text-white/70 hover:text-white hover:bg-white/10 transition-colors"
+          aria-label="Fermer le menu"
+        >
+          <X size={18} />
+        </button>
       </div>
 
-      <div className="px-6 py-5 border-b border-white/10">
+      {/* Merchant info */}
+      <div className="px-6 py-5 border-b border-white/10 flex-shrink-0">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center font-bold text-sm">
+          <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center font-bold text-sm flex-shrink-0">
             {initiales}
           </div>
           <div className="flex-1 min-w-0">
@@ -73,7 +100,7 @@ export default function DashboardSidebar() {
           </div>
         </div>
         {isDemo ? (
-          <Link href="/pricing" className="mt-3 flex items-center gap-1.5 bg-amber-400/20 border border-amber-400/30 rounded-lg px-3 py-1.5 text-xs hover:bg-amber-400/30 transition-colors">
+          <Link href="/pricing" onClick={onClose} className="mt-3 flex items-center gap-1.5 bg-amber-400/20 border border-amber-400/30 rounded-lg px-3 py-1.5 text-xs hover:bg-amber-400/30 transition-colors">
             <span className="text-amber-300 font-medium">🎭 Mode démo — Créer un compte</span>
           </Link>
         ) : commercant?.abonnement_actif ? (
@@ -82,13 +109,14 @@ export default function DashboardSidebar() {
             <span className="text-green-300 font-medium">Abonnement actif</span>
           </div>
         ) : commercant && (
-          <Link href="/pricing" className="mt-3 flex items-center gap-1.5 bg-yellow-400/20 border border-yellow-400/30 rounded-lg px-3 py-1.5 text-xs hover:bg-yellow-400/30 transition-colors">
+          <Link href="/pricing" onClick={onClose} className="mt-3 flex items-center gap-1.5 bg-yellow-400/20 border border-yellow-400/30 rounded-lg px-3 py-1.5 text-xs hover:bg-yellow-400/30 transition-colors">
             <span className="text-yellow-300 font-medium">⚡ Activer mon compte</span>
           </Link>
         )}
       </div>
 
-      <nav className="flex-1 px-4 py-4 space-y-1">
+      {/* Nav links */}
+      <nav className="flex-1 px-4 py-4 space-y-1 overflow-y-auto">
         {navItems.map(({ href, label, icon: Icon, proOnly, badge }) => {
           const active = pathname === href
           const isPro = commercant?.plan_actif === 'annuel'
@@ -115,7 +143,8 @@ export default function DashboardSidebar() {
         })}
       </nav>
 
-      <div className="px-4 py-4 border-t border-white/10">
+      {/* Logout */}
+      <div className="px-4 py-4 border-t border-white/10 flex-shrink-0">
         <button
           onClick={handleLogout}
           className="flex items-center gap-3 px-3 py-2.5 w-full rounded-xl text-sm font-medium text-white/70 hover:bg-white/10 hover:text-white transition-colors"
