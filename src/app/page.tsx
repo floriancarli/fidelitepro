@@ -104,7 +104,7 @@ export default function LandingPage() {
                     <div className="w-5 h-5 rounded bg-[#2D4A8A]/10 flex items-center justify-center">
                       <BarChart3 size={12} className="text-[#2D4A8A]" />
                     </div>
-                    <span className="text-xs font-semibold text-[#1A1A23]">Dashboard — CroustyBrawl</span>
+                    <span className="text-xs font-semibold text-[#1A1A23]">Dashboard — Boulangerie du coin</span>
                   </div>
                   <div className="flex items-center gap-1 bg-[#F59E0B] text-[#1B2B4B] text-[10px] font-bold px-2.5 py-1 rounded-lg">
                     <QrCode size={10} />
