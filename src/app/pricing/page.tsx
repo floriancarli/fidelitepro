@@ -3,53 +3,21 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { Check, ArrowLeft, Zap, Clock } from 'lucide-react'
+import { Check, ArrowLeft, Star } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { Logo } from '@/components/Logo'
 import Footer from '@/components/Footer'
 
-const PLANS = [
-  {
-    id: 'mensuel' as const,
-    nom: 'Mensuel',
-    badge: 'Le plus populaire',
-    badgeStyle: 'popular',
-    prix: 39,
-    prixLabel: '39€',
-    periode: '/mois',
-    sousTitre: 'Sans engagement',
-    facturation: null,
-    highlight: true,
-    features: [
-      'Clients illimités',
-      '1 programme de fidélité',
-      'Notifications email automatiques',
-      'Support email',
-    ],
-    cta: 'Commencer',
-  },
-  {
-    id: 'annuel' as const,
-    nom: 'Annuel',
-    badge: 'Meilleure valeur',
-    badgeStyle: 'value',
-    prix: 29,
-    prixLabel: '29€',
-    periode: '/mois',
-    sousTitre: 'Économisez 120€/an',
-    facturation: 'Facturé 348€/an',
-    highlight: false,
-    features: [
-      'Clients illimités',
-      'Programmes de fidélité multiples',
-      'Notifications email automatiques',
-      'Analytics avancés',
-      'Export CSV clients',
-      'Support prioritaire',
-    ],
-    wallet: true,
-    cta: 'Commencer',
-  },
+const FEATURES_COMMUNES = [
+  'Carte de fidélité digitale illimitée',
+  'Clients et scans illimités',
+  'QR codes uniques par client',
+  'Dashboard analytics complet',
+  'Système de récompenses personnalisable',
+  'Notifications realtime à chaque scan',
+  'Export CSV des données clients',
+  'PWA installable (commerçant + client)',
+  'Support par email',
 ]
 
 export default function PricingPage() {
@@ -101,108 +69,88 @@ export default function PricingPage() {
       </header>
 
       <div className="flex-1 flex flex-col items-center px-4 py-16">
-        <div className="text-center mb-12 max-w-xl">
-          <h1 className="text-4xl font-bold text-[#1A1A23] mb-4">Tarifs simples et transparents</h1>
+        {/* Hero */}
+        <div className="text-center mb-16 max-w-xl">
+          <h1 className="text-4xl font-bold text-[#1A1A23] mb-4">Une seule offre. Deux rythmes.</h1>
           <p className="text-[#6B7280] text-lg">
-            Choisissez le plan qui correspond à votre activité. Pas de frais cachés.
+            Toutes les fonctionnalités incluses. Vous choisissez le rythme qui vous convient.
           </p>
         </div>
 
+        {/* Bloc fonctionnalités partagé */}
+        <div className="w-full max-w-2xl mb-16">
+          <h2 className="text-xl font-bold text-[#1A1A23] text-center mb-8">
+            Tout ce dont vous avez besoin, dans les 2 formules
+          </h2>
+          <div className="bg-gray-50 rounded-2xl p-8 border border-gray-100">
+            <ul className="grid sm:grid-cols-2 gap-x-8 gap-y-4">
+              {FEATURES_COMMUNES.map((f) => (
+                <li key={f} className="flex items-start gap-3">
+                  <Check size={17} className="mt-0.5 flex-shrink-0 text-[#F59E0B]" />
+                  <span className="text-sm text-[#374151]">{f}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+
         {checkoutError && (
-          <div className="w-full max-w-3xl mb-4 bg-red-50 border border-red-200 text-red-700 rounded-xl px-4 py-3 text-sm">
+          <div className="w-full max-w-2xl mb-6 bg-red-50 border border-red-200 text-red-700 rounded-xl px-4 py-3 text-sm">
             {checkoutError}
           </div>
         )}
 
-        <div className="grid md:grid-cols-2 gap-6 w-full max-w-3xl items-start">
-          {PLANS.map((plan) => (
-            <div
-              key={plan.id}
-              className={`rounded-2xl p-8 relative flex flex-col ${
-                plan.highlight
-                  ? 'bg-[#2D4A8A] text-white shadow-2xl shadow-[#2D4A8A]/25 ring-2 ring-[#2D4A8A]'
-                  : 'bg-white border-2 border-[#F59E0B] shadow-sm'
-              }`}
-            >
-              {plan.badge && (
-                <div className={`absolute -top-3.5 left-1/2 -translate-x-1/2 text-xs font-bold px-4 py-1 rounded-full whitespace-nowrap ${
-                  plan.badgeStyle === 'popular'
-                    ? 'bg-yellow-400 text-yellow-900'
-                    : 'bg-[#F59E0B] text-white'
-                }`}>
-                  ⭐ {plan.badge}
-                </div>
-              )}
-
-              {/* Header */}
-              <div className="mb-6">
-                <div className="flex items-center gap-2 mb-1">
-                  {plan.highlight
-                    ? <Zap size={16} className="text-yellow-300" />
-                    : <Zap size={16} className="text-[#F59E0B]" />
-                  }
-                  <span className={`text-sm font-semibold ${plan.highlight ? 'text-white/80' : 'text-[#F59E0B]'}`}>
-                    {plan.sousTitre}
-                  </span>
-                </div>
-                <h2 className={`text-2xl font-bold ${plan.highlight ? 'text-white' : 'text-[#1A1A23]'}`}>
-                  {plan.nom}
-                </h2>
-              </div>
-
-              {/* Prix */}
-              <div className="mb-6">
-                <div className="flex items-end gap-1">
-                  <span className={`text-5xl font-bold ${plan.highlight ? 'text-white' : 'text-[#1A1A23]'}`}>
-                    {plan.prixLabel}
-                  </span>
-                  <span className={`text-base pb-1.5 ${plan.highlight ? 'text-white/70' : 'text-[#6B7280]'}`}>
-                    {plan.periode}
-                  </span>
-                </div>
-                {plan.facturation && (
-                  <p className={`text-sm mt-1 ${plan.highlight ? 'text-white/60' : 'text-[#6B7280]'}`}>
-                    {plan.facturation}
-                  </p>
-                )}
-              </div>
-
-              {/* Features */}
-              <ul className="space-y-3 mb-8 flex-1">
-                {plan.features.map((f) => (
-                  <li key={f} className="flex items-start gap-3">
-                    <Check
-                      size={17}
-                      className={`mt-0.5 flex-shrink-0 ${plan.highlight ? 'text-green-300' : 'text-[#0F6E56]'}`}
-                    />
-                    <span className={`text-sm ${plan.highlight ? 'text-white/90' : 'text-[#374151]'}`}>{f}</span>
-                  </li>
-                ))}
-                {plan.wallet && (
-                  <li className="flex items-start gap-3">
-                    <span className="text-base flex-shrink-0 mt-[-1px]">🔜</span>
-                    <span className={`text-sm italic ${plan.highlight ? 'text-white/70' : 'text-[#6B7280]'}`}>Wallet Apple &amp; Google — Bientôt disponible</span>
-                  </li>
-                )}
-              </ul>
-
-              {/* CTA */}
-              <button
-                onClick={() => handleCheckout(plan.id)}
-                disabled={loading === plan.id || checkingAuth}
-                className={`w-full py-3.5 rounded-xl font-semibold text-sm transition-colors disabled:opacity-60 disabled:cursor-not-allowed ${
-                  plan.highlight
-                    ? 'bg-white text-[#2D4A8A] hover:bg-gray-50'
-                    : 'bg-[#F59E0B] text-[#1B2B4B] hover:bg-[#e08900]'
-                }`}
-              >
-                {loading === plan.id ? 'Redirection...' : plan.cta}
-              </button>
+        {/* Cards prix */}
+        <div className="grid md:grid-cols-2 gap-6 w-full max-w-2xl items-start">
+          {/* Mensuel — secondaire, outline bleu */}
+          <div className="rounded-2xl p-8 flex flex-col border border-gray-200 bg-white">
+            <h2 className="text-2xl font-bold text-[#1A1A23] mb-2">Mensuel</h2>
+            <div className="flex items-end gap-1 mb-2">
+              <span className="text-5xl font-bold text-[#1A1A23]">39€</span>
+              <span className="text-base pb-1.5 text-[#6B7280]">/mois</span>
             </div>
-          ))}
+            <p className="text-sm text-[#6B7280] mb-8">Sans engagement, résiliable à tout moment</p>
+            <button
+              onClick={() => handleCheckout('mensuel')}
+              disabled={loading === 'mensuel' || checkingAuth}
+              className="w-full py-3.5 rounded-xl font-semibold text-sm transition-colors border-2 border-[#2D4A8A] text-[#2D4A8A] hover:bg-[#2D4A8A]/5 disabled:opacity-60 disabled:cursor-not-allowed"
+            >
+              {loading === 'mensuel' ? 'Redirection...' : 'Démarrer en mensuel'}
+            </button>
+          </div>
+
+          {/* Annuel — mise en avant, orange */}
+          <div className="rounded-2xl p-8 relative flex flex-col border-2 border-[#F59E0B] bg-white shadow-md shadow-[#F59E0B]/10">
+            <div className="absolute -top-3.5 right-4 bg-[#F59E0B] text-white text-xs font-bold px-3 py-1 rounded-full whitespace-nowrap">
+              Économisez 120€/an
+            </div>
+            <h2 className="text-2xl font-bold text-[#1A1A23] mb-2">Annuel</h2>
+            <div className="flex items-end gap-1 mb-1">
+              <span className="text-5xl font-bold text-[#1A1A23]">29€</span>
+              <span className="text-base pb-1.5 text-[#6B7280]">/mois</span>
+            </div>
+            <p className="text-sm text-[#6B7280] mb-4">Soit 348€ facturés une fois par an</p>
+            <div className="flex items-start gap-2 bg-[#FFF9EC] border border-[#F59E0B]/30 rounded-xl px-4 py-3 mb-8">
+              <Star size={16} className="text-[#F59E0B] flex-shrink-0 mt-0.5" fill="currentColor" />
+              <p className="text-sm text-[#92400e] font-medium">
+                Bonus annuel&nbsp;: accès prioritaire au Wallet Apple &amp; Google dès leur sortie
+              </p>
+            </div>
+            <button
+              onClick={() => handleCheckout('annuel')}
+              disabled={loading === 'annuel' || checkingAuth}
+              className="w-full py-3.5 rounded-xl font-semibold text-sm transition-colors bg-[#F59E0B] text-[#1B2B4B] hover:bg-[#e08900] disabled:opacity-60 disabled:cursor-not-allowed"
+            >
+              {loading === 'annuel' ? 'Redirection...' : 'Démarrer en annuel'}
+            </button>
+          </div>
         </div>
 
-        <p className="mt-8 text-sm text-[#6B7280]">
+        <p className="mt-6 text-sm text-center text-[#9CA3AF] max-w-lg">
+          Vous pouvez basculer du mensuel à l&apos;annuel à tout moment depuis votre espace, sans frais supplémentaires.
+        </p>
+
+        <p className="mt-4 text-sm text-[#6B7280]">
           Paiement sécurisé par{' '}
           <span className="font-semibold text-[#635BFF]">Stripe</span>.
           Annulable à tout moment pour le plan mensuel.

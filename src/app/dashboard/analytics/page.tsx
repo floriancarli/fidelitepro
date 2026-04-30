@@ -8,37 +8,13 @@ import {
 import { TrendingUp, Users, Gift, Star, ArrowRight, AlertTriangle, Heart } from 'lucide-react'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
-import type { Commercant, CarteFidelite, Scan } from '@/lib/types'
+import type { CarteFidelite, Scan } from '@/lib/types'
 
 function fmt(iso: string) {
   return new Intl.DateTimeFormat('fr-FR', { day: '2-digit', month: 'short' }).format(new Date(iso))
 }
 
-// Fake data shown as blurred preview for non-annual users
-const DEMO_SCANS_BY_DAY = Array.from({ length: 30 }, (_, i) => {
-  const d = new Date(); d.setDate(d.getDate() - (29 - i))
-  return { day: fmt(d.toISOString()), scans: Math.floor(Math.random() * 12) + 1 }
-})
-const DEMO_POINTS_BY_WEEK = [
-  { week: '28 oct.', points: 142 },
-  { week: '4 nov.', points: 198 },
-  { week: '11 nov.', points: 175 },
-  { week: '18 nov.', points: 231 },
-  { week: '25 nov.', points: 189 },
-  { week: '2 déc.', points: 267 },
-  { week: '9 déc.', points: 245 },
-  { week: '16 déc.', points: 312 },
-]
-const DEMO_TOP10: CarteFidelite[] = [
-  { id: '1', commercant_id: '', client_id: '', client_email: 'sophie.m@example.com', client_nom: 'Sophie M.', nombre_points: 8, points_cumules_total: 210, derniere_visite: new Date().toISOString(), recompenses_obtenues: 7, created_at: '' },
-  { id: '2', commercant_id: '', client_id: '', client_email: 'thomas.b@example.com', client_nom: 'Thomas B.', nombre_points: 5, points_cumules_total: 184, derniere_visite: new Date().toISOString(), recompenses_obtenues: 6, created_at: '' },
-  { id: '3', commercant_id: '', client_id: '', client_email: 'claire.d@example.com', client_nom: 'Claire D.', nombre_points: 3, points_cumules_total: 157, derniere_visite: new Date().toISOString(), recompenses_obtenues: 5, created_at: '' },
-  { id: '4', commercant_id: '', client_id: '', client_email: 'marc.l@example.com', client_nom: 'Marc L.', nombre_points: 9, points_cumules_total: 132, derniere_visite: new Date().toISOString(), recompenses_obtenues: 4, created_at: '' },
-  { id: '5', commercant_id: '', client_id: '', client_email: 'julie.r@example.com', client_nom: 'Julie R.', nombre_points: 2, points_cumules_total: 118, derniere_visite: new Date().toISOString(), recompenses_obtenues: 3, created_at: '' },
-]
-
 export default function AnalyticsPage() {
-  const [commercant, setCommercant] = useState<Commercant | null>(null)
   const [loading, setLoading] = useState(true)
 
   const [scansByDay, setScansByDay] = useState<{ day: string; scans: number }[]>([])
@@ -51,7 +27,6 @@ export default function AnalyticsPage() {
   const [fidelisesCount, setFidelisesCount] = useState(0)
   const [passageUniqueCount, setPassageUniqueCount] = useState(0)
 
-  const [isDemoLive, setIsDemoLive] = useState(false)
   const [userId, setUserId] = useState<string | null>(null)
 
   const load = useCallback(async () => {
@@ -60,82 +35,64 @@ export default function AnalyticsPage() {
     if (!user) return
 
     setUserId(user.id)
-    const demoLive = user.email === 'demo-live@getorlyo.com'
-    setIsDemoLive(demoLive)
 
-    const { data: comm } = await supabase.from('commercants').select('*').eq('id', user.id).single()
-    setCommercant(comm)
+    const now = new Date()
+    const day30ago = new Date(now); day30ago.setDate(now.getDate() - 30)
+    const week8ago = new Date(now); week8ago.setDate(now.getDate() - 56)
+    const month1ago = new Date(now.getFullYear(), now.getMonth(), 1)
 
-    if (demoLive || comm?.plan_actif === 'annuel') {
-      const now = new Date()
-      const day30ago = new Date(now); day30ago.setDate(now.getDate() - 30)
-      const week8ago = new Date(now); week8ago.setDate(now.getDate() - 56)
-      const month1ago = new Date(now.getFullYear(), now.getMonth(), 1)
+    const [{ data: scans30 }, { data: scans8w }, { data: cartes }, { data: scansMonth }, { data: allScans }] = await Promise.all([
+      supabase.from('scans').select('created_at').eq('commercant_id', user.id).gte('created_at', day30ago.toISOString()),
+      supabase.from('scans').select('created_at, points_ajoutes').eq('commercant_id', user.id).gte('created_at', week8ago.toISOString()),
+      supabase.from('cartes_fidelite').select('*').eq('commercant_id', user.id).order('points_cumules_total', { ascending: false }),
+      supabase.from('scans').select('recompense_declenchee').eq('commercant_id', user.id).gte('created_at', month1ago.toISOString()),
+      supabase.from('scans').select('carte_fidelite_id').eq('commercant_id', user.id),
+    ])
 
-      const [{ data: scans30 }, { data: scans8w }, { data: cartes }, { data: scansMonth }, { data: allScans }] = await Promise.all([
-        supabase.from('scans').select('created_at').eq('commercant_id', user.id).gte('created_at', day30ago.toISOString()),
-        supabase.from('scans').select('created_at, points_ajoutes').eq('commercant_id', user.id).gte('created_at', week8ago.toISOString()),
-        supabase.from('cartes_fidelite').select('*').eq('commercant_id', user.id).order('points_cumules_total', { ascending: false }),
-        supabase.from('scans').select('recompense_declenchee').eq('commercant_id', user.id).gte('created_at', month1ago.toISOString()),
-        supabase.from('scans').select('carte_fidelite_id').eq('commercant_id', user.id),
-      ])
-
-      const dayMap: Record<string, number> = {}
-      for (let i = 29; i >= 0; i--) {
-        const d = new Date(now); d.setDate(now.getDate() - i)
-        dayMap[d.toISOString().slice(0, 10)] = 0
-      }
-      ;(scans30 ?? []).forEach((s: Pick<Scan, 'created_at'>) => {
-        const k = s.created_at.slice(0, 10)
-        if (k in dayMap) dayMap[k]++
-      })
-      setScansByDay(Object.entries(dayMap).map(([day, scans]) => ({ day: fmt(day + 'T12:00:00'), scans })))
-
-      const weekMap: Record<string, number> = {}
-      for (let i = 7; i >= 0; i--) {
-        const d = new Date(now); d.setDate(now.getDate() - i * 7)
-        const mon = new Date(d); mon.setDate(d.getDate() - ((d.getDay() + 6) % 7))
-        weekMap[mon.toISOString().slice(0, 10)] = 0
-      }
-      ;(scans8w ?? []).forEach((s: Pick<Scan, 'created_at' | 'points_ajoutes'>) => {
-        const d = new Date(s.created_at)
-        const mon = new Date(d); mon.setDate(d.getDate() - ((d.getDay() + 6) % 7))
-        const k = mon.toISOString().slice(0, 10)
-        if (k in weekMap) weekMap[k] += s.points_ajoutes
-      })
-      setPointsByWeek(Object.entries(weekMap).map(([week, points]) => ({ week: fmt(week + 'T12:00:00'), points })))
-
-      setTop10((cartes ?? []).slice(0, 10))
-
-      const threshold = day30ago.toISOString()
-      const active = (cartes ?? []).filter((c: CarteFidelite) => c.derniere_visite >= threshold).length
-      setActiveCount(active)
-      setInactiveCount((cartes ?? []).length - active)
-      setRewardsMois((scansMonth ?? []).filter((s: Pick<Scan, 'recompense_declenchee'>) => s.recompense_declenchee).length)
-
-      const scanCountByCarte: Record<string, number> = {}
-      for (const s of allScans ?? []) {
-        const id = (s as { carte_fidelite_id: string }).carte_fidelite_id
-        if (id) scanCountByCarte[id] = (scanCountByCarte[id] ?? 0) + 1
-      }
-      const fidelises = Object.values(scanCountByCarte).filter((n) => n >= 2).length
-      const passageUnique = Object.values(scanCountByCarte).filter((n) => n === 1).length
-      const totalFid = fidelises + passageUnique
-      setFidelisesCount(fidelises)
-      setPassageUniqueCount(passageUnique)
-      setFidelisationRate(totalFid > 0 ? Math.round((fidelises / totalFid) * 100) : 0)
-    } else {
-      // Use demo data for preview
-      setScansByDay(DEMO_SCANS_BY_DAY)
-      setPointsByWeek(DEMO_POINTS_BY_WEEK)
-      setTop10(DEMO_TOP10)
-      setActiveCount(34)
-      setInactiveCount(12)
-      setRewardsMois(18)
-      setFidelisesCount(28)
-      setPassageUniqueCount(18)
-      setFidelisationRate(61)
+    const dayMap: Record<string, number> = {}
+    for (let i = 29; i >= 0; i--) {
+      const d = new Date(now); d.setDate(now.getDate() - i)
+      dayMap[d.toISOString().slice(0, 10)] = 0
     }
+    ;(scans30 ?? []).forEach((s: Pick<Scan, 'created_at'>) => {
+      const k = s.created_at.slice(0, 10)
+      if (k in dayMap) dayMap[k]++
+    })
+    setScansByDay(Object.entries(dayMap).map(([day, scans]) => ({ day: fmt(day + 'T12:00:00'), scans })))
+
+    const weekMap: Record<string, number> = {}
+    for (let i = 7; i >= 0; i--) {
+      const d = new Date(now); d.setDate(now.getDate() - i * 7)
+      const mon = new Date(d); mon.setDate(d.getDate() - ((d.getDay() + 6) % 7))
+      weekMap[mon.toISOString().slice(0, 10)] = 0
+    }
+    ;(scans8w ?? []).forEach((s: Pick<Scan, 'created_at' | 'points_ajoutes'>) => {
+      const d = new Date(s.created_at)
+      const mon = new Date(d); mon.setDate(d.getDate() - ((d.getDay() + 6) % 7))
+      const k = mon.toISOString().slice(0, 10)
+      if (k in weekMap) weekMap[k] += s.points_ajoutes
+    })
+    setPointsByWeek(Object.entries(weekMap).map(([week, points]) => ({ week: fmt(week + 'T12:00:00'), points })))
+
+    setTop10((cartes ?? []).slice(0, 10))
+
+    const threshold = day30ago.toISOString()
+    const active = (cartes ?? []).filter((c: CarteFidelite) => c.derniere_visite >= threshold).length
+    setActiveCount(active)
+    setInactiveCount((cartes ?? []).length - active)
+    setRewardsMois((scansMonth ?? []).filter((s: Pick<Scan, 'recompense_declenchee'>) => s.recompense_declenchee).length)
+
+    const scanCountByCarte: Record<string, number> = {}
+    for (const s of allScans ?? []) {
+      const id = (s as { carte_fidelite_id: string }).carte_fidelite_id
+      if (id) scanCountByCarte[id] = (scanCountByCarte[id] ?? 0) + 1
+    }
+    const fidelises = Object.values(scanCountByCarte).filter((n) => n >= 2).length
+    const passageUnique = Object.values(scanCountByCarte).filter((n) => n === 1).length
+    const totalFid = fidelises + passageUnique
+    setFidelisesCount(fidelises)
+    setPassageUniqueCount(passageUnique)
+    setFidelisationRate(totalFid > 0 ? Math.round((fidelises / totalFid) * 100) : 0)
 
     setLoading(false)
   }, [])
@@ -160,29 +117,11 @@ export default function AnalyticsPage() {
     )
   }
 
-  const isPro = isDemoLive || commercant?.plan_actif === 'annuel'
   const totalCartes = activeCount + inactiveCount
   const activePct = totalCartes > 0 ? Math.round((activeCount / totalCartes) * 100) : 0
 
   return (
     <div className="space-y-8">
-      {/* Sticky upsell banner — non-annual users */}
-      {!isPro && (
-        <div className="sticky top-0 z-20 bg-[#F59E0B] px-6 py-3 flex flex-col sm:flex-row sm:items-center gap-3 shadow-md">
-          <div className="flex items-center gap-2 flex-1">
-            <span className="text-lg">⭐</span>
-            <p className="font-bold text-white text-sm">Fonctionnalité réservée au plan annuel</p>
-          </div>
-          <Link
-            href="/pricing"
-            className="inline-flex items-center gap-2 bg-white text-[#2D4A8A] font-semibold px-4 py-2 rounded-xl hover:bg-gray-50 transition-colors text-sm flex-shrink-0"
-          >
-            Passer au plan annuel
-            <ArrowRight size={14} />
-          </Link>
-        </div>
-      )}
-
       <div className="px-8 space-y-8">
       <div>
         <h1 className="text-2xl font-bold text-[#1A1A23]">Analytics</h1>
@@ -190,7 +129,7 @@ export default function AnalyticsPage() {
       </div>
 
       {/* Métriques */}
-      <div className={`grid grid-cols-2 lg:grid-cols-4 gap-4 ${!isPro ? 'opacity-60 pointer-events-none select-none' : ''}`}>
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {[
           { label: 'Clients actifs', value: `${activePct}%`, sub: `${activeCount} / ${totalCartes}`, icon: Users, color: 'text-[#2D4A8A]', bg: 'bg-[#2D4A8A]/10' },
           { label: 'Clients inactifs', value: inactiveCount, sub: '+30 jours sans scan', icon: Users, color: 'text-[#6B7280]', bg: 'bg-gray-100' },
@@ -211,7 +150,7 @@ export default function AnalyticsPage() {
       </div>
 
       {/* Taux de fidélisation + Clients inactifs */}
-      <div className={`grid grid-cols-1 md:grid-cols-2 gap-4 ${!isPro ? 'opacity-60 pointer-events-none select-none' : ''}`}>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* Taux de fidélisation */}
         <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 flex flex-col gap-4">
           <div className="flex items-center justify-between">
@@ -290,27 +229,10 @@ export default function AnalyticsPage() {
         </div>
       </div>
 
-      {/* Charts wrapper — blurred overlay for non-pro */}
-      <div className={`space-y-8 ${!isPro ? 'relative' : ''}`}>
-        {!isPro && (
-          <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-4 rounded-2xl">
-            <div className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-lg border border-[#F59E0B]/30 px-8 py-6 flex flex-col items-center gap-3 text-center">
-              <span className="text-3xl">⭐</span>
-              <p className="font-bold text-[#1A1A23]">Graphiques réservés au plan annuel</p>
-              <p className="text-sm text-[#6B7280] max-w-xs">Ces graphiques afficheront vos vraies données une fois votre abonnement annuel activé.</p>
-              <Link
-                href="/pricing"
-                className="mt-1 inline-flex items-center gap-2 bg-[#F59E0B] text-[#1B2B4B] font-semibold px-5 py-2.5 rounded-xl hover:bg-[#e08900] transition-colors text-sm"
-              >
-                Passer au plan annuel
-                <ArrowRight size={15} />
-              </Link>
-            </div>
-          </div>
-        )}
-
+      {/* Charts */}
+      <div className="space-y-8">
         {/* Scans par jour */}
-        <div className={`bg-white rounded-2xl border border-gray-200 shadow-sm p-6 ${!isPro ? 'blur-sm' : ''}`}>
+        <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
           <h2 className="font-semibold text-[#1A1A23] mb-6">Scans par jour — 30 derniers jours</h2>
           <ResponsiveContainer width="100%" height={220}>
             <LineChart data={scansByDay} margin={{ top: 4, right: 16, left: -20, bottom: 0 }}>
@@ -324,7 +246,7 @@ export default function AnalyticsPage() {
         </div>
 
         {/* Points par semaine */}
-        <div className={`bg-white rounded-2xl border border-gray-200 shadow-sm p-6 ${!isPro ? 'blur-sm' : ''}`}>
+        <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
           <h2 className="font-semibold text-[#1A1A23] mb-6">Points distribués par semaine — 8 dernières semaines</h2>
           <ResponsiveContainer width="100%" height={220}>
             <BarChart data={pointsByWeek} margin={{ top: 4, right: 16, left: -20, bottom: 0 }}>
@@ -338,7 +260,7 @@ export default function AnalyticsPage() {
         </div>
 
         {/* Top 10 clients */}
-        <div className={`bg-white rounded-2xl border border-gray-200 shadow-sm ${!isPro ? 'blur-sm' : ''}`}>
+        <div className="bg-white rounded-2xl border border-gray-200 shadow-sm">
           <div className="px-6 py-5 border-b border-gray-200">
             <h2 className="font-semibold text-[#1A1A23]">Top 10 clients</h2>
             <p className="text-xs text-[#6B7280]">Classés par points cumulés total</p>

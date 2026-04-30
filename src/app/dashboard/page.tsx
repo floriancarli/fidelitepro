@@ -325,24 +325,6 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        {/* Bannière upsell annuel — mensuel depuis 30+ jours */}
-        {!isDemo && !isDemoLive && commercant?.plan_actif === 'mensuel' && (() => {
-          const thirtyDaysAgo = new Date(); thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
-          return new Date(commercant.created_at) <= thirtyDaysAgo
-        })() && (
-          <div className="bg-[#FFF8EC] border border-[#F59E0B]/40 rounded-2xl px-5 py-4 flex flex-col sm:flex-row sm:items-center gap-4 mb-6">
-            <p className="flex-1 text-sm text-[#1A1A23]">
-              🎉 <span className="font-semibold">Vous utilisez Orlyo depuis 30 jours !</span> Passez au plan annuel et économisez <span className="font-semibold text-[#F59E0B]">120€/an</span>.
-            </p>
-            <Link
-              href="/pricing"
-              className="inline-flex items-center gap-2 bg-[#2D4A8A] text-white font-semibold px-4 py-2.5 rounded-xl hover:bg-[#1e3a6e] transition-colors text-sm flex-shrink-0"
-            >
-              Passer au plan annuel
-              <ArrowRight size={15} />
-            </Link>
-          </div>
-        )}
 
         {/* Bannière résultat scan */}
         {lastScanResult && (
@@ -393,25 +375,13 @@ export default function DashboardPage() {
               <p className="text-xs text-[#6B7280]">{cartes.length} client{cartes.length > 1 ? 's' : ''} inscrits</p>
             </div>
             <div className="sm:ml-auto flex items-center gap-3">
-              {(isDemoLive || commercant?.plan_actif === 'annuel') ? (
-                <button
-                  onClick={exportCSV}
-                  className="flex items-center gap-1.5 border border-gray-200 text-[#1A1A23] text-sm font-medium px-3 py-2 rounded-lg hover:bg-gray-50 transition-colors"
-                >
-                  <Download size={15} />
-                  Exporter CSV
-                </button>
-              ) : (
-                <div title="Disponible sur le plan annuel">
-                  <button
-                    disabled
-                    className="flex items-center gap-1.5 border border-gray-200 text-gray-300 text-sm font-medium px-3 py-2 rounded-lg cursor-not-allowed"
-                  >
-                    <Download size={15} />
-                    Exporter CSV
-                  </button>
-                </div>
-              )}
+              <button
+                onClick={exportCSV}
+                className="flex items-center gap-1.5 border border-gray-200 text-[#1A1A23] text-sm font-medium px-3 py-2 rounded-lg hover:bg-gray-50 transition-colors"
+              >
+                <Download size={15} />
+                Exporter CSV
+              </button>
               <div className="relative">
                 <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#6B7280]" />
                 <input

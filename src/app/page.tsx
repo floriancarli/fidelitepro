@@ -25,6 +25,15 @@ const avantages = [
   },
 ]
 
+const FEATURES_LANDING_SHARED = [
+  'Clients et scans illimités',
+  'Dashboard analytics complet',
+  'Récompenses personnalisables',
+  'Export CSV des données clients',
+  'PWA installable',
+  'Support par email',
+]
+
 // Annuel listed first so it appears first on mobile; md:order-* swaps visually on desktop
 const pricing = [
   {
@@ -34,15 +43,8 @@ const pricing = [
     badge: 'Meilleure valeur',
     badgeStyle: 'value',
     facturation: 'Facturé 348€/an',
-    features: [
-      'Clients illimités',
-      'Programmes multiples',
-      'Notifications email',
-      'Analytics avancés',
-      'Export CSV',
-      'Support prioritaire',
-      '🔜 Apple Wallet & Google Wallet — Bientôt disponible',
-    ],
+    features: FEATURES_LANDING_SHARED,
+    wallet: true,
     cta: 'Commencer',
     highlight: false,
     desktopOrder: 'md:order-2',
@@ -53,7 +55,8 @@ const pricing = [
     desc: 'Sans engagement',
     badge: 'Le plus populaire',
     badgeStyle: 'popular',
-    features: ['Clients illimités', '1 programme de fidélité', 'Notifications email', 'Support email'],
+    features: FEATURES_LANDING_SHARED,
+    wallet: false,
     cta: 'Commencer',
     highlight: true,
     desktopOrder: 'md:order-1',
@@ -248,6 +251,12 @@ export default function LandingPage() {
                       {f}
                     </li>
                   ))}
+                  {p.wallet && (
+                    <li className="flex items-start gap-2 text-sm">
+                      <Star size={16} className="mt-0.5 flex-shrink-0 text-[#F59E0B]" fill="currentColor" />
+                      <span className="font-medium text-[#92400e]">Bonus&nbsp;: Wallet Apple &amp; Google en priorité</span>
+                    </li>
+                  )}
                 </ul>
                 <Link
                   href="/pricing"
