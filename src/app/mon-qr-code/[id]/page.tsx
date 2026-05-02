@@ -211,6 +211,16 @@ export default function MonQrCodePage() {
       setLoading(false)
       return
     }
+
+    // Défense en profondeur : vérification explicite de propriété.
+    // La RLS (clients_select_own : email = auth.email()) fournit déjà
+    // cette garantie, mais on valide aussi côté application.
+    if (clientData.email !== user.email) {
+      setNotFound(true)
+      setLoading(false)
+      return
+    }
+
     setClient(clientData)
 
     const { data: cartesData } = await supabase
