@@ -25,13 +25,22 @@ export async function updateSession(request: NextRequest) {
 
   const { data: { user } } = await supabase.auth.getUser()
 
-  const protectedPaths = ['/dashboard', '/mon-compte']
-  const isProtected = protectedPaths.some(p => request.nextUrl.pathname.startsWith(p))
+  // Pages protégées → redirection vers /login si non authentifié
+  const protectedPagePaths = ['/dashboard', '/mon-compte', '/scan']
+  const isProtectedPage = protectedPagePaths.some(p => request.nextUrl.pathname.startsWith(p))
 
-  if (isProtected && !user) {
+  if (isProtectedPage && !user) {
     const url = request.nextUrl.clone()
     url.pathname = '/login'
     return NextResponse.redirect(url)
+  }
+
+  // Routes API sensibles → 401 JSON si non authentifié (défense en profondeur)
+  const protectedApiPaths = ['/api/recompenses', '/api/scan', '/api/stripe/checkout']
+  const isProtectedApi = protectedApiPaths.some(p => request.nextUrl.pathname.startsWith(p))
+
+  if (isProtectedApi && !user) {
+    return NextResponse.json({ error: 'Non authentifié' }, { status: 401 })
   }
 
   return supabaseResponse
