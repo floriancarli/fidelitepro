@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@supabase/supabase-js'
+import { createAdminClient } from '@/lib/supabase/admin'
 import { sendRelanceJ7Email } from '@/lib/email'
 
 function isAuthorized(req: NextRequest): boolean {
@@ -44,10 +44,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
-  const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  )
+  const supabase = createAdminClient()
 
   // Fenêtre : emails "presque là" envoyés il y a 7–8 jours
   const windowEnd = new Date(Date.now() - 7 * 86_400_000)

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@supabase/supabase-js'
+import { createAdminClient } from '@/lib/supabase/admin'
 import { sendRelanceEmail } from '@/lib/email'
 
 // Protect the cron endpoint with a shared secret (set CRON_SECRET in env)
@@ -33,10 +33,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
-  const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  )
+  const supabase = createAdminClient()
 
   const cutoff = new Date()
   cutoff.setDate(cutoff.getDate() - 30)

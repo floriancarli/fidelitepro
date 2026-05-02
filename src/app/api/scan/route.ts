@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import { sendAlmostThereEmail } from '@/lib/email'
 
 export async function POST(request: NextRequest) {
@@ -27,8 +28,9 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Compte commerçant introuvable', detail: commercantError?.message }, { status: 404 })
   }
 
-  // Récupérer le client via son QR code
-  const { data: client, error: clientError } = await supabase
+  // Récupérer le client via son QR code — admin car la session du commerçant
+  // ne peut pas lire les enregistrements clients qui ne lui appartiennent pas
+  const { data: client, error: clientError } = await createAdminClient()
     .from('clients')
     .select('*')
     .eq('qr_code_id', clientQrCodeId)
