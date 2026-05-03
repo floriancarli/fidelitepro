@@ -5,9 +5,6 @@ import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { Logo } from '@/components/Logo'
 
-const DEMO_EMAIL = process.env.NEXT_PUBLIC_DEMO_EMAIL || 'demo@getorlyo.com'
-const DEMO_PASSWORD = process.env.NEXT_PUBLIC_DEMO_PASSWORD || 'DemoFidelite2024!'
-
 export default function DemoPage() {
   const router = useRouter()
   const [error, setError] = useState('')
@@ -16,11 +13,8 @@ export default function DemoPage() {
     const login = async () => {
       const supabase = createClient()
       await supabase.auth.signOut()
-      const { error: signInError } = await supabase.auth.signInWithPassword({
-        email: DEMO_EMAIL,
-        password: DEMO_PASSWORD,
-      })
-      if (signInError) {
+      const res = await fetch('/api/demo-auth', { method: 'POST' })
+      if (!res.ok) {
         setError('La démo est temporairement indisponible. Veuillez réessayer dans quelques instants.')
         return
       }
