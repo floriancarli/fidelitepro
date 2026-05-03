@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createServerClient } from '@supabase/ssr'
 
-const DEMO_EMAIL = 'demo@getorlyo.com'
+const DEMO_EMAIL = 'demo-live@getorlyo.com'
 
 export async function POST(req: NextRequest) {
   const password = process.env.DEMO_PASSWORD
