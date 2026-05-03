@@ -10,6 +10,38 @@
 
 
 -- ============================================================
+-- TABLE : commercants
+-- ============================================================
+-- Constat : RLS apparaît comme "Disabled" sur le dashboard Supabase,
+-- ce qui signifie que les policies INSERT/UPDATE sont ignorées et que
+-- n'importe qui avec la clé anon peut modifier ou supprimer un commerçant.
+-- Correction :
+--   1. Activer RLS sur la table (idempotent si déjà actif)
+--   2. Recréer les 3 policies de manière défensive (DROP IF EXISTS)
+--      au cas où elles auraient été modifiées ou supprimées manuellement.
+--
+-- SELECT public : maintenu intentionnellement pour /join (visiteurs non connectés)
+-- INSERT        : uniquement si auth.uid() = id (le commerçant crée son propre profil)
+-- UPDATE        : uniquement si auth.uid() = id (chaque commerçant gère son propre compte)
+-- DELETE        : aucune policy → bloqué par défaut dès que RLS est actif
+
+ALTER TABLE commercants ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "commercant_select_public" ON commercants;
+DROP POLICY IF EXISTS "commercant_insert_own" ON commercants;
+DROP POLICY IF EXISTS "commercant_update_own" ON commercants;
+
+CREATE POLICY "commercant_select_public" ON commercants
+  FOR SELECT USING (true);
+
+CREATE POLICY "commercant_insert_own" ON commercants
+  FOR INSERT WITH CHECK (auth.uid() = id);
+
+CREATE POLICY "commercant_update_own" ON commercants
+  FOR UPDATE USING (auth.uid() = id);
+
+
+-- ============================================================
 -- TABLE : clients
 -- ============================================================
 -- Avant : SELECT USING (true) — lecture anonyme de tous les clients
@@ -69,17 +101,6 @@ DROP POLICY IF EXISTS "recompenses_select" ON recompenses;
 
 CREATE POLICY "recompenses_select_own" ON recompenses
   FOR SELECT USING (auth.uid() = commercant_id);
-
-
--- ============================================================
--- TABLE : commercants
--- ============================================================
--- INCHANGÉ — la policy "commercant_select_public" (USING (true)) est
--- intentionnellement maintenue pour permettre aux visiteurs non connectés
--- de voir le nom, le logo et les paliers du commerçant sur la page /join.
--- Les champs sensibles (abonnement_actif) sont acceptable à ce stade.
--- Amélioration future : créer une vue commercants_public_info avec
--- uniquement les champs nécessaires à /join.
 
 
 -- ============================================================
