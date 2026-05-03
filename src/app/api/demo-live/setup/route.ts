@@ -1,10 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 
-const SECRET_KEY = 'orlyo2026'
-
-const DEMO_LIVE_EMAIL    = 'demo-live@getorlyo.com'
-const DEMO_LIVE_PASSWORD = 'OrlyoDemo2026'
+const DEMO_LIVE_EMAIL = 'demo-live@getorlyo.com'
 const MERCHANT_QR        = 'QR-DEMOLIVE-MERCHANT'
 const JEAN_QR            = 'QR-DEMOLIVE-JEAN'
 
@@ -15,9 +12,20 @@ const PALIERS = [
 ]
 
 export async function POST(req: NextRequest) {
+  const scanKey = process.env.DEMO_LIVE_SCAN_KEY
+  if (!scanKey) {
+    console.error('[api/demo-live/setup] DEMO_LIVE_SCAN_KEY not configured')
+    return NextResponse.json({ error: 'Configuration manquante' }, { status: 500 })
+  }
   const key = req.nextUrl.searchParams.get('key')
-  if (key !== SECRET_KEY) {
+  if (key !== scanKey) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  }
+
+  const demoLivePassword = process.env.DEMO_LIVE_SETUP_PASSWORD
+  if (!demoLivePassword) {
+    console.error('[api/demo-live/setup] DEMO_LIVE_SETUP_PASSWORD not configured')
+    return NextResponse.json({ error: 'Configuration manquante' }, { status: 500 })
   }
 
   const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
@@ -38,11 +46,11 @@ export async function POST(req: NextRequest) {
 
   if (existing) {
     userId = existing.id
-    await admin.auth.admin.updateUserById(userId, { password: DEMO_LIVE_PASSWORD })
+    await admin.auth.admin.updateUserById(userId, { password: demoLivePassword })
   } else {
     const { data: created, error } = await admin.auth.admin.createUser({
       email: DEMO_LIVE_EMAIL,
-      password: DEMO_LIVE_PASSWORD,
+      password: demoLivePassword,
       email_confirm: true,
     })
     if (error || !created.user) {
@@ -96,7 +104,6 @@ export async function POST(req: NextRequest) {
     ok: true,
     userId,
     email: DEMO_LIVE_EMAIL,
-    password: DEMO_LIVE_PASSWORD,
     jean_qr: JEAN_QR,
   })
 }

@@ -1,11 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 
-const SECRET_KEY = 'orlyo2026'
-
 export async function GET(req: NextRequest) {
+  const scanKey = process.env.DEMO_LIVE_SCAN_KEY
+  if (!scanKey) {
+    console.error('[api/demo-live/scan] DEMO_LIVE_SCAN_KEY not configured')
+    return new NextResponse('Configuration manquante', { status: 500 })
+  }
   const key = req.nextUrl.searchParams.get('key')
-  if (key !== SECRET_KEY) {
+  if (key !== scanKey) {
     return new NextResponse('Accès refusé', { status: 403 })
   }
 
