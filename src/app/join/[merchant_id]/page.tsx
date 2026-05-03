@@ -28,7 +28,6 @@ export default function JoinPage() {
   const [showConfirm, setShowConfirm] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
-  const [needsConfirm, setNeedsConfirm] = useState(false)
 
   // Already logged in → redirect to their QR code
   useEffect(() => {
@@ -66,60 +65,48 @@ export default function JoinPage() {
       setError('Les mots de passe ne correspondent pas.')
       return
     }
-    if (form.password.length < 6) {
-      setError('Le mot de passe doit contenir au moins 6 caractères.')
+    if (form.password.length < 8) {
+      setError('Le mot de passe doit contenir au moins 8 caractères.')
       return
     }
 
     setLoading(true)
     try {
-      const supabase = createClient()
       const email = form.email.toLowerCase().trim()
+      const nom = form.nom.trim()
 
-      const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
-        email,
-        password: form.password,
-        options: { data: { nom: form.nom } },
+      const res = await fetch('/api/join', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ merchant_id: merchantId, email, password: form.password, nom }),
       })
 
-      if (signUpError) {
-        if (signUpError.message.toLowerCase().includes('already registered')) {
+      const json = await res.json()
+
+      if (!res.ok) {
+        if (json.error === 'EMAIL_TAKEN') {
           setError('Cet email est déjà utilisé.')
-          return
+        } else {
+          setError(json.error || 'Une erreur est survenue.')
         }
-        throw signUpError
+        return
       }
 
-      // Get or create client record
-      const { data: existing } = await supabase
-        .from('clients')
-        .select('qr_code_id')
-        .eq('email', email)
-        .maybeSingle()
+      const supabase = createClient()
+      const { error: signInError } = await supabase.auth.signInWithPassword({
+        email,
+        password: form.password,
+      })
 
-      let qrCodeId: string
-      if (existing) {
-        qrCodeId = existing.qr_code_id
-      } else {
-        const newId = 'QR-' + crypto.randomUUID().replace(/-/g, '').slice(0, 8).toUpperCase()
-        const { data: newClient, error: insertErr } = await supabase
-          .from('clients')
-          .insert({ email, nom: form.nom, qr_code_id: newId })
-          .select('qr_code_id')
-          .single()
-        if (insertErr) throw insertErr
-        qrCodeId = newClient.qr_code_id
+      if (signInError) {
+        setError('Compte créé mais connexion échouée. Connectez-vous sur la page de connexion.')
+        return
       }
 
-      localStorage.setItem(LS_KEY, JSON.stringify({ qr_code_id: qrCodeId, email }))
-
-      if (signUpData.session) {
-        router.replace(`/mon-qr-code/${qrCodeId}`)
-      } else {
-        setNeedsConfirm(true)
-      }
-    } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Une erreur est survenue')
+      localStorage.setItem(LS_KEY, JSON.stringify({ qr_code_id: json.qr_code_id, email }))
+      router.replace(`/mon-qr-code/${json.qr_code_id}`)
+    } catch {
+      setError('Une erreur est survenue. Veuillez réessayer.')
     } finally {
       setLoading(false)
     }
@@ -132,22 +119,6 @@ export default function JoinPage() {
         <Link href="/" className="text-[#2D4A8A] font-medium hover:underline text-sm">
           Retour à l&apos;accueil →
         </Link>
-      </div>
-    )
-  }
-
-  if (needsConfirm) {
-    return (
-      <div className="min-h-screen bg-white flex items-center justify-center px-4">
-        <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-8 w-full max-w-md text-center">
-          <div className="text-5xl mb-4">📧</div>
-          <h1 className="text-xl font-bold mb-2">Vérifiez vos emails</h1>
-          <p className="text-[#6B7280] text-sm leading-relaxed">
-            Un lien de confirmation a été envoyé à{' '}
-            <strong className="text-[#1A1A23]">{form.email}</strong>.
-            Cliquez dessus pour activer votre compte et accéder à votre carte.
-          </p>
-        </div>
       </div>
     )
   }
@@ -249,7 +220,7 @@ export default function JoinPage() {
                   required
                   value={form.password}
                   onChange={(e) => setForm({ ...form, password: e.target.value })}
-                  placeholder="6 caractères minimum"
+                  placeholder="8 caractères minimum"
                   className="w-full border border-gray-200 rounded-xl px-4 py-3 pr-12 text-base focus:outline-none focus:ring-2 focus:ring-[#2D4A8A]/30 focus:border-[#2D4A8A] transition-colors"
                 />
                 <button
