@@ -2,13 +2,6 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { sendRelanceEmail } from '@/lib/email'
 
-// Protect the cron endpoint with a shared secret (set CRON_SECRET in env)
-function isAuthorized(req: NextRequest): boolean {
-  const secret = process.env.CRON_SECRET
-  if (!secret) return true // unprotected in dev if secret not set
-  const auth = req.headers.get('authorization')
-  return auth === `Bearer ${secret}`
-}
 
 type CarteRelance = {
   id: string
@@ -29,7 +22,12 @@ type CarteRelance = {
 }
 
 export async function GET(req: NextRequest) {
-  if (!isAuthorized(req)) {
+  const cronSecret = process.env.CRON_SECRET
+  if (!cronSecret) {
+    console.error('[cron/relance] CRON_SECRET not configured')
+    return NextResponse.json({ error: 'CRON_SECRET manquant' }, { status: 500 })
+  }
+  if (req.headers.get('authorization') !== `Bearer ${cronSecret}`) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 

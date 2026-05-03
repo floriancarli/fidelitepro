@@ -2,11 +2,6 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { sendRelanceJ7Email } from '@/lib/email'
 
-function isAuthorized(req: NextRequest): boolean {
-  const secret = process.env.CRON_SECRET
-  if (!secret) return true
-  return req.headers.get('authorization') === `Bearer ${secret}`
-}
 
 type Palier = { points: number; libelle: string }
 
@@ -40,7 +35,12 @@ type CarteAvecJoins = {
 }
 
 export async function GET(req: NextRequest) {
-  if (!isAuthorized(req)) {
+  const cronSecret = process.env.CRON_SECRET
+  if (!cronSecret) {
+    console.error('[cron/relance-j7] CRON_SECRET not configured')
+    return NextResponse.json({ error: 'CRON_SECRET manquant' }, { status: 500 })
+  }
+  if (req.headers.get('authorization') !== `Bearer ${cronSecret}`) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
