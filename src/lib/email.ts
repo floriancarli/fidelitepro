@@ -191,3 +191,74 @@ export async function sendRelanceEmail(p: RelanceParams) {
     html: baseTemplate(p.couleur, body),
   })
 }
+
+// ── Suppression compte commerçant (RGPD Art. 17) ─────────────────────────────
+
+export async function sendAccountDeletedMerchantEmail({
+  to,
+  nomCommerce,
+}: {
+  to: string
+  nomCommerce: string
+}) {
+  const body = `
+    <h1 style="margin:0 0 16px;font-size:22px;font-weight:700;color:#1A1A23">
+      Votre compte Orlyo a été supprimé
+    </h1>
+    <p style="margin:0 0 12px;font-size:15px;color:#6B7280;line-height:1.6">
+      Bonjour,<br/>
+      Votre compte <strong style="color:#1A1A23">${nomCommerce}</strong> sur Orlyo a bien été supprimé conformément au RGPD Article 17 (droit à l'effacement).
+    </p>
+    <p style="margin:0 0 12px;font-size:15px;color:#6B7280;line-height:1.6">
+      Votre abonnement Stripe a été résilié. Vos données personnelles ont été effacées de notre base de production.
+    </p>
+    <div style="background:#F9F9FB;border-radius:14px;padding:16px 20px;border:1px solid #E5E7EB;margin:0 0 16px">
+      <p style="margin:0;font-size:13px;color:#6B7280;line-height:1.6">
+        Conformément à l'article L123-22 du Code de commerce, vos factures sont conservées chez Stripe pendant 10 ans.<br/>
+        Vos données ont été supprimées de notre base de production. Les sauvegardes seront purgées sous 30 jours conformément au RGPD.
+      </p>
+    </div>
+    <p style="margin:0;font-size:13px;color:#9CA3AF;line-height:1.6">
+      Si vous n'êtes pas à l'origine de cette demande, contactez-nous immédiatement à
+      <a href="mailto:contact@orlyo.fr" style="color:#2D4A8A">contact@orlyo.fr</a>.
+    </p>
+  `
+  return getResend().emails.send({
+    from: 'Orlyo <noreply@getorlyo.com>',
+    to,
+    subject: 'Confirmation de suppression de votre compte Orlyo',
+    html: baseTemplate('#2D4A8A', body),
+  })
+}
+
+// ── Suppression compte client (RGPD Art. 17) ──────────────────────────────────
+
+export async function sendAccountDeletedClientEmail({ to }: { to: string }) {
+  const body = `
+    <h1 style="margin:0 0 16px;font-size:22px;font-weight:700;color:#1A1A23">
+      Votre compte Orlyo a été supprimé
+    </h1>
+    <p style="margin:0 0 12px;font-size:15px;color:#6B7280;line-height:1.6">
+      Bonjour,<br/>
+      Votre compte Orlyo a bien été supprimé conformément au RGPD Article 17 (droit à l'effacement).
+    </p>
+    <p style="margin:0 0 12px;font-size:15px;color:#6B7280;line-height:1.6">
+      Vos données de fidélité ont été anonymisées chez tous vos commerçants.
+    </p>
+    <div style="background:#F9F9FB;border-radius:14px;padding:16px 20px;border:1px solid #E5E7EB;margin:0 0 16px">
+      <p style="margin:0;font-size:13px;color:#6B7280;line-height:1.6">
+        Vos données ont été supprimées de notre base de production. Les sauvegardes seront purgées sous 30 jours conformément au RGPD.
+      </p>
+    </div>
+    <p style="margin:0;font-size:13px;color:#9CA3AF;line-height:1.6">
+      Si vous n'êtes pas à l'origine de cette demande, contactez-nous immédiatement à
+      <a href="mailto:contact@orlyo.fr" style="color:#2D4A8A">contact@orlyo.fr</a>.
+    </p>
+  `
+  return getResend().emails.send({
+    from: 'Orlyo <noreply@getorlyo.com>',
+    to,
+    subject: 'Confirmation de suppression de votre compte Orlyo',
+    html: baseTemplate('#2D4A8A', body),
+  })
+}

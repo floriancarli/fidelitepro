@@ -1,11 +1,13 @@
 'use client'
 
 import { useEffect, useState, useCallback } from 'react'
-import { Save, Check } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import { Save, Check, AlertTriangle, Trash2 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import type { Commercant } from '@/lib/types'
 
 export default function MonComptePage() {
+  const router = useRouter()
   const [commercant, setCommercant] = useState<Commercant | null>(null)
   const [form, setForm] = useState({
     nom_commerce: '',
@@ -18,6 +20,12 @@ export default function MonComptePage() {
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
   const [error, setError] = useState('')
+
+  const [showDeleteModal, setShowDeleteModal] = useState(false)
+  const [deletePassword, setDeletePassword] = useState('')
+  const [deleteConfirmText, setDeleteConfirmText] = useState('')
+  const [deleteLoading, setDeleteLoading] = useState(false)
+  const [deleteError, setDeleteError] = useState('')
 
   const load = useCallback(async () => {
     const supabase = createClient()
@@ -64,6 +72,31 @@ export default function MonComptePage() {
     }
   }
 
+  const handleDeleteAccount = async () => {
+    if (deleteConfirmText !== 'SUPPRIMER' || !deletePassword) return
+    setDeleteLoading(true)
+    setDeleteError('')
+    try {
+      const res = await fetch('/api/account/delete-merchant', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password: deletePassword }),
+      })
+      const json = await res.json()
+      if (!res.ok) {
+        setDeleteError(json.error || 'Une erreur est survenue.')
+        return
+      }
+      const supabase = createClient()
+      await supabase.auth.signOut()
+      router.replace('/')
+    } catch {
+      setDeleteError('Erreur réseau. Veuillez réessayer.')
+    } finally {
+      setDeleteLoading(false)
+    }
+  }
+
   if (!commercant) {
     return (
       <div className="flex items-center justify-center h-full min-h-screen">
@@ -73,6 +106,75 @@ export default function MonComptePage() {
   }
 
   return (
+    <>
+      {showDeleteModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+          <div className="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-sm">
+            <div className="w-12 h-12 rounded-full bg-red-50 flex items-center justify-center mx-auto mb-4">
+              <AlertTriangle size={22} className="text-red-500" />
+            </div>
+            <h3 className="text-lg font-bold text-center mb-2">Supprimer mon compte</h3>
+            <p className="text-sm text-[#6B7280] text-center mb-5 leading-relaxed">
+              Cette action est <strong className="text-[#1A1A23]">irréversible</strong>. Toutes vos données, votre programme de fidélité et votre historique seront définitivement supprimés.
+            </p>
+
+            {deleteError && (
+              <div className="bg-red-50 border border-red-200 text-red-700 rounded-xl px-4 py-3 text-sm mb-4">
+                {deleteError}
+              </div>
+            )}
+
+            <div className="space-y-3 mb-5">
+              <div>
+                <label className="block text-sm font-medium text-[#1A1A23] mb-1.5">
+                  Confirmez votre mot de passe
+                </label>
+                <input
+                  type="password"
+                  value={deletePassword}
+                  onChange={(e) => setDeletePassword(e.target.value)}
+                  placeholder="Votre mot de passe actuel"
+                  className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-red-300 focus:border-red-400 transition-colors"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-[#1A1A23] mb-1.5">
+                  Tapez <span className="font-mono font-bold">SUPPRIMER</span> pour confirmer
+                </label>
+                <input
+                  type="text"
+                  value={deleteConfirmText}
+                  onChange={(e) => setDeleteConfirmText(e.target.value)}
+                  placeholder="SUPPRIMER"
+                  className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-red-300 focus:border-red-400 transition-colors"
+                />
+              </div>
+            </div>
+
+            <div className="flex gap-3">
+              <button
+                onClick={() => {
+                  setShowDeleteModal(false)
+                  setDeletePassword('')
+                  setDeleteConfirmText('')
+                  setDeleteError('')
+                }}
+                className="flex-1 border border-gray-200 text-[#1A1A23] font-medium py-2.5 rounded-xl hover:bg-gray-50 transition-colors"
+              >
+                Annuler
+              </button>
+              <button
+                onClick={handleDeleteAccount}
+                disabled={deleteConfirmText !== 'SUPPRIMER' || !deletePassword || deleteLoading}
+                className="flex-1 bg-red-500 text-white font-semibold py-2.5 rounded-xl hover:bg-red-600 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                {deleteLoading ? 'Suppression…' : 'Supprimer définitivement'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
     <div className="p-8 max-w-2xl">
       <div className="mb-8">
         <h1 className="text-2xl font-bold">Mon Compte</h1>
@@ -206,6 +308,31 @@ export default function MonComptePage() {
           {saving ? 'Sauvegarde...' : 'Sauvegarder les modifications'}
         </button>
       </form>
+
+      {/* Zone de danger */}
+      <div className="mt-8 bg-red-50 border border-red-200 rounded-2xl p-6">
+        <div className="flex items-start gap-3 mb-4">
+          <div className="w-9 h-9 rounded-xl bg-red-100 flex items-center justify-center flex-shrink-0">
+            <AlertTriangle size={18} className="text-red-500" />
+          </div>
+          <div>
+            <h2 className="font-semibold text-[#1A1A23]">Zone de danger</h2>
+            <p className="text-sm text-[#6B7280] mt-0.5 leading-relaxed">
+              La suppression de votre compte est définitive et irréversible. Toutes vos données,
+              votre programme de fidélité et vos clients seront effacés conformément au RGPD Art. 17.
+            </p>
+          </div>
+        </div>
+        <button
+          type="button"
+          onClick={() => setShowDeleteModal(true)}
+          className="flex items-center gap-2 border border-red-300 text-red-600 font-medium px-4 py-2.5 rounded-xl hover:bg-red-100 transition-colors text-sm"
+        >
+          <Trash2 size={15} />
+          Supprimer mon compte définitivement
+        </button>
+      </div>
     </div>
+    </>
   )
 }

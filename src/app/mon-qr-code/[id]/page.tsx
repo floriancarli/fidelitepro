@@ -3,7 +3,7 @@
 import { useEffect, useState, useCallback, useRef } from 'react'
 import dynamic from 'next/dynamic'
 import { useParams, useRouter } from 'next/navigation'
-import { ArrowLeft, Star, ChevronRight } from 'lucide-react'
+import { ArrowLeft, Star, ChevronRight, Trash2, AlertTriangle } from 'lucide-react'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 import { Logo } from '@/components/Logo'
@@ -186,6 +186,8 @@ export default function MonQrCodePage() {
   const [animation, setAnimation] = useState<AnimData | null>(null)
   const [loading, setLoading] = useState(true)
   const [notFound, setNotFound] = useState(false)
+  const [showDeleteModal, setShowDeleteModal] = useState(false)
+  const [deleteLoading, setDeleteLoading] = useState(false)
 
   // Ref pour accéder aux cartes depuis le handler Realtime sans re-subscribe
   const cartesRef = useRef<CarteInfo[]>([])
@@ -357,6 +359,22 @@ export default function MonQrCodePage() {
 
   const dismissAnimation = useCallback(() => setAnimation(null), [])
 
+  const handleDeleteAccount = async () => {
+    setDeleteLoading(true)
+    try {
+      const res = await fetch('/api/account/delete-client', { method: 'POST' })
+      if (!res.ok) {
+        setDeleteLoading(false)
+        return
+      }
+      const supabase = createClient()
+      await supabase.auth.signOut()
+      router.replace('/')
+    } catch {
+      setDeleteLoading(false)
+    }
+  }
+
   // ── États de chargement ─────────────────────────────────────────────────────
 
   if (loading) {
@@ -381,7 +399,37 @@ export default function MonQrCodePage() {
   // ── Rendu principal ─────────────────────────────────────────────────────────
 
   return (
-    <div className="min-h-screen bg-white flex flex-col">
+    <>
+      {showDeleteModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+          <div className="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-sm">
+            <div className="w-12 h-12 rounded-full bg-red-50 flex items-center justify-center mx-auto mb-4">
+              <AlertTriangle size={22} className="text-red-500" />
+            </div>
+            <h3 className="text-lg font-bold text-center mb-2">Supprimer mon compte</h3>
+            <p className="text-sm text-[#6B7280] text-center mb-5 leading-relaxed">
+              Cette action est <strong className="text-[#1A1A23]">irréversible</strong>. Vos cartes de fidélité chez tous vos commerçants seront supprimées.
+            </p>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setShowDeleteModal(false)}
+                className="flex-1 border border-gray-200 text-[#1A1A23] font-medium py-2.5 rounded-xl hover:bg-gray-50 transition-colors"
+              >
+                Annuler
+              </button>
+              <button
+                onClick={handleDeleteAccount}
+                disabled={deleteLoading}
+                className="flex-1 bg-red-500 text-white font-semibold py-2.5 rounded-xl hover:bg-red-600 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                {deleteLoading ? 'Suppression…' : 'Supprimer'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <div className="min-h-screen bg-white flex flex-col">
       {animation && <AnimationOverlay data={animation} onDismiss={dismissAnimation} />}
 
       <header className="bg-white border-b border-gray-200 px-4 py-4 flex items-center gap-4 sticky top-0 z-10">
@@ -561,8 +609,21 @@ export default function MonQrCodePage() {
               })}
             </div>
           )}
+
+          {/* Suppression de compte */}
+          <div className="pt-4 pb-2 text-center">
+            <button
+              onClick={() => setShowDeleteModal(true)}
+              className="text-xs text-[#9CA3AF] hover:text-red-400 transition-colors inline-flex items-center gap-1.5"
+            >
+              <Trash2 size={12} />
+              Supprimer mon compte
+            </button>
+          </div>
+
         </div>
       </div>
     </div>
+    </>
   )
 }
