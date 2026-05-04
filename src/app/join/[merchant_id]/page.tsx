@@ -23,7 +23,7 @@ export default function JoinPage() {
 
   const [commercant, setCommercant] = useState<CommercantInfo | null>(null)
   const [notFound, setNotFound] = useState(false)
-  const [form, setForm] = useState({ nom: '', email: '', password: '', confirm: '' })
+  const [form, setForm] = useState({ nom: '', email: '', password: '', confirm: '', cgu: false })
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirm, setShowConfirm] = useState(false)
   const [loading, setLoading] = useState(false)
@@ -61,6 +61,10 @@ export default function JoinPage() {
     e.preventDefault()
     setError('')
 
+    if (!form.cgu) {
+      setError('Vous devez accepter la politique de confidentialité pour vous inscrire.')
+      return
+    }
     if (form.password !== form.confirm) {
       setError('Les mots de passe ne correspondent pas.')
       return
@@ -78,7 +82,7 @@ export default function JoinPage() {
       const res = await fetch('/api/join', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ merchant_id: merchantId, email, password: form.password, nom }),
+        body: JSON.stringify({ merchant_id: merchantId, email, password: form.password, nom, cgu_accepted: form.cgu }),
       })
 
       const json = await res.json()
@@ -256,9 +260,39 @@ export default function JoinPage() {
               </div>
             </div>
 
+            <div className="flex items-start gap-3 pt-1">
+              <input
+                id="cgu-consent"
+                type="checkbox"
+                checked={form.cgu}
+                onChange={(e) => setForm({ ...form, cgu: e.target.checked })}
+                className="mt-0.5 w-4 h-4 rounded border-gray-300 cursor-pointer flex-shrink-0 accent-[#2D4A8A]"
+              />
+              <label htmlFor="cgu-consent" className="text-sm text-[#6B7280] cursor-pointer leading-relaxed">
+                J&apos;accepte la{' '}
+                <Link
+                  href="/politique-confidentialite"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-[#2D4A8A] hover:underline font-medium"
+                >
+                  politique de confidentialité
+                </Link>
+                {' '}et les{' '}
+                <Link
+                  href="/mentions-legales"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-[#2D4A8A] hover:underline font-medium"
+                >
+                  mentions légales
+                </Link>
+              </label>
+            </div>
+
             <button
               type="submit"
-              disabled={loading || !commercant}
+              disabled={loading || !commercant || !form.cgu}
               className="w-full text-white font-bold py-3.5 rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed mt-2"
               style={{ backgroundColor: color }}
             >

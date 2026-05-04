@@ -29,11 +29,18 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Corps de requête invalide.' }, { status: 400 })
   }
 
-  const { merchant_id, email: rawEmail, password, nom: rawNom } =
+  const { merchant_id, email: rawEmail, password, nom: rawNom, cgu_accepted } =
     body as Record<string, unknown>
 
   const email = typeof rawEmail === 'string' ? rawEmail.toLowerCase().trim() : ''
   const nom = typeof rawNom === 'string' ? rawNom.trim() : ''
+
+  if (cgu_accepted !== true) {
+    return NextResponse.json(
+      { error: 'Vous devez accepter la politique de confidentialité pour vous inscrire.' },
+      { status: 400 }
+    )
+  }
 
   if (!merchant_id || typeof merchant_id !== 'string' || !UUID_RE.test(merchant_id)) {
     return NextResponse.json({ error: 'Identifiant commerce invalide.' }, { status: 400 })
@@ -93,10 +100,16 @@ export async function POST(req: NextRequest) {
 
   const qrCodeId = 'QR-' + crypto.randomUUID().replace(/-/g, '').slice(0, 8).toUpperCase()
 
-  // Insérer le client
+  // Insérer le client avec preuve de consentement RGPD
   const { error: clientErr } = await admin
     .from('clients')
-    .insert({ email, nom, qr_code_id: qrCodeId })
+    .insert({
+      email,
+      nom,
+      qr_code_id: qrCodeId,
+      cgu_accepted_at: new Date().toISOString(),
+      cgu_accepted_version: 'v1.0',
+    })
 
   if (clientErr) {
     // Rollback : supprimer l'auth user pour éviter un orphelin
