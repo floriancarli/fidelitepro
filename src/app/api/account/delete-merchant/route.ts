@@ -102,12 +102,11 @@ export async function POST(req: NextRequest) {
       )
 
       for (const client of clientRows as { id: string; email: string }[]) {
-        // Anonymiser toutes les cartes du client (par email ET client_id)
         const anonEmail = `supprime_${crypto.randomUUID().replace(/-/g, '').slice(0, 12)}@orlyo.deleted`
         await admin
           .from('cartes_fidelite')
           .update({ client_email: anonEmail, client_nom: 'Client supprimé' })
-          .or(`client_email.eq.${client.email},client_id.eq.${client.id}`)
+          .eq('client_email', client.email)
 
         await admin.from('clients').delete().eq('id', client.id)
 

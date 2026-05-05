@@ -30,7 +30,7 @@ export async function POST() {
   await admin
     .from('cartes_fidelite')
     .update({ client_email: anonEmail, client_nom: 'Client supprimé' })
-    .or(`client_email.eq.${client.email},client_id.eq.${client.id}`)
+    .eq('client_email', client.email)
 
   // Supprimer le profil client
   await admin.from('clients').delete().eq('id', client.id)
