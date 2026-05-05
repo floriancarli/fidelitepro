@@ -72,7 +72,6 @@ const DEMO_SCAN_RESULT: ScanResult = {
   carte: {
     id: 'demo-carte-01',
     commercant_id: 'demo',
-    client_id: 'demo-client-01',
     client_email: 'marie.dupont@gmail.com',
     client_nom: 'Marie Dupont',
     nombre_points: 9,
