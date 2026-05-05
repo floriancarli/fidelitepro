@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { sendRelanceJ7Email } from '@/lib/email'
+import { apiError } from '@/lib/api-error'
 
 
 type Palier = { points: number; libelle: string }
@@ -58,8 +59,7 @@ export async function GET(req: NextRequest) {
     .lte('sent_at', windowEnd.toISOString())
 
   if (logsError) {
-    console.error('[cron/relance-j7] logs query error:', logsError)
-    return NextResponse.json({ error: logsError.message }, { status: 500 })
+    return apiError(logsError, { fallback: 'Erreur lors de la relance J+7.' })
   }
   if (!logs || logs.length === 0) {
     return NextResponse.json({ sent: 0 })
@@ -120,8 +120,7 @@ export async function GET(req: NextRequest) {
     .in('id', eligibleCarteIds)
 
   if (cartesError) {
-    console.error('[cron/relance-j7] cartes query error:', cartesError)
-    return NextResponse.json({ error: cartesError.message }, { status: 500 })
+    return apiError(cartesError, { fallback: 'Erreur lors de la relance J+7.' })
   }
 
   const carteById = new Map(

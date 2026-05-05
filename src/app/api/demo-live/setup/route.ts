@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
+import { apiError } from '@/lib/api-error'
 
 const DEMO_LIVE_EMAIL = 'demo-live@getorlyo.com'
 const MERCHANT_QR        = 'QR-DEMOLIVE-MERCHANT'
@@ -30,7 +31,7 @@ export async function POST(req: NextRequest) {
 
   const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
   if (!serviceKey) {
-    return NextResponse.json({ error: 'SUPABASE_SERVICE_ROLE_KEY not configured' }, { status: 500 })
+    return NextResponse.json({ error: 'Configuration manquante' }, { status: 500 })
   }
 
   const admin = createClient(
@@ -54,7 +55,7 @@ export async function POST(req: NextRequest) {
       email_confirm: true,
     })
     if (error || !created.user) {
-      return NextResponse.json({ error: error?.message ?? 'Cannot create user' }, { status: 500 })
+      return apiError(error, { fallback: 'Erreur création compte démo.' })
     }
     userId = created.user.id
   }
@@ -76,7 +77,7 @@ export async function POST(req: NextRequest) {
     plan_actif: 'annuel',
   }, { onConflict: 'id' })
 
-  if (commErr) return NextResponse.json({ error: commErr.message }, { status: 500 })
+  if (commErr) return apiError(commErr, { fallback: 'Erreur configuration démo.' })
 
   // 3. Upsert client Jean Dupont
   const { error: clientErr } = await admin.from('clients').upsert({
@@ -85,7 +86,7 @@ export async function POST(req: NextRequest) {
     qr_code_id: JEAN_QR,
   }, { onConflict: 'email' })
 
-  if (clientErr) return NextResponse.json({ error: clientErr.message }, { status: 500 })
+  if (clientErr) return apiError(clientErr, { fallback: 'Erreur configuration démo.' })
 
   // 4. Upsert carte fidelite (start at 0 points)
   const { error: carteErr } = await admin.from('cartes_fidelite').upsert({
@@ -98,7 +99,7 @@ export async function POST(req: NextRequest) {
     derniere_visite: new Date().toISOString(),
   }, { onConflict: 'commercant_id,client_email' })
 
-  if (carteErr) return NextResponse.json({ error: carteErr.message }, { status: 500 })
+  if (carteErr) return apiError(carteErr, { fallback: 'Erreur configuration démo.' })
 
   return NextResponse.json({
     ok: true,

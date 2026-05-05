@@ -39,7 +39,7 @@ export default function ScanPage() {
       })
       const data = await res.json()
       if (!res.ok) {
-        setErrorMsg(data.detail ? `${data.error} — ${data.detail}` : (data.error || 'Erreur lors du scan'))
+        setErrorMsg(data.error || 'Erreur lors du scan')
         setState('error')
         return
       }

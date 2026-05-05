@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
+import { apiError } from '@/lib/api-error'
 
 function isAuthorized(req: NextRequest) {
   const secret = process.env.CRON_SECRET
@@ -41,7 +42,7 @@ export async function POST(req: NextRequest) {
 
   // 1. Create or find the demo auth user
   const { data: { users }, error: listErr } = await admin.auth.admin.listUsers()
-  if (listErr) return NextResponse.json({ error: listErr.message }, { status: 500 })
+  if (listErr) return apiError(listErr, { fallback: 'Erreur création compte démo.' })
 
   let demoUserId: string
   const existingUser = users.find((u) => u.email === DEMO_EMAIL)
@@ -57,7 +58,7 @@ export async function POST(req: NextRequest) {
       email_confirm: true,
     })
     if (createErr || !created.user) {
-      return NextResponse.json({ error: createErr?.message ?? 'Cannot create user' }, { status: 500 })
+      return apiError(createErr, { fallback: 'Erreur création compte démo.' })
     }
     demoUserId = created.user.id
   }
@@ -79,7 +80,7 @@ export async function POST(req: NextRequest) {
     plan_actif: 'annuel',
   }, { onConflict: 'id' })
 
-  if (commErr) return NextResponse.json({ error: commErr.message }, { status: 500 })
+  if (commErr) return apiError(commErr, { fallback: 'Erreur configuration démo.' })
 
   // 3. Upsert demo clients and their cartes
   const visiteBase = new Date()

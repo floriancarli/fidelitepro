@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { apiError } from '@/lib/api-error'
 
 export async function POST(request: NextRequest) {
   const supabase = await createClient()
@@ -53,7 +54,7 @@ export async function POST(request: NextRequest) {
     .eq('id', carte.id)
 
   if (updateErr) {
-    return NextResponse.json({ error: 'Erreur mise à jour points', detail: updateErr.message }, { status: 500 })
+    return apiError(updateErr, { fallback: 'Erreur lors de la validation.' })
   }
 
   // Marquer la récompense comme utilisée
@@ -63,7 +64,7 @@ export async function POST(request: NextRequest) {
     .eq('id', recompenseId)
 
   if (markErr) {
-    return NextResponse.json({ error: 'Erreur validation récompense', detail: markErr.message }, { status: 500 })
+    return apiError(markErr, { fallback: 'Erreur lors de la validation.' })
   }
 
   return NextResponse.json({ ok: true, pointsRestants: nouveauxPoints })

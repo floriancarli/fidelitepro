@@ -53,6 +53,6 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Impossible de créer la session de paiement' }, { status: 500 })
   }
 
-  console.log(`[checkout] session created: ${session.id} for ${user.email} (${plan})`)
+  console.log(`[checkout] session created: ${session.id} plan=${plan}`)
   return NextResponse.json({ url: session.url })
 }

@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { apiError } from '@/lib/api-error'
 
 const DEMO_LIVE_EMAIL = 'demo-live@getorlyo.com'
 
@@ -22,7 +23,7 @@ export async function POST() {
     })
     .eq('commercant_id', user.id)
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+  if (error) return apiError(error, { fallback: 'Erreur lors de la réinitialisation.' })
 
   // Delete all scans for this merchant
   await supabase.from('scans').delete().eq('commercant_id', user.id)

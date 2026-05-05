@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { sendAlmostThereEmail } from '@/lib/email'
+import { apiError } from '@/lib/api-error'
 
 export async function POST(request: NextRequest) {
   const supabase = await createClient()
@@ -24,8 +25,7 @@ export async function POST(request: NextRequest) {
     .single()
 
   if (commercantError || !commercant) {
-    console.error('[scan] commercant error:', commercantError)
-    return NextResponse.json({ error: 'Compte commerçant introuvable', detail: commercantError?.message }, { status: 404 })
+    return apiError(commercantError, { status: 404, fallback: 'Compte commerçant introuvable.' })
   }
 
   // Récupérer le client via son QR code — admin car la session du commerçant
@@ -37,8 +37,7 @@ export async function POST(request: NextRequest) {
     .single()
 
   if (clientError || !client) {
-    console.error('[scan] client error:', clientError)
-    return NextResponse.json({ error: 'Client introuvable — QR code non reconnu', detail: clientError?.message }, { status: 404 })
+    return apiError(clientError, { status: 404, fallback: 'QR code non reconnu.' })
   }
 
   // Trouver ou créer la carte — lookup par client_email (pas client_id, colonne optionnelle)
@@ -50,8 +49,7 @@ export async function POST(request: NextRequest) {
     .maybeSingle()
 
   if (carteSelectError) {
-    console.error('[scan] carte select error:', carteSelectError)
-    return NextResponse.json({ error: 'Erreur lecture carte', detail: carteSelectError.message }, { status: 500 })
+    return apiError(carteSelectError, { fallback: 'Erreur lors du scan.' })
   }
 
   // Résoudre les paliers : utilise paliers[] si définis, sinon fallback sur l'ancien champ unique
@@ -85,8 +83,7 @@ export async function POST(request: NextRequest) {
       .single()
 
     if (insertError) {
-      console.error('[scan] insert carte error:', insertError)
-      return NextResponse.json({ error: 'Erreur création carte', detail: insertError.message, code: insertError.code }, { status: 500 })
+      return apiError(insertError, { fallback: 'Erreur lors du scan.' })
     }
     carteCourante = newCarte
   } else {
@@ -125,8 +122,7 @@ export async function POST(request: NextRequest) {
       .eq('id', carteCourante.id)
 
     if (updateError) {
-      console.error('[scan] update carte error:', updateError)
-      return NextResponse.json({ error: 'Erreur mise à jour carte', detail: updateError.message }, { status: 500 })
+      return apiError(updateError, { fallback: 'Erreur lors du scan.' })
     }
 
     carteCourante = {
@@ -148,7 +144,7 @@ export async function POST(request: NextRequest) {
       pointsManquants,
     })
     if (nextPalier && pointsManquants !== null && pointsManquants <= 2) {
-      console.log('[scan] envoi email "presque là" à', client.email)
+      console.log('[scan] envoi email "presque là"')
       try {
         const emailResult = await sendAlmostThereEmail({
           clientEmail: client.email,

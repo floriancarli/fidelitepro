@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { sendRelanceEmail } from '@/lib/email'
+import { apiError } from '@/lib/api-error'
 
 
 type CarteRelance = {
@@ -52,8 +53,7 @@ export async function GET(req: NextRequest) {
     .lte('derniere_visite', windowEnd.toISOString())
 
   if (error) {
-    console.error('[cron/relance] query error:', error)
-    return NextResponse.json({ error: error.message }, { status: 500 })
+    return apiError(error, { fallback: 'Erreur lors de la relance.' })
   }
 
   if (!cartes || cartes.length === 0) {

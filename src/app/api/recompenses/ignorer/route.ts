@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient as createServerClient } from '@/lib/supabase/server'
 import { createClient as createAdminClient } from '@supabase/supabase-js'
+import { apiError } from '@/lib/api-error'
 
 export async function POST(request: NextRequest) {
   const supabase = await createServerClient()
@@ -43,7 +44,7 @@ export async function POST(request: NextRequest) {
     .eq('id', recompenseId)
 
   if (deleteErr) {
-    return NextResponse.json({ error: 'Erreur suppression', detail: deleteErr.message }, { status: 500 })
+    return apiError(deleteErr, { fallback: 'Erreur lors de la suppression.' })
   }
 
   return NextResponse.json({ ok: true })
