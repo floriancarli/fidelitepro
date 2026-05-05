@@ -24,8 +24,6 @@ export async function POST() {
 
   const savedEmail = user.email
 
-  // Anonymiser toutes les cartes de fidélité (par email ET par client_id car
-  // les cartes créées via /join n'ont pas toujours client_id renseigné)
   const anonEmail = `supprime_${crypto.randomUUID().replace(/-/g, '').slice(0, 12)}@orlyo.deleted`
   await admin
     .from('cartes_fidelite')

@@ -32,7 +32,6 @@ export interface Client {
 export interface CarteFidelite {
   id: string
   commercant_id: string
-  client_id: string
   client_email: string
   client_nom: string
   nombre_points: number
