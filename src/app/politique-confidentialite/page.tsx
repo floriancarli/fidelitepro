@@ -29,15 +29,17 @@ export default function PolitiqueConfidentialitePage() {
 
       <main className="flex-1 max-w-3xl mx-auto w-full px-6 py-10">
         <h1 className="text-3xl font-bold mb-2">Politique de confidentialité</h1>
-        <p className="text-[#6B7280] text-sm mb-8">Dernière mise à jour : janvier 2025</p>
+        <p className="text-[#6B7280] text-sm mb-8">Dernière mise à jour : mai 2026</p>
 
         <Section title="1. Responsable du traitement">
           <p>
             Le responsable du traitement des données personnelles collectées via Orlyo est :
           </p>
           <div className="bg-white rounded-xl p-4 text-sm font-mono">
-            <p>Orlyo SAS</p>
-            <p>Contact : <a href="mailto:dpo@getorlyo.com" className="text-[#2D4A8A] hover:underline">dpo@getorlyo.com</a></p>
+            <p>Florian Carli (Carlio Labs)</p>
+            <p>27 rue des Alouettes, 57860 Montois-la-Montagne</p>
+            <p>SIRET : 901 408 195 00021</p>
+            <p>Contact : <a href="mailto:contact@getorlyo.com" className="text-[#2D4A8A] hover:underline">contact@getorlyo.com</a></p>
           </div>
         </Section>
 
@@ -101,8 +103,8 @@ export default function PolitiqueConfidentialitePage() {
             <li><strong>Droit à la limitation</strong> — limiter le traitement de vos données</li>
           </ul>
           <p className="mt-3">
-            Pour exercer ces droits, contactez notre DPO à{' '}
-            <a href="mailto:dpo@getorlyo.com" className="text-[#2D4A8A] hover:underline">dpo@getorlyo.com</a>.
+            Pour exercer ces droits, contactez-nous à{' '}
+            <a href="mailto:contact@getorlyo.com" className="text-[#2D4A8A] hover:underline">contact@getorlyo.com</a>.
             Nous répondrons dans un délai maximum de 30 jours.
           </p>
           <p className="mt-2">
