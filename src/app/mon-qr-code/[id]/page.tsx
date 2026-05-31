@@ -456,8 +456,7 @@ export default function MonQrCodePage() {
 
             <div className="bg-white rounded-3xl border border-gray-200 shadow-sm overflow-hidden">
               <div className="bg-gradient-to-br from-[#2D4A8A] to-[#1e3a6e] p-6 text-white text-center">
-                <Logo white size="sm" />
-                <p className="text-white/70 text-xs mt-1">Carte de fidélité</p>
+                <p className="text-white/70 text-xs">Carte de fidélité</p>
                 <p className="font-bold text-lg mt-2">{client.nom}</p>
               </div>
               <div className="p-8 flex flex-col items-center">
