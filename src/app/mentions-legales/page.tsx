@@ -42,13 +42,14 @@ export default function MentionsLegalesPage() {
 
         <Section title="1. Éditeur du site">
           <div className="bg-white rounded-xl p-4">
-            <InfoRow label="Raison sociale" value="Orlyo SAS" />
-            <InfoRow label="Forme juridique" value="Société par Actions Simplifiée (SAS)" />
-            <InfoRow label="Capital social" value="À compléter" />
-            <InfoRow label="Siège social" value="À compléter" />
-            <InfoRow label="SIRET" value="À compléter" />
+            <InfoRow label="Raison sociale" value="Florian Carli" />
+            <InfoRow label="Nom commercial" value="Carlio Labs" />
+            <InfoRow label="Forme juridique" value="Entrepreneur individuel" />
+            <InfoRow label="Siège social" value="27 rue des Alouettes, 57860 Montois-la-Montagne, France" />
+            <InfoRow label="SIRET" value="901 408 195 00021" />
+            <InfoRow label="Code APE" value="62.01Z" />
             <InfoRow label="Email" value="contact@getorlyo.com" />
-            <InfoRow label="Directeur de publication" value="À compléter" />
+            <InfoRow label="Directeur de publication" value="Florian Carli" />
           </div>
         </Section>
 
@@ -79,11 +80,11 @@ export default function MentionsLegalesPage() {
         <Section title="4. Propriété intellectuelle">
           <p>
             L&apos;ensemble du contenu de ce site (textes, images, logotypes, structure) est la propriété exclusive de
-            Orlyo SAS et est protégé par les lois françaises et internationales relatives à la propriété intellectuelle.
+            Florian Carli (Carlio Labs) et est protégé par les lois françaises et internationales relatives à la propriété intellectuelle.
           </p>
           <p>
             Toute reproduction, représentation, modification ou exploitation, totale ou partielle, du contenu de ce site
-            est interdite sans autorisation écrite préalable de Orlyo SAS.
+            est interdite sans autorisation écrite préalable de Florian Carli (Carlio Labs).
           </p>
         </Section>
 
@@ -95,8 +96,8 @@ export default function MentionsLegalesPage() {
             </Link>.
           </p>
           <p>
-            Responsable du traitement : Orlyo SAS —{' '}
-            <a href="mailto:dpo@getorlyo.com" className="text-[#2D4A8A] hover:underline">dpo@getorlyo.com</a>
+            Responsable du traitement : Florian Carli —{' '}
+            <a href="mailto:contact@getorlyo.com" className="text-[#2D4A8A] hover:underline">contact@getorlyo.com</a>
           </p>
         </Section>
 
@@ -109,12 +110,12 @@ export default function MentionsLegalesPage() {
 
         <Section title="7. Limitation de responsabilité">
           <p>
-            Orlyo SAS s&apos;efforce d&apos;assurer l&apos;exactitude et la mise à jour des informations diffusées sur ce site.
-            Toutefois, Orlyo SAS ne peut garantir l&apos;exactitude, la précision ou l&apos;exhaustivité des informations
+            Florian Carli (Carlio Labs) s&apos;efforce d&apos;assurer l&apos;exactitude et la mise à jour des informations diffusées sur ce site.
+            Toutefois, Florian Carli (Carlio Labs) ne peut garantir l&apos;exactitude, la précision ou l&apos;exhaustivité des informations
             mises à disposition sur ce site.
           </p>
           <p>
-            Orlyo SAS décline toute responsabilité pour toute imprécision, inexactitude ou omission portant sur
+            Florian Carli (Carlio Labs) décline toute responsabilité pour toute imprécision, inexactitude ou omission portant sur
             des informations disponibles sur ce site.
           </p>
         </Section>
