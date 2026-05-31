@@ -17,8 +17,11 @@ export const metadata: Metadata = {
   description: 'Fidélisez vos clients simplement avec un QR code unique.',
   manifest: '/manifest.webmanifest',
   icons: {
-    icon: [{ url: '/logo-orlyo.png', type: 'image/png' }],
-    apple: [{ url: '/logo-orlyo.png', type: 'image/png' }],
+    icon: [
+      { url: '/favicon.svg', type: 'image/svg+xml' },
+      { url: '/favicon.ico', sizes: '32x32', type: 'image/x-icon' },
+    ],
+    apple: [{ url: '/logo-orlyo.png', sizes: '180x180', type: 'image/png' }],
   },
   appleWebApp: {
     capable: true,
