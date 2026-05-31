@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { Check, ArrowLeft, Star } from 'lucide-react'
+import { Check, ArrowLeft, Star, Tag } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { Logo } from '@/components/Logo'
 import Footer from '@/components/Footer'
@@ -26,6 +26,7 @@ export default function PricingPage() {
   const [checkoutError, setCheckoutError] = useState('')
   const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [checkingAuth, setCheckingAuth] = useState(true)
+  const [promoCode, setPromoCode] = useState('')
 
   useEffect(() => {
     createClient().auth.getUser().then(({ data: { user } }) => {
@@ -45,7 +46,7 @@ export default function PricingPage() {
       const res = await fetch('/api/stripe/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ plan }),
+        body: JSON.stringify({ plan, promoCode: promoCode.trim() }),
       })
       const data = await res.json()
       if (!res.ok || data.error) {
@@ -146,7 +147,30 @@ export default function PricingPage() {
           </div>
         </div>
 
-        <p className="mt-6 text-sm text-center text-[#9CA3AF] max-w-lg">
+        {/* Code promo */}
+        <div className="w-full max-w-2xl mt-8">
+          <div className="flex items-center gap-2 border border-gray-200 rounded-xl px-4 py-3 bg-white focus-within:border-[#2D4A8A] transition-colors">
+            <Tag size={16} className="text-[#9CA3AF] flex-shrink-0" />
+            <input
+              type="text"
+              value={promoCode}
+              onChange={(e) => setPromoCode(e.target.value.toUpperCase())}
+              placeholder="Code promo (facultatif)"
+              className="flex-1 text-sm outline-none placeholder:text-[#9CA3AF] text-[#1A1A23] bg-transparent"
+              maxLength={32}
+            />
+            {promoCode && (
+              <button
+                onClick={() => setPromoCode('')}
+                className="text-xs text-[#9CA3AF] hover:text-[#6B7280] transition-colors"
+              >
+                Effacer
+              </button>
+            )}
+          </div>
+        </div>
+
+        <p className="mt-4 text-sm text-center text-[#9CA3AF] max-w-lg">
           Vous pouvez basculer du mensuel à l&apos;annuel à tout moment depuis votre espace, sans frais supplémentaires.
         </p>
 
