@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { QrCode, BarChart3, Gift, Mail, Check, ArrowRight, Star, ChevronDown } from 'lucide-react'
+import { QrCode, BarChart3, Gift, Mail, Check, ArrowRight, Star, ChevronDown, TrendingUp, Download, Smartphone, ScanLine } from 'lucide-react'
 import NavbarLanding from '@/components/NavbarLanding'
 
 const avantages = [
@@ -22,6 +22,26 @@ const avantages = [
     icon: Mail,
     titre: 'Notifications automatiques',
     desc: 'Relances email automatiques pour fidéliser vos clients et les faire revenir.',
+  },
+  {
+    icon: TrendingUp,
+    titre: 'Analytics avancés',
+    desc: 'Taux de fidélisation, clients inactifs, scans par jour. Toutes vos données en un coup d\'œil.',
+  },
+  {
+    icon: Download,
+    titre: 'Export CSV',
+    desc: 'Exportez vos données clients et statistiques en un clic. (Plan annuel)',
+  },
+  {
+    icon: Smartphone,
+    titre: 'PWA installable',
+    desc: 'Vos clients installent leur carte comme une app, sans passer par l\'App Store.',
+  },
+  {
+    icon: ScanLine,
+    titre: 'Scanner en caisse',
+    desc: 'Scannez les QR codes de vos clients directement depuis votre téléphone, sans matériel supplémentaire.',
   },
 ]
 
