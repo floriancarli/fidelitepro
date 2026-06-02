@@ -75,6 +75,13 @@ function InscriptionForm() {
 
       if (dbError) throw dbError
 
+      // Email de bienvenue — non bloquant
+      fetch('/api/emails/bienvenue-commercant', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ nomCommerce: form.nomCommerce }),
+      }).catch(() => {})
+
       // Redirect to pricing for payment (keep plan param if present)
       router.push(plan ? `/pricing` : '/pricing')
     } catch (err: unknown) {

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
-import { sendAlmostThereEmail } from '@/lib/email'
+import { sendAlmostThereEmail, sendRewardUnlockedEmail } from '@/lib/email'
 import { apiError } from '@/lib/api-error'
 
 export async function POST(request: NextRequest) {
@@ -131,6 +131,18 @@ export async function POST(request: NextRequest) {
       points_cumules_total: carteCourante.points_cumules_total + pointsParVisite,
       recompenses_obtenues: recompensesObtenues,
     }
+  }
+
+  // Email récompense débloquée
+  if (recompenseDeclenchee && libelleRecompenseObtenue) {
+    sendRewardUnlockedEmail({
+      clientEmail: client.email,
+      clientNom: client.nom,
+      clientQrCodeId: client.qr_code_id,
+      nomCommerce: commercant.nom_commerce,
+      couleur: commercant.couleur_principale || '#2D4A8A',
+      libelleRecompense: libelleRecompenseObtenue,
+    }).catch((err) => console.error('[scan] reward email error:', err))
   }
 
   // Email "presque là" : 1 ou 2 points du prochain palier non atteint

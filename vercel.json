@@ -7,6 +7,14 @@
     {
       "path": "/api/cron/relance-j7",
       "schedule": "0 10 * * *"
+    },
+    {
+      "path": "/api/cron/relance-15j",
+      "schedule": "0 8 * * *"
+    },
+    {
+      "path": "/api/cron/resume-hebdo",
+      "schedule": "0 7 * * 1"
     }
   ]
 }

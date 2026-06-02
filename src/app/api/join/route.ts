@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { checkRateLimit } from '@/lib/rate-limit'
+import { sendWelcomeClientEmail } from '@/lib/email'
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/
@@ -132,6 +133,23 @@ export async function POST(req: NextRequest) {
   })
   if (carteErr) {
     console.error('[api/join] insert carte error (non bloquant):', carteErr)
+  }
+
+  // Email de bienvenue — non bloquant
+  const { data: commercantData } = await admin
+    .from('commercants')
+    .select('nom_commerce, couleur_principale')
+    .eq('id', merchant_id)
+    .maybeSingle()
+
+  if (commercantData) {
+    sendWelcomeClientEmail({
+      clientEmail: email,
+      clientNom: nom,
+      clientQrCodeId: qrCodeId,
+      nomCommerce: commercantData.nom_commerce,
+      couleur: commercantData.couleur_principale || '#2D4A8A',
+    }).catch((err) => console.error('[api/join] welcome email error:', err))
   }
 
   return NextResponse.json({ success: true, qr_code_id: qrCodeId })
