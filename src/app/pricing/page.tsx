@@ -134,7 +134,7 @@ export default function PricingPage() {
             <div className="flex items-start gap-2 bg-[#FFF9EC] border border-[#F59E0B]/30 rounded-xl px-4 py-3 mb-8">
               <Star size={16} className="text-[#F59E0B] flex-shrink-0 mt-0.5" fill="currentColor" />
               <p className="text-sm text-[#92400e] font-medium">
-                Bonus annuel&nbsp;: accès prioritaire au Wallet Apple &amp; Google dès leur sortie
+                Bonus annuel&nbsp;: accès prioritaire aux nouvelles fonctionnalités
               </p>
             </div>
             <button
