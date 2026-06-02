@@ -274,7 +274,7 @@ export default function LandingPage() {
                   {p.wallet && (
                     <li className="flex items-start gap-2 text-sm">
                       <Star size={16} className="mt-0.5 flex-shrink-0 text-[#F59E0B]" fill="currentColor" />
-                      <span className="font-medium text-[#92400e]">Bonus&nbsp;: Wallet Apple &amp; Google en priorité</span>
+                      <span className="font-medium text-[#92400e]">Accès prioritaire aux nouvelles fonctionnalités</span>
                     </li>
                   )}
                 </ul>
@@ -366,6 +366,10 @@ export default function LandingPage() {
                 r: 'Oui. L\'abonnement mensuel est sans engagement. L\'abonnement annuel peut être résilié à tout moment ; les mois restants ne sont pas remboursés mais votre accès reste actif jusqu\'à la fin de la période.',
               },
               {
+                q: 'Combien de temps faut-il pour démarrer ?',
+                r: 'Moins de 10 minutes. Créez votre compte, configurez vos récompenses et affichez votre QR code en caisse. Vos clients peuvent s\'inscrire immédiatement.',
+              },
+              {
                 q: 'Mes données sont-elles sécurisées ?',
                 r: 'Toutes les données sont hébergées en Europe (Irlande) chez Supabase, certifié SOC 2 Type II. Les connexions sont chiffrées en TLS. Nous ne revendons aucune donnée à des tiers.',
               },
@@ -391,7 +395,7 @@ export default function LandingPage() {
             href="/pricing"
             className="inline-flex w-full sm:w-auto items-center justify-center gap-2 bg-white text-[#2D4A8A] font-semibold px-8 py-4 sm:py-3.5 rounded-xl hover:bg-gray-50 transition-colors"
           >
-            Voir les tarifs
+            Commencer gratuitement
             <ArrowRight size={18} />
           </Link>
         </div>
