@@ -1,12 +1,14 @@
 import type { Metadata } from 'next'
-import { createClient } from '@supabase/supabase-js'
+import { createAdminClient } from '@/lib/supabase/admin'
 
-async function getCommercantId(qrCodeId: string): Promise<string | null> {
+type CommercantInfo = {
+  nomCommerce: string
+  commercantId: string | null   // null si pas de logo → fallback Orlyo
+}
+
+async function getCommercantInfo(qrCodeId: string): Promise<CommercantInfo | null> {
   try {
-    const supabase = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-    )
+    const supabase = createAdminClient()
 
     const { data: client } = await supabase
       .from('clients')
@@ -18,18 +20,22 @@ async function getCommercantId(qrCodeId: string): Promise<string | null> {
 
     const { data: carte } = await supabase
       .from('cartes_fidelite')
-      .select('commercants(id, logo_url)')
+      .select('commercants(id, nom_commerce, logo_url)')
       .eq('client_email', client.email)
       .order('derniere_visite', { ascending: false })
       .limit(1)
       .single()
 
     const commercant = (carte as unknown as {
-      commercants: { id: string; logo_url: string | null } | null
+      commercants: { id: string; nom_commerce: string; logo_url: string | null } | null
     })?.commercants
 
-    if (!commercant?.logo_url) return null
-    return commercant.id
+    if (!commercant) return null
+
+    return {
+      nomCommerce: commercant.nom_commerce,
+      commercantId: commercant.logo_url ? commercant.id : null,
+    }
   } catch {
     return null
   }
@@ -41,19 +47,24 @@ export async function generateMetadata({
   params: Promise<{ id: string }>
 }): Promise<Metadata> {
   const { id } = await params
-  const commercantId = await getCommercantId(id)
+  const info = await getCommercantInfo(id)
 
-  const appleIcon = commercantId
-    ? { url: `/api/logo/${commercantId}`, sizes: '180x180', type: 'image/png' }
-    : { url: '/icons/icon-192.png', sizes: '180x180', type: 'image/png' }
+  const appTitle = info?.nomCommerce
+    ? `Fidélité ${info.nomCommerce}`
+    : 'Ma Carte Fidélité'
+
+  // Logo du commerce si disponible, sinon logo Orlyo (pas l'icône violet générique)
+  const appleIcon = info?.commercantId
+    ? { url: `/api/logo/${info.commercantId}`, sizes: '180x180', type: 'image/png' }
+    : { url: '/logo-orlyo.png', sizes: '180x180', type: 'image/png' }
 
   return {
-    title: 'Ma Carte Fidélité',
+    title: appTitle,
     description: 'Votre carte de fidélité numérique personnelle.',
     manifest: `/api/pwa/${id}`,
     appleWebApp: {
       capable: true,
-      title: 'Ma Carte Fidélité',
+      title: appTitle,
       statusBarStyle: 'default',
     },
     icons: {
