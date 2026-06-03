@@ -8,6 +8,7 @@ import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 import { Logo } from '@/components/Logo'
 import InstallPrompt from '@/components/InstallPrompt'
+import PushNotificationPrompt from '@/components/PushNotificationPrompt'
 import type { Client, Palier } from '@/lib/types'
 
 const QRCodeCanvas = dynamic(() => import('qrcode.react').then((m) => m.QRCodeCanvas), { ssr: false })
@@ -475,8 +476,9 @@ export default function MonQrCodePage() {
             </div>
           </div>
 
-          {/* Ajouter à l'écran d'accueil */}
+          {/* Ajouter à l'écran d'accueil + notifications */}
           <InstallPrompt />
+          <PushNotificationPrompt />
 
           {/* Points par commerce */}
           {cartes.length === 0 ? (

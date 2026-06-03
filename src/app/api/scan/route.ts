@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { sendAlmostThereEmail, sendRewardUnlockedEmail } from '@/lib/email'
+import { sendPushToClient } from '@/lib/push'
 import { apiError } from '@/lib/api-error'
 
 export async function POST(request: NextRequest) {
@@ -133,6 +134,16 @@ export async function POST(request: NextRequest) {
     }
   }
 
+  // Notification push récompense débloquée
+  if (recompenseDeclenchee && libelleRecompenseObtenue) {
+    sendPushToClient(client.email, {
+      title: '🎁 Récompense débloquée !',
+      body: `${libelleRecompenseObtenue} chez ${commercant.nom_commerce}`,
+      url: `/mon-qr-code/${client.qr_code_id}`,
+      tag: 'reward-unlocked',
+    }).catch((err) => console.error('[scan] push reward error:', err))
+  }
+
   // Email récompense débloquée
   if (recompenseDeclenchee && libelleRecompenseObtenue) {
     sendRewardUnlockedEmail({
@@ -156,7 +167,16 @@ export async function POST(request: NextRequest) {
       pointsManquants,
     })
     if (nextPalier && pointsManquants !== null && pointsManquants <= 2) {
-      console.log('[scan] envoi email "presque là"')
+      console.log('[scan] envoi email + push "presque là"')
+
+      // Push notification "presque là"
+      sendPushToClient(client.email, {
+        title: '⭐ Presque une récompense !',
+        body: `Plus que ${pointsManquants} point${pointsManquants > 1 ? 's' : ''} pour ${nextPalier.libelle} chez ${commercant.nom_commerce}`,
+        url: `/mon-qr-code/${client.qr_code_id}`,
+        tag: 'almost-there',
+      }).catch((err) => console.error('[scan] push almost-there error:', err))
+
       try {
         const emailResult = await sendAlmostThereEmail({
           clientEmail: client.email,
